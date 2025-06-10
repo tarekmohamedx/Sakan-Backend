@@ -29,7 +29,7 @@ public partial class Booking
 
     public virtual Bed Bed { get; set; }
 
-    public virtual AspNetUser Guest { get; set; }
+    public virtual ApplicationUser Guest { get; set; }
 
     public virtual Listing Listing { get; set; }
 

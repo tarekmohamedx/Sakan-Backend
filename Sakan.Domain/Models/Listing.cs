@@ -37,7 +37,7 @@ public partial class Listing
 
     public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 
-    public virtual AspNetUser Host { get; set; }
+    public virtual ApplicationUser Host { get; set; }
 
     public virtual ICollection<ListingPhoto> ListingPhotos { get; set; } = new List<ListingPhoto>();
 

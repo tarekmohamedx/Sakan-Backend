@@ -17,7 +17,7 @@ public partial class Message
 
     public DateTime? Timestamp { get; set; }
 
-    public virtual AspNetUser Receiver { get; set; }
+    public virtual ApplicationUser Receiver { get; set; }
 
-    public virtual AspNetUser Sender { get; set; }
+    public virtual ApplicationUser Sender { get; set; }
 }

@@ -27,7 +27,7 @@ public partial class Bed
 
     public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 
-    public virtual AspNetUser OccupiedByUser { get; set; }
+    public virtual ApplicationUser OccupiedByUser { get; set; }
 
     public virtual Room Room { get; set; }
 }

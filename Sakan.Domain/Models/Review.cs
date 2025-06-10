@@ -19,7 +19,7 @@ public partial class Review
 
     public DateTime? CreatedAt { get; set; }
 
-    public virtual AspNetUser ReviewedUser { get; set; }
+    public virtual ApplicationUser ReviewedUser { get; set; }
 
-    public virtual AspNetUser Reviewer { get; set; }
+    public virtual ApplicationUser Reviewer { get; set; }
 }
