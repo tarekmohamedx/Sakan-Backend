@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Interfaces\" />
+    <PackageReference Include="System.Net.Http.Json" Version="9.0.6" />
   </ItemGroup>
 
 </Project>
