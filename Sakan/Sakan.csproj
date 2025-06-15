@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
@@ -8,6 +8,13 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.5" />
+    <PackageReference Include="System.Net.Http.Json" Version="9.0.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+	  <ProjectReference Include="..\Sakan.Application\Sakan.Application.csproj" />
+	  <ProjectReference Include="..\Sakan.Domain\Sakan.Domain.csproj" />
+	  <ProjectReference Include="..\Sakan.Infrastructure\Sakan.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
