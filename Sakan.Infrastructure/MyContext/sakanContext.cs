@@ -356,6 +356,11 @@ public partial class sakanContext:IdentityDbContext<ApplicationUser>
                 .HasColumnName("name");
         });
 
+        modelBuilder.Entity<Favorite>(entity =>
+        {
+            entity.HasKey(e => new { e.ListingId, e.UserId });
+        });
+
         OnModelCreatingPartial(modelBuilder);
     }
 

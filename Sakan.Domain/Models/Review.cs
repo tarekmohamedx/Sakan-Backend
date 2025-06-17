@@ -19,6 +19,12 @@ public partial class Review
 
     public DateTime? CreatedAt { get; set; }
 
+    public int BookingId { get; set; }
+
+    public bool IsActive { get; set; }
+
+    public virtual Booking Booking { get; set; }
+
     public virtual ApplicationUser ReviewedUser { get; set; }
 
     public virtual ApplicationUser Reviewer { get; set; }

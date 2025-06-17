@@ -33,13 +33,25 @@ public partial class Listing
 
     public bool? IsBookableAsWhole { get; set; }
 
+    public decimal? MinBedPrice { get; set; }
+
+    public decimal? AverageRating { get; set; }
+
+    public bool IsActive { get; set; }
+
     public virtual ICollection<BookingRequest> BookingRequests { get; set; } = new List<BookingRequest>();
 
     public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
+
+    public virtual ICollection<Chat> Chats { get; set; } = new List<Chat>();
+
+    public virtual ICollection<Favorite> Favorites { get; set; } = new List<Favorite>();
 
     public virtual ApplicationUser Host { get; set; }
 
     public virtual ICollection<ListingPhoto> ListingPhotos { get; set; } = new List<ListingPhoto>();
 
     public virtual ICollection<Room> Rooms { get; set; } = new List<Room>();
+
+    public virtual ICollection<Amenity> Amenities { get; set; } = new List<Amenity>();
 }

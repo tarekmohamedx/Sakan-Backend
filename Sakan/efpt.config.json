@@ -8,7 +8,7 @@
    "OutputContextPath": null,
    "OutputPath": "Models",
    "PreserveCasingWithRegex": true,
-   "ProjectRootNamespace": "Sakan.Domain",
+   "ProjectRootNamespace": "Sakan",
    "Schemas": null,
    "SelectedHandlebarsLanguage": 2,
    "SelectedToBeGenerated": 2,
@@ -16,50 +16,6 @@
    "Tables": [
       {
          "Name": "[dbo].[Amenities]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[AspNetRoleClaims]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[AspNetRoles]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[AspNetUserClaims]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[AspNetUserLogins]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[AspNetUserRoles]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[AspNetUsers]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[AspNetUserTokens]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[BedPhotos]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[Beds]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[BookingRequests]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[Bookings]",
          "ObjectType": 0
       },
       {
@@ -75,43 +31,11 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[ListingPhotos]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[Listings]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[Messages]",
-         "ObjectType": 0
-      },
-      {
          "Name": "[dbo].[Notifications]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[Payments]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[Reviews]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[RoomPhotos]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[Rooms]",
-         "ObjectType": 0
-      },
-      {
          "Name": "[dbo].[SupportTickets]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[Test]",
          "ObjectType": 0
       },
       {

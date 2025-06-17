@@ -3,8 +3,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Sakan.Application.Services;
+using Sakan.Domain.Interfaces;
 using Sakan.Domain.Models;
 using Sakan.Infrastructure.Models;
+using Sakan.Infrastructure.Repositories;
 using System.Text;
 
 namespace Sakan
@@ -72,9 +75,13 @@ namespace Sakan
                 options.Password.RequiredLength = 4;
                 options.SignIn.RequireConfirmedEmail = false;
                 options.Lockout.AllowedForNewUsers = false;
+                
             });
 
 
+
+            builder.Services.AddScoped<ITestRepo, TestRepo>();
+            builder.Services.AddScoped<ITestService, TestService>(); 
 
             var app = builder.Build();
 

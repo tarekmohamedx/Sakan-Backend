@@ -15,8 +15,4 @@
     <ProjectReference Include="..\Sakan.Domain\Sakan.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Repositories\" />
-  </ItemGroup>
-
 </Project>
