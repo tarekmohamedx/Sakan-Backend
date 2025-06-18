@@ -81,7 +81,9 @@ namespace Sakan
 
 
             builder.Services.AddScoped<ITestRepo, TestRepo>();
-            builder.Services.AddScoped<ITestService, TestService>(); 
+            builder.Services.AddScoped<IProfile, ProfileRepo>();
+            builder.Services.AddScoped<ITestService, TestService>();
+            builder.Services.AddScoped<IProfileService, Userprofileservice>(); 
 
             var app = builder.Build();
 
