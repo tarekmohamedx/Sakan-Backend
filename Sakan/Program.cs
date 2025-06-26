@@ -1,4 +1,5 @@
 
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -50,6 +51,11 @@ namespace Sakan
 
                 };
 
+            }).AddGoogle(googleoption =>
+            {
+                googleoption.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+                googleoption.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+                googleoption.CallbackPath = "/sakanak";
             });
 
 
