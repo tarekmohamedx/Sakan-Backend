@@ -1,11 +1,13 @@
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Sakan.Application.Services;
 using Sakan.Domain.Interfaces;
 using Sakan.Domain.Models;
+using Sakan.Hubs;
 using Sakan.Infrastructure.Models;
 using Sakan.Infrastructure.Repositories;
 using System.Text;
@@ -27,6 +29,7 @@ namespace Sakan
             });
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
+            builder.Services.AddSignalR();
 
 
 
@@ -59,6 +62,13 @@ namespace Sakan
                 option.UseSqlServer(connection);
             });
 
+            builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
+
+
+            //swagger
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
+
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
               .AddEntityFrameworkStores<sakanContext>().AddDefaultTokenProviders();
 
@@ -87,11 +97,19 @@ namespace Sakan
 
             var app = builder.Build();
 
+            app.UseSwagger();
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "My API v1");
+                options.RoutePrefix = "";
+            });
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
             }
+
 
             app.UseHttpsRedirection();
             
@@ -99,7 +117,7 @@ namespace Sakan
             app.UseAuthorization();
 
             app.UseCors("s");
-
+            app.MapHub<ChatHub>("/chat");
             app.MapControllers();
 
             app.Run();
