@@ -2,23 +2,25 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.SignalR;
 using Sakan.Application.DTOs;
+using Sakan.Application.Services;
 
 namespace Sakan.Hubs
 {
     public class ChatHub:Hub
     {
-        public ChatHub(sakanContext sakanContext)
+        public ChatHub( IMessageService messageService)
         {
-            SakanContext = sakanContext;
+            MessageService = messageService;
         }
 
         public sakanContext SakanContext { get; }
+        public IMessageService MessageService { get; }
 
         public async Task SendMessage(MessageDto dto)
         {
-            await Clients.User(dto.ReceiverID).SendAsync("ReceiveMessage", dto);
+            var savedMessage = await MessageService.SendMessageAsync(dto);
+            await Clients.User(dto.ReceiverID).SendAsync("ReceiveMessage", savedMessage);
             Console.WriteLine("Dto: " + JsonSerializer.Serialize(dto));
-            //await Clients.All.SendAsync("ReceiveMessage", dto);
         }
     }
 }

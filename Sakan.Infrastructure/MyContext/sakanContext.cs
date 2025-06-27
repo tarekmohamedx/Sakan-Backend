@@ -31,6 +31,7 @@ public partial class sakanContext:IdentityDbContext<ApplicationUser>
     public virtual DbSet<ListingPhoto> ListingPhotos { get; set; }
 
     public virtual DbSet<Message> Messages { get; set; }
+    public virtual DbSet<Chat> Chats { get; set; }
 
     public virtual DbSet<Payment> Payments { get; set; }
 

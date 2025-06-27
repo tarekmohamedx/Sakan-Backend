@@ -18,6 +18,7 @@ namespace Sakan
     {
         public static void Main(string[] args)
         {
+            var MyAllowSpecificOrigins = "AllowSpecificOrigins";
             var builder = WebApplication.CreateBuilder(args);
 
             var connection = builder.Configuration.GetConnectionString("connection");
@@ -72,10 +73,25 @@ namespace Sakan
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
               .AddEntityFrameworkStores<sakanContext>().AddDefaultTokenProviders();
 
-            builder.Services.AddCors(option =>
-            {
-                option.AddPolicy("s", o => o.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
-            });
+            //builder.Services.AddCors(option =>
+            //{
+            //    option.AddPolicy("s", o => o.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+            //});
+
+           // Add CORS policy
+                builder.Services.AddCors(options =>
+                {
+                    options.AddPolicy(name: MyAllowSpecificOrigins,
+                        policy =>
+                        {
+                            policy.WithOrigins("http://localhost:4200")
+                                  .AllowAnyHeader()
+                                  .AllowAnyMethod()
+                                  .AllowCredentials();
+                        });
+                });
+
+
             builder.Services.Configure<IdentityOptions>(options =>
             {
                 options.Password.RequireDigit = true;
@@ -93,7 +109,10 @@ namespace Sakan
             builder.Services.AddScoped<ITestRepo, TestRepo>();
             builder.Services.AddScoped<IProfile, ProfileRepo>();
             builder.Services.AddScoped<ITestService, TestService>();
-            builder.Services.AddScoped<IProfileService, Userprofileservice>(); 
+            builder.Services.AddScoped<IProfileService, Userprofileservice>();
+            builder.Services.AddScoped<IMessage, MessageRepo>();
+            builder.Services.AddScoped<IMessageService, MessageService>();
+
 
             var app = builder.Build();
 
@@ -116,7 +135,7 @@ namespace Sakan
             app.UseAuthentication(); 
             app.UseAuthorization();
 
-            app.UseCors("s");
+            app.UseCors(MyAllowSpecificOrigins);
             app.MapHub<ChatHub>("/chat");
             app.MapControllers();
 
