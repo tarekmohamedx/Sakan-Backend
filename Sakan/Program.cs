@@ -123,6 +123,8 @@ namespace Sakan
                 options.RoutePrefix = "";
             });
 
+            
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -131,7 +133,7 @@ namespace Sakan
 
 
             app.UseHttpsRedirection();
-            
+            app.UseRouting();
             app.UseAuthentication(); 
             app.UseAuthorization();
 
