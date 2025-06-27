@@ -55,7 +55,7 @@ namespace Sakan
             {
                 googleoption.ClientId = builder.Configuration["Authentication:Google:ClientId"];
                 googleoption.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-                googleoption.CallbackPath = "/sakanak";
+                googleoption.CallbackPath = "/signin-google";
             });
 
 

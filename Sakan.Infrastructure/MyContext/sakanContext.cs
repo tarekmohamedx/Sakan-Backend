@@ -18,6 +18,7 @@ public partial class sakanContext:IdentityDbContext<ApplicationUser>
     {
     }
 
+
     public virtual DbSet<Bed> Beds { get; set; }
 
     public virtual DbSet<BedPhoto> BedPhotos { get; set; }
