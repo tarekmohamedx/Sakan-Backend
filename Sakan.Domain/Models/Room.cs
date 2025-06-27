@@ -21,6 +21,8 @@ public partial class Room
 
     public bool? IsBookableAsWhole { get; set; }
 
+    public bool IsActive { get; set; }
+
     public virtual ICollection<Bed> Beds { get; set; } = new List<Bed>();
 
     public virtual ICollection<BookingRequest> BookingRequests { get; set; } = new List<BookingRequest>();

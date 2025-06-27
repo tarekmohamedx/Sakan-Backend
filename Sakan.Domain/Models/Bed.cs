@@ -21,13 +21,15 @@ public partial class Bed
 
     public string OccupiedByUserId { get; set; }
 
+    public bool IsActive { get; set; }
+
     public virtual ICollection<BedPhoto> BedPhotos { get; set; } = new List<BedPhoto>();
 
     public virtual ICollection<BookingRequest> BookingRequests { get; set; } = new List<BookingRequest>();
 
     public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 
-    public virtual AspNetUser OccupiedByUser { get; set; }
+    public virtual ApplicationUser OccupiedByUser { get; set; }
 
     public virtual Room Room { get; set; }
 }

@@ -25,9 +25,11 @@ public partial class BookingRequest
 
     public bool? GuestApproved { get; set; }
 
+    public bool IsActive { get; set; }
+
     public virtual Bed Bed { get; set; }
 
-    public virtual AspNetUser Guest { get; set; }
+    public virtual ApplicationUser Guest { get; set; }
 
     public virtual Listing Listing { get; set; }
 

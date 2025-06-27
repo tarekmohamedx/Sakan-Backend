@@ -5,15 +5,19 @@ using System.Collections.Generic;
 
 namespace Sakan.Domain.Models;
 
-public partial class AspNetUserClaim
+public partial class Notification
 {
     public int Id { get; set; }
 
     public string UserId { get; set; }
 
-    public string ClaimType { get; set; }
+    public string Message { get; set; }
 
-    public string ClaimValue { get; set; }
+    public bool IsRead { get; set; }
 
-    public virtual AspNetUser User { get; set; }
+    public string Link { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+
+    public virtual ApplicationUser User { get; set; }
 }

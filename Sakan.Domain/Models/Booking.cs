@@ -27,13 +27,19 @@ public partial class Booking
 
     public DateTime? CreatedAt { get; set; }
 
+    public bool IsActive { get; set; }
+
     public virtual Bed Bed { get; set; }
 
-    public virtual AspNetUser Guest { get; set; }
+    public virtual ApplicationUser Guest { get; set; }
 
     public virtual Listing Listing { get; set; }
 
     public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
 
+    public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
+
     public virtual Room Room { get; set; }
+
+    public virtual ICollection<SupportTicket> SupportTickets { get; set; } = new List<SupportTicket>();
 }

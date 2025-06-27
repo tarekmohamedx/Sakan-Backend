@@ -5,15 +5,13 @@ using System.Collections.Generic;
 
 namespace Sakan.Domain.Models;
 
-public partial class AspNetUserToken
+public partial class Amenity
 {
-    public string UserId { get; set; }
-
-    public string LoginProvider { get; set; }
+    public int Id { get; set; }
 
     public string Name { get; set; }
 
-    public string Value { get; set; }
+    public string IconUrl { get; set; }
 
-    public virtual AspNetUser User { get; set; }
+    public virtual ICollection<Listing> Listings { get; set; } = new List<Listing>();
 }
