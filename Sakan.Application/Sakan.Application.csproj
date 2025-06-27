@@ -6,8 +6,12 @@
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\Sakan.Domain\Sakan.Domain.csproj" />
-	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Sakan.Domain\Sakan.Domain.csproj" />
+  </ItemGroup>
 
 </Project>

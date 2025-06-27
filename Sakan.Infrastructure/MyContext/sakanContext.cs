@@ -31,6 +31,7 @@ public partial class sakanContext:IdentityDbContext<ApplicationUser>
     public virtual DbSet<ListingPhoto> ListingPhotos { get; set; }
 
     public virtual DbSet<Message> Messages { get; set; }
+    public virtual DbSet<Chat> Chats { get; set; }
 
     public virtual DbSet<Payment> Payments { get; set; }
 
@@ -247,7 +248,7 @@ public partial class sakanContext:IdentityDbContext<ApplicationUser>
             entity.HasKey(e => e.MessageId).HasName("PK__Messages__C87C037C52C1C551");
 
             entity.Property(e => e.MessageId).HasColumnName("MessageID");
-            entity.Property(e => e.Content).HasColumnType("text");
+            entity.Property(e => e.Content).HasColumnType("nvarchar(max)");
             entity.Property(e => e.ReceiverId)
                 .HasMaxLength(450)
                 .HasColumnName("ReceiverID");
