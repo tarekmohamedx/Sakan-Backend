@@ -1,11 +1,17 @@
+using Microsoft.EntityFrameworkCore;
+using Sakan.Infrastructure.Services;
+using Sakan.Application.Interfaces;
+using Sakan.Infrastructure.Models;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Sakan.Application.Services;
 using Sakan.Domain.Interfaces;
 using Sakan.Domain.Models;
+using Sakan.Hubs;
 using Sakan.Infrastructure.Models;
 using Sakan.Infrastructure.Repositories;
 using System.Text;
@@ -16,6 +22,7 @@ namespace Sakan
     {
         public static void Main(string[] args)
         {
+            var MyAllowSpecificOrigins = "AllowSpecificOrigins";
             var builder = WebApplication.CreateBuilder(args);
 
             var connection = builder.Configuration.GetConnectionString("connection");
@@ -25,8 +32,18 @@ namespace Sakan
             {
               //  option.Filters.Add();
             });
+            builder.Services.AddControllers();
+            builder.Services.AddScoped<IListingDetailsService, ListingDetailsService>();
+            builder.Services.AddScoped<IRoomDetailsService, RoomDetailsService>();
+            builder.Services.AddScoped<IBookingRequestService, BookingRequestService>();
+
+
+            builder.Services.AddDbContext<sakanContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
+            builder.Services.AddSignalR();
 
 
 
@@ -59,13 +76,35 @@ namespace Sakan
                 option.UseSqlServer(connection);
             });
 
+            builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
+
+
+            //swagger
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
+
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
               .AddEntityFrameworkStores<sakanContext>().AddDefaultTokenProviders();
 
-            builder.Services.AddCors(option =>
-            {
-                option.AddPolicy("s", o => o.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
-            });
+            //builder.Services.AddCors(option =>
+            //{
+            //    option.AddPolicy("s", o => o.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+            //});
+
+           // Add CORS policy
+                builder.Services.AddCors(options =>
+                {
+                    options.AddPolicy(name: MyAllowSpecificOrigins,
+                        policy =>
+                        {
+                            policy.WithOrigins("http://localhost:4200")
+                                  .AllowAnyHeader()
+                                  .AllowAnyMethod()
+                                  .AllowCredentials();
+                        });
+                });
+
+
             builder.Services.Configure<IdentityOptions>(options =>
             {
                 options.Password.RequireDigit = true;
@@ -81,9 +120,30 @@ namespace Sakan
 
 
             builder.Services.AddScoped<ITestRepo, TestRepo>();
-            builder.Services.AddScoped<ITestService, TestService>(); 
+            builder.Services.AddScoped<IProfile, ProfileRepo>();
+            builder.Services.AddScoped<ITestService, TestService>();
+            builder.Services.AddScoped<IProfileService, Userprofileservice>();
+            builder.Services.AddScoped<IMessage, MessageRepo>();
+            builder.Services.AddScoped<IMessageService, MessageService>();
+
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowFrontend",
+                    policy => policy
+                        .WithOrigins("http://localhost:4200") // Angular dev server
+                        .AllowAnyHeader()
+                        .AllowAnyMethod());
+            });
 
             var app = builder.Build();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "My API v1");
+                options.RoutePrefix = "";
+            });
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -91,13 +151,15 @@ namespace Sakan
                 app.MapOpenApi();
             }
 
+            app.UseCors("AllowFrontend");
+
             app.UseHttpsRedirection();
             
             app.UseAuthentication(); 
             app.UseAuthorization();
 
-            app.UseCors("s");
-
+            app.UseCors(MyAllowSpecificOrigins);
+            app.MapHub<ChatHub>("/chat");
             app.MapControllers();
 
             app.Run();
