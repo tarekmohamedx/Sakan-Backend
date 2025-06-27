@@ -49,6 +49,17 @@ namespace Sakan.Infrastructure.Repositories
            {
                ChatId = chat.ChatId,
                ListingId = chat.ListingId,
+               ListingTitle = "Mansoura Apartmentt",
+               UserName = Context.Users
+                .Where(u =>
+                    u.Id == Context.Messages
+                        .Where(m => m.ChatId == chat.ChatId)
+                        .OrderByDescending(m => m.Timestamp)
+                        .Select(m => m.SenderId == userId ? m.ReceiverId : m.SenderId)
+                        .FirstOrDefault()
+                )
+                .Select(u => u.UserName)
+                .FirstOrDefault(),
                LastMessage = Context.Messages
                    .Where(m => m.ChatId == chat.ChatId)
                    .OrderByDescending(m => m.Timestamp)

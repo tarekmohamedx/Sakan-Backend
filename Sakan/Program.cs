@@ -127,14 +127,14 @@ namespace Sakan
             builder.Services.AddScoped<IMessageService, MessageService>();
 
 
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy("AllowFrontend",
-                    policy => policy
-                        .WithOrigins("http://localhost:4200") // Angular dev server
-                        .AllowAnyHeader()
-                        .AllowAnyMethod());
-            });
+            //builder.Services.AddCors(options =>
+            //{
+            //    options.AddPolicy("AllowFrontend",
+            //        policy => policy
+            //            .WithOrigins("http://localhost:4200") // Angular dev server
+            //            .AllowAnyHeader()
+            //            .AllowAnyMethod());
+            //});
 
             var app = builder.Build();
 
@@ -153,7 +153,7 @@ namespace Sakan
                 app.MapOpenApi();
             }
 
-            app.UseCors("AllowFrontend");
+            //app.UseCors("AllowFrontend");
 
             app.UseHttpsRedirection();
             app.UseRouting();
