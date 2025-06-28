@@ -2,22 +2,40 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace Sakan.Domain.Models;
 
 public partial class Message
 {
-    public int MessageId { get; set; }
+    [Key]
+    public int MessageID { get; set; }
 
-    public string SenderId { get; set; }
+    [StringLength(450)]
+    public string SenderID { get; set; }
 
-    public string ReceiverId { get; set; }
+    [StringLength(450)]
+    public string ReceiverID { get; set; }
 
+    [Column(TypeName = "text")]
     public string Content { get; set; }
 
+    [Column(TypeName = "datetime")]
     public DateTime? Timestamp { get; set; }
 
+    public int? ChatId { get; set; }
+
+    [ForeignKey("ChatId")]
+    [InverseProperty("Messages")]
+    public virtual Chat Chat { get; set; }
+
+    [ForeignKey("ReceiverID")]
+    [InverseProperty("MessageReceivers")]
     public virtual AspNetUser Receiver { get; set; }
 
+    [ForeignKey("SenderID")]
+    [InverseProperty("MessageSenders")]
     public virtual AspNetUser Sender { get; set; }
 }

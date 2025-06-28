@@ -2,44 +2,79 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace Sakan.Domain.Models;
 
 public partial class Listing
 {
+    [Key]
     public int Id { get; set; }
 
+    [Required]
+    [StringLength(450)]
     public string HostId { get; set; }
 
+    [StringLength(150)]
     public string Title { get; set; }
 
     public string Description { get; set; }
 
+    [Column(TypeName = "decimal(10, 2)")]
     public decimal? PricePerMonth { get; set; }
 
     public int? MaxGuests { get; set; }
 
+    [StringLength(100)]
     public string Governorate { get; set; }
 
+    [StringLength(100)]
     public string District { get; set; }
 
     public double? Latitude { get; set; }
 
     public double? Longitude { get; set; }
 
+    [Column(TypeName = "datetime")]
     public DateTime? CreatedAt { get; set; }
 
     public bool? IsApproved { get; set; }
 
     public bool? IsBookableAsWhole { get; set; }
 
+    [Column(TypeName = "decimal(18, 2)")]
+    public decimal? MinBedPrice { get; set; }
+
+    [Column(TypeName = "decimal(3, 2)")]
+    public decimal? AverageRating { get; set; }
+
+    public bool IsActive { get; set; }
+
+    [InverseProperty("Listing")]
     public virtual ICollection<BookingRequest> BookingRequests { get; set; } = new List<BookingRequest>();
 
+    [InverseProperty("Listing")]
     public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 
+    [InverseProperty("Listing")]
+    public virtual ICollection<Chat> Chats { get; set; } = new List<Chat>();
+
+    [InverseProperty("Listing")]
+    public virtual ICollection<Favorite> Favorites { get; set; } = new List<Favorite>();
+
+    [ForeignKey("HostId")]
+    [InverseProperty("Listings")]
     public virtual AspNetUser Host { get; set; }
 
+    [InverseProperty("Listing")]
     public virtual ICollection<ListingPhoto> ListingPhotos { get; set; } = new List<ListingPhoto>();
 
+    [InverseProperty("Listing")]
     public virtual ICollection<Room> Rooms { get; set; } = new List<Room>();
+
+    [ForeignKey("ListingId")]
+    [InverseProperty("Listings")]
+    public virtual ICollection<Amenity> Amenities { get; set; } = new List<Amenity>();
 }

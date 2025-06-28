@@ -2,32 +2,49 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace Sakan.Domain.Models;
 
 public partial class Bed
 {
+    [Key]
     public int Id { get; set; }
 
     public int? RoomId { get; set; }
 
+    [StringLength(50)]
     public string Label { get; set; }
 
+    [StringLength(20)]
     public string Type { get; set; }
 
+    [Column(TypeName = "decimal(10, 2)")]
     public decimal? Price { get; set; }
 
     public bool? IsAvailable { get; set; }
 
+    [StringLength(450)]
     public string OccupiedByUserId { get; set; }
 
+    public bool IsActive { get; set; }
+
+    [InverseProperty("Bed")]
     public virtual ICollection<BedPhoto> BedPhotos { get; set; } = new List<BedPhoto>();
 
+    [InverseProperty("Bed")]
     public virtual ICollection<BookingRequest> BookingRequests { get; set; } = new List<BookingRequest>();
 
+    [InverseProperty("Bed")]
     public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 
+    [ForeignKey("OccupiedByUserId")]
+    [InverseProperty("Beds")]
     public virtual AspNetUser OccupiedByUser { get; set; }
 
+    [ForeignKey("RoomId")]
+    [InverseProperty("Beds")]
     public virtual Room Room { get; set; }
 }

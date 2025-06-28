@@ -2,13 +2,18 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace Sakan.Domain.Models;
 
 public partial class BookingRequest
 {
+    [Key]
     public int Id { get; set; }
 
+    [StringLength(450)]
     public string GuestId { get; set; }
 
     public int? ListingId { get; set; }
@@ -17,19 +22,31 @@ public partial class BookingRequest
 
     public int? BedId { get; set; }
 
+    [Column(TypeName = "date")]
     public DateTime? FromDate { get; set; }
 
+    [Column(TypeName = "date")]
     public DateTime? ToDate { get; set; }
 
     public bool? HostApproved { get; set; }
 
     public bool? GuestApproved { get; set; }
 
+    public bool IsActive { get; set; }
+
+    [ForeignKey("BedId")]
+    [InverseProperty("BookingRequests")]
     public virtual Bed Bed { get; set; }
 
+    [ForeignKey("GuestId")]
+    [InverseProperty("BookingRequests")]
     public virtual AspNetUser Guest { get; set; }
 
+    [ForeignKey("ListingId")]
+    [InverseProperty("BookingRequests")]
     public virtual Listing Listing { get; set; }
 
+    [ForeignKey("RoomId")]
+    [InverseProperty("BookingRequests")]
     public virtual Room Room { get; set; }
 }

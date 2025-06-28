@@ -2,16 +2,23 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace Sakan.Domain.Models;
 
 public partial class RoomPhoto
 {
+    [Key]
     public int Id { get; set; }
 
     public int? RoomId { get; set; }
 
+    [StringLength(255)]
     public string PhotoUrl { get; set; }
 
+    [ForeignKey("RoomId")]
+    [InverseProperty("RoomPhotos")]
     public virtual Room Room { get; set; }
 }

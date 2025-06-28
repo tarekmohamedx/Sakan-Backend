@@ -2,26 +2,39 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace Sakan.Domain.Models;
 
 public partial class Payment
 {
-    public int PaymentId { get; set; }
+    [Key]
+    public int PaymentID { get; set; }
 
-    public int? BookingId { get; set; }
+    public int? BookingID { get; set; }
 
-    public string StripePaymentIntentId { get; set; }
+    [StringLength(100)]
+    public string StripePaymentIntentID { get; set; }
 
+    [Column(TypeName = "decimal(10, 2)")]
     public decimal? Amount { get; set; }
 
+    [StringLength(10)]
     public string Currency { get; set; }
 
+    [Column(TypeName = "datetime")]
     public DateTime? PaymentDate { get; set; }
 
+    [Required]
+    [StringLength(20)]
     public string Status { get; set; }
 
+    [StringLength(20)]
     public string Method { get; set; }
 
+    [ForeignKey("BookingID")]
+    [InverseProperty("Payments")]
     public virtual Booking Booking { get; set; }
 }

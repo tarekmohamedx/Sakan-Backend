@@ -1,9 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.36105.23 d17.13
+VisualStudioVersion = 17.13.36105.23
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sakan", "Sakan\Sakan.csproj", "{49FE978E-4D9F-40EF-8E1F-D5A77E8521EA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EDA6254E-4234-4B9F-820F-D97054FDC9B2} = {EDA6254E-4234-4B9F-820F-D97054FDC9B2}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sakan.Domain", "Sakan.Domain\Sakan.Domain.csproj", "{B187A344-3FF5-4857-9FFC-010E6DE9B548}"
 EndProject

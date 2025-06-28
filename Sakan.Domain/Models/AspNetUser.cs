@@ -2,19 +2,28 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace Sakan.Domain.Models;
 
+[Index("NormalizedEmail", Name = "EmailIndex")]
 public partial class AspNetUser
 {
+    [Key]
     public string Id { get; set; }
 
+    [StringLength(256)]
     public string UserName { get; set; }
 
+    [StringLength(256)]
     public string NormalizedUserName { get; set; }
 
+    [StringLength(256)]
     public string Email { get; set; }
 
+    [StringLength(256)]
     public string NormalizedEmail { get; set; }
 
     public bool EmailConfirmed { get; set; }
@@ -37,27 +46,56 @@ public partial class AspNetUser
 
     public int AccessFailedCount { get; set; }
 
+    public string ProfilePictureUrl { get; set; }
+
+    public bool IsVerifiedHost { get; set; }
+
+    [InverseProperty("User")]
     public virtual ICollection<AspNetUserClaim> AspNetUserClaims { get; set; } = new List<AspNetUserClaim>();
 
+    [InverseProperty("User")]
     public virtual ICollection<AspNetUserLogin> AspNetUserLogins { get; set; } = new List<AspNetUserLogin>();
 
+    [InverseProperty("User")]
     public virtual ICollection<AspNetUserToken> AspNetUserTokens { get; set; } = new List<AspNetUserToken>();
 
+    [InverseProperty("OccupiedByUser")]
     public virtual ICollection<Bed> Beds { get; set; } = new List<Bed>();
 
+    [InverseProperty("Guest")]
     public virtual ICollection<BookingRequest> BookingRequests { get; set; } = new List<BookingRequest>();
 
+    [InverseProperty("Guest")]
     public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 
+    [InverseProperty("User")]
+    public virtual ICollection<Favorite> Favorites { get; set; } = new List<Favorite>();
+
+    [InverseProperty("Host")]
     public virtual ICollection<Listing> Listings { get; set; } = new List<Listing>();
 
+    [InverseProperty("Receiver")]
     public virtual ICollection<Message> MessageReceivers { get; set; } = new List<Message>();
 
+    [InverseProperty("Sender")]
     public virtual ICollection<Message> MessageSenders { get; set; } = new List<Message>();
 
+    [InverseProperty("User")]
+    public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+
+    [InverseProperty("ReviewedUser")]
     public virtual ICollection<Review> ReviewReviewedUsers { get; set; } = new List<Review>();
 
+    [InverseProperty("Reviewer")]
     public virtual ICollection<Review> ReviewReviewers { get; set; } = new List<Review>();
 
+    [InverseProperty("User")]
+    public virtual ICollection<SupportTicket> SupportTickets { get; set; } = new List<SupportTicket>();
+
+    [InverseProperty("Author")]
+    public virtual ICollection<TicketReply> TicketReplies { get; set; } = new List<TicketReply>();
+
+    [ForeignKey("UserId")]
+    [InverseProperty("Users")]
     public virtual ICollection<AspNetRole> Roles { get; set; } = new List<AspNetRole>();
 }

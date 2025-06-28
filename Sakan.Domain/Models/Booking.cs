@@ -2,13 +2,19 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace Sakan.Domain.Models;
 
 public partial class Booking
 {
+    [Key]
     public int Id { get; set; }
 
+    [Required]
+    [StringLength(450)]
     public string GuestId { get; set; }
 
     public int? ListingId { get; set; }
@@ -17,23 +23,45 @@ public partial class Booking
 
     public int? BedId { get; set; }
 
+    [Column(TypeName = "date")]
     public DateTime FromDate { get; set; }
 
+    [Column(TypeName = "date")]
     public DateTime ToDate { get; set; }
 
+    [Column(TypeName = "decimal(10, 2)")]
     public decimal? Price { get; set; }
 
+    [StringLength(20)]
     public string PaymentStatus { get; set; }
 
+    [Column(TypeName = "datetime")]
     public DateTime? CreatedAt { get; set; }
 
+    public bool IsActive { get; set; }
+
+    [ForeignKey("BedId")]
+    [InverseProperty("Bookings")]
     public virtual Bed Bed { get; set; }
 
+    [ForeignKey("GuestId")]
+    [InverseProperty("Bookings")]
     public virtual AspNetUser Guest { get; set; }
 
+    [ForeignKey("ListingId")]
+    [InverseProperty("Bookings")]
     public virtual Listing Listing { get; set; }
 
+    [InverseProperty("Booking")]
     public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
 
+    [InverseProperty("Booking")]
+    public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
+
+    [ForeignKey("RoomId")]
+    [InverseProperty("Bookings")]
     public virtual Room Room { get; set; }
+
+    [InverseProperty("Booking")]
+    public virtual ICollection<SupportTicket> SupportTickets { get; set; } = new List<SupportTicket>();
 }

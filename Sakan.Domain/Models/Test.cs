@@ -2,12 +2,19 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace Sakan.Domain.Models;
 
+[Table("Test")]
 public partial class Test
 {
-    public int Id { get; set; }
+    [Key]
+    public int id { get; set; }
 
-    public string Name { get; set; }
+    [StringLength(30)]
+    [Unicode(false)]
+    public string name { get; set; }
 }

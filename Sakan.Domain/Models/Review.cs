@@ -2,24 +2,44 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace Sakan.Domain.Models;
 
 public partial class Review
 {
-    public int ReviewId { get; set; }
+    [Key]
+    public int ReviewID { get; set; }
 
-    public string ReviewerId { get; set; }
+    [StringLength(450)]
+    public string ReviewerID { get; set; }
 
-    public string ReviewedUserId { get; set; }
+    [StringLength(450)]
+    public string ReviewedUserID { get; set; }
 
     public int? Rating { get; set; }
 
+    [Column(TypeName = "text")]
     public string Comment { get; set; }
 
+    [Column(TypeName = "datetime")]
     public DateTime? CreatedAt { get; set; }
 
+    public int BookingId { get; set; }
+
+    public bool IsActive { get; set; }
+
+    [ForeignKey("BookingId")]
+    [InverseProperty("Reviews")]
+    public virtual Booking Booking { get; set; }
+
+    [ForeignKey("ReviewedUserID")]
+    [InverseProperty("ReviewReviewedUsers")]
     public virtual AspNetUser ReviewedUser { get; set; }
 
+    [ForeignKey("ReviewerID")]
+    [InverseProperty("ReviewReviewers")]
     public virtual AspNetUser Reviewer { get; set; }
 }

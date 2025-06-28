@@ -6,7 +6,7 @@
    "IncludeConnectionString": false,
    "ModelNamespace": null,
    "OutputContextPath": null,
-   "OutputPath": "Models",
+   "OutputPath": "MyContext",
    "PreserveCasingWithRegex": true,
    "ProjectRootNamespace": "Sakan.Infrastructure",
    "Schemas": null,
@@ -14,6 +14,10 @@
    "SelectedToBeGenerated": 1,
    "T4TemplatePath": null,
    "Tables": [
+      {
+         "Name": "[dbo].[Amenities]",
+         "ObjectType": 0
+      },
       {
          "Name": "[dbo].[AspNetRoleClaims]",
          "ObjectType": 0
@@ -59,6 +63,18 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[Chats]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Favorites]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ListingAmenities]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[ListingPhotos]",
          "ObjectType": 0
       },
@@ -68,6 +84,10 @@
       },
       {
          "Name": "[dbo].[Messages]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Notifications]",
          "ObjectType": 0
       },
       {
@@ -87,7 +107,15 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[SupportTickets]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[Test]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TicketReplies]",
          "ObjectType": 0
       }
    ],
@@ -95,15 +123,16 @@
    "UncountableWords": null,
    "UseAsyncStoredProcedureCalls": true,
    "UseBoolPropertiesWithoutDefaultSql": false,
-   "UseDatabaseNames": false,
+   "UseDatabaseNames": true,
    "UseDatabaseNamesForRoutines": true,
    "UseDateOnlyTimeOnly": false,
    "UseDbContextSplitting": false,
    "UseDecimalDataAnnotationForSprocResult": true,
-   "UseFluentApiOnly": true,
+   "UseFluentApiOnly": false,
    "UseHandleBars": false,
    "UseHierarchyId": false,
    "UseInflector": true,
+   "UseInternalAccessModifiersForSprocsAndFunctions": false,
    "UseLegacyPluralizer": false,
    "UseManyToManyEntity": false,
    "UseNoDefaultConstructor": false,
