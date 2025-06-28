@@ -8,7 +8,7 @@ namespace Sakan.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Customer")]
+    //[Authorize(Roles = "Customer")]
     public class HostListingsController : ControllerBase
     {
         private readonly IHostListingService _listingService;
@@ -21,15 +21,16 @@ namespace Sakan.Controllers
 
 
         [HttpGet("my")]
-        public async Task<IActionResult> GetMyListings()
+        public async Task<IActionResult> GetMyListings([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
-            //var hostId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var hostId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(hostId))
                 return Unauthorized("Host ID not found in token.");
 
-            var listings = await _listingService.GetHostListingsAsync(hostId);
-            return Ok(listings);
+            var pagedResult = await _listingService.GetHostListingsPagedAsync(hostId, page, pageSize);
+            return Ok(pagedResult);
         }
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetListingById(int id)

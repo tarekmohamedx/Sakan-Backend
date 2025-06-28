@@ -20,9 +20,9 @@ namespace Sakan.Infrastructure.Services
             _context = context;
         }
 
-        public async Task<List<HostListingDto>> GetHostListingsAsync(string hostId)
+        public async Task<object> GetHostListingsPagedAsync(string hostId, int page, int pageSize)
         {
-            var listings = await _context.Listings
+            var query = _context.Listings
                 .Where(l => l.HostId == hostId)
                 .Select(l => new HostListingDto
                 {
@@ -32,11 +32,23 @@ namespace Sakan.Infrastructure.Services
                     PricePerMonth = l.PricePerMonth ?? 0,
                     MaxGuests = l.MaxGuests ?? 0,
                     PreviewImage = l.ListingPhotos.FirstOrDefault().PhotoUrl
-                })
+                });
+
+            var total = await query.CountAsync();
+            var listings = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
 
-            return listings;
+            return new
+            {
+                totalCount = total,
+                page,
+                pageSize,
+                listings
+            };
         }
+
 
         public async Task<ListingEditDto> GetListingByIdAsync(int id, string hostId)
         {
@@ -62,7 +74,7 @@ namespace Sakan.Infrastructure.Services
         public async Task<bool> UpdateListingWithPhotosAsync(int id, string hostId, ListingEditDto updated)
         {
             var listing = await _context.Listings
-                .Include(l => l.ListingPhotos)
+                //.Include(l => l.ListingPhotos)
                 .FirstOrDefaultAsync(l => l.Id == id && l.HostId == hostId);
 
             if (listing == null) return false;
@@ -77,16 +89,16 @@ namespace Sakan.Infrastructure.Services
             listing.IsBookableAsWhole = updated.IsBookableAsWhole;
             listing.IsActive = updated.IsActive;
 
-            // Replace photos
-            listing.ListingPhotos.Clear();
-            foreach (var photoUrl in updated.PhotoUrls)
-            {
-                listing.ListingPhotos.Add(new ListingPhoto
-                {
-                    PhotoUrl = photoUrl,
-                    ListingId = listing.Id
-                });
-            }
+            //// Replace photos
+            //listing.ListingPhotos.Clear();
+            //foreach (var photoUrl in updated.PhotoUrls)
+            //{
+            //    listing.ListingPhotos.Add(new ListingPhoto
+            //    {
+            //        PhotoUrl = photoUrl,
+            //        ListingId = listing.Id
+            //    });
+            //}
 
             await _context.SaveChangesAsync();
             return true;
