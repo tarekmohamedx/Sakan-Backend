@@ -75,6 +75,30 @@ namespace Sakan.Infrastructure.Repositories
            .ToListAsync();
         }
 
+        public async Task<Chat> CreateChatIfNotExistsAsync(string senderId, string receiverId, int listingId)
+        {
+            var existingChat = await Context.Chats
+                .Include(c => c.Messages)
+                .FirstOrDefaultAsync(c =>
+                    c.ListingId == listingId &&
+                    c.Messages.Any(m =>
+                        (m.SenderId == senderId && m.ReceiverId == receiverId) ||
+                        (m.SenderId == receiverId && m.ReceiverId == senderId)
+                    ));
+
+            if (existingChat != null)
+                return existingChat;
+
+            var newChat = new Chat
+            {
+                ListingId = listingId,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            Context.Chats.Add(newChat);
+            await Context.SaveChangesAsync();
+            return newChat;
+        }
         public async Task SaveChangesAsync()
         {
             await Context.SaveChangesAsync();

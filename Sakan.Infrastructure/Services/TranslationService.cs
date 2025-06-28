@@ -32,7 +32,7 @@ namespace Sakan.Infrastructure.Services
                 format = "text"
             };
 
-            var response = await _httpClient.PostAsJsonAsync("http://localhost:5000/translate", requestBody);
+            var response = await _httpClient.PostAsJsonAsync("http://localhost:5001/translate", requestBody);
             response.EnsureSuccessStatusCode();
 
             var result = await response.Content.ReadFromJsonAsync<TranslationResult>();

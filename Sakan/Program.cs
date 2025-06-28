@@ -125,6 +125,9 @@ namespace Sakan
             builder.Services.AddScoped<IProfileService, Userprofileservice>();
             builder.Services.AddScoped<IMessage, MessageRepo>();
             builder.Services.AddScoped<IMessageService, MessageService>();
+            builder.Services.AddScoped<IHostDashboard, HostDashboardRepo>();
+            builder.Services.AddScoped<IHostDashboardService, HostDashboardService>();
+
 
 
             //builder.Services.AddCors(options =>
