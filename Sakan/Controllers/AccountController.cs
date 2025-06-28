@@ -75,7 +75,7 @@ namespace Sakan.Controllers
 
                         JwtSecurityToken token = new JwtSecurityToken(
                             issuer: config["jwt:issuer"],
-                            audience: config["jwt:audiance"],
+                            audience: config["jwt:audience"],
                             expires: DateTime.UtcNow.AddDays(1),
                             claims: claims,
                             signingCredentials: signingCredentials
@@ -134,12 +134,12 @@ namespace Sakan.Controllers
 
             // Create claims
             var claims = new List<Claim>
-    {
-        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-        new Claim(ClaimTypes.NameIdentifier, user.Id),
-        new Claim(ClaimTypes.Name, user.UserName),
-        new Claim(ClaimTypes.Email, user.Email)
-    };
+            {
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.Email, user.Email)
+            };
 
             var roles = await userManager.GetRolesAsync(user);
             foreach (var role in roles)
@@ -167,8 +167,6 @@ namespace Sakan.Controllers
                 ExpiresAt = token.ValidTo
             });
         }
-
-
 
     }
 

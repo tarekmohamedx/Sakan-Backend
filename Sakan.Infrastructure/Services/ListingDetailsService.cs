@@ -22,11 +22,9 @@ namespace Sakan.Infrastructure.Services
                 .ThenInclude(r => r.RoomPhotos)
                 .Include(l => l.Host)
                 .FirstOrDefaultAsync(l => l.Id == id);
-            
-
 
             if (listing == null) return null;
-
+            var bedroomTypes = new[] { "single", "double", "studio", "shared" };
             return new ListingDetailsDto
             {
                 Id = listing.Id,
@@ -36,19 +34,19 @@ namespace Sakan.Infrastructure.Services
                 Location = $"{listing.Governorate}, {listing.District}",
                 Latitude = listing.Latitude ?? 0,
                 Longitude = listing.Longitude ?? 0,
-                Bedrooms = listing.Rooms.Count(r => r.Type.ToLower().Contains("bedroom")),
+                Bedrooms = listing.Rooms.Count(r => r.Type != null && bedroomTypes.Contains(r.Type.ToLower())),
                 Bathrooms = listing.Rooms.Count(r => r.Type == "bathroom"),
                 Photos = listing.ListingPhotos.Select(p => p.PhotoUrl).ToList(),
                 BedroomList = listing.Rooms
-                .Where(r => r.Type.ToLower().Contains("bedroom"))
-                .Select(r => new RoomDto
-                {
-                    Id = r.Id,
-                    Name = r.Name,
-                    PricePerNight = r.PricePerNight,
-                    Photos = r.RoomPhotos.Select(p => p.PhotoUrl).ToList()
-                })
-                .ToList(),
+                    .Where(r => r.Type != null && bedroomTypes.Contains(r.Type.ToLower()))
+                    .Select(r => new RoomDto
+                    {
+                        Id = r.Id,
+                        Name = r.Name,
+                        PricePerNight = r.PricePerNight,
+                        Photos = r.RoomPhotos.Select(p => p.PhotoUrl).ToList()
+                    })
+                    .ToList(),
                 Host = new HostInfoDto
                 {
                     Name = listing.Host.UserName,
