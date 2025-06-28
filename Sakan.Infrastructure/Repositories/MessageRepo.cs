@@ -77,17 +77,23 @@ namespace Sakan.Infrastructure.Repositories
 
         public async Task<Chat> CreateChatIfNotExistsAsync(string senderId, string receiverId, int listingId)
         {
+            // أولًا دور على شات موجود لنفس الـ listing
             var existingChat = await Context.Chats
-                .Include(c => c.Messages)
-                .FirstOrDefaultAsync(c =>
-                    c.ListingId == listingId &&
-                    c.Messages.Any(m =>
-                        (m.SenderId == senderId && m.ReceiverId == receiverId) ||
-                        (m.SenderId == receiverId && m.ReceiverId == senderId)
-                    ));
+                .FirstOrDefaultAsync(c => c.ListingId == listingId &&
+                    Context.Messages.Any(m =>
+                        m.ChatId == c.ChatId &&
+                        ((m.SenderId == senderId && m.ReceiverId == receiverId) ||
+                         (m.SenderId == receiverId && m.ReceiverId == senderId)))
+                );
 
             if (existingChat != null)
                 return existingChat;
+
+            var possibleChat = await Context.Chats
+                .FirstOrDefaultAsync(c => c.ListingId == listingId);
+
+            if (possibleChat != null)
+                return possibleChat;
 
             var newChat = new Chat
             {
@@ -97,8 +103,11 @@ namespace Sakan.Infrastructure.Repositories
 
             Context.Chats.Add(newChat);
             await Context.SaveChangesAsync();
+
             return newChat;
         }
+
+
         public async Task SaveChangesAsync()
         {
             await Context.SaveChangesAsync();
