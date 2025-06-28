@@ -23,7 +23,7 @@ namespace Sakan.Controllers
         [HttpGet("my")]
         public async Task<IActionResult> GetMyListings([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
-            var hostId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            //var hostId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(hostId))
                 return Unauthorized("Host ID not found in token.");
 

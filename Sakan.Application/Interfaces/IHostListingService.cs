@@ -12,7 +12,7 @@ namespace Sakan.Application.Interfaces
     {
         Task<bool> UpdateListingWithPhotosAsync(int id, string hostId, ListingEditDto updated);
         Task<bool> DeleteListingAsync(int id, string hostId);
-        Task<List<HostListingDto>> GetHostListingsPagedAsync(string hostId, int page, int pageSize);
+        Task<object> GetHostListingsPagedAsync(string hostId, int page, int pageSize);
         Task<ListingEditDto> GetListingByIdAsync(int id, string hostId);
     }
 }
