@@ -18,6 +18,11 @@ namespace Sakan.Application.Services
 
         public IMessage MessageRepo { get; }
 
+        public Task<Chat> CreateChatIfNotExistsAsync(string senderId, string receiverId, int listingId)
+        {
+            return MessageRepo.CreateChatIfNotExistsAsync(senderId, receiverId, listingId);
+        }
+
         public async Task<IEnumerable<Message>> GetChatHistoryAsync(int chatId)
         {
             var messages = await MessageRepo.GetMessagesByChatIdAsync(chatId);

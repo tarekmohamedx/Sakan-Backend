@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Sakan.Application.DTOs;
 using Sakan.Application.Services;
+using Sakan.Domain.Models;
 
 namespace Sakan.Controllers
 {
@@ -51,5 +52,13 @@ namespace Sakan.Controllers
                 return NotFound(ex.Message);
             }
         }
+
+        [HttpPost("CreateChatIfNotExists")]
+        public async Task<ActionResult<UserChatSummary>> CreateChatIfNotExists([FromBody] CreateChatRequestDTO request)
+        {
+            var chat = await _messageService.CreateChatIfNotExistsAsync(request.SenderId, request.ReceiverId, request.ListingId);
+            return Ok(chat);
+        }
+
     }
 }
