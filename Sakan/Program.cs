@@ -37,6 +37,10 @@ namespace Sakan
             builder.Services.AddScoped<IListingDetailsService, ListingDetailsService>();
             builder.Services.AddScoped<IRoomDetailsService, RoomDetailsService>();
             builder.Services.AddScoped<IBookingRequestService, BookingRequestService>();
+            builder.Services.AddScoped<IImageKitService, ImageKitService>();
+            builder.Services.AddScoped<IListRepository, ListingRepo>();
+            builder.Services.AddScoped<IListingService, ListingService>(); 
+
 
 
             builder.Services.AddDbContext<sakanContext>(options =>
