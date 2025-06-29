@@ -3,6 +3,7 @@ using Sakan.Infrastructure.Services;
 using Sakan.Application.Interfaces;
 using Sakan.Infrastructure.Models;
 
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
@@ -41,7 +42,14 @@ namespace Sakan
             builder.Services.AddScoped<IListingDetailsService, ListingDetailsService>();
             builder.Services.AddScoped<IRoomDetailsService, RoomDetailsService>();
             builder.Services.AddScoped<IBookingRequestService, BookingRequestService>();
+
+            builder.Services.AddScoped<IImageKitService, ImageKitService>();
+            builder.Services.AddScoped<IListRepository, ListingRepo>();
+            builder.Services.AddScoped<IListingService, ListingService>(); 
+
+
             builder.Services.AddScoped<IHostListingService, HostListingService>();
+
 
 
             //builder.Services.AddDbContext<sakanContext>(options =>
@@ -78,6 +86,12 @@ namespace Sakan
                     NameClaimType = ClaimTypes.NameIdentifier
                 };
 
+
+            }).AddGoogle(googleoption =>
+            {
+                googleoption.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+                googleoption.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+                googleoption.CallbackPath = "/signin-google";
                 // 🔥 THIS disables redirect to Account/Login for APIs
                 options.Events = new JwtBearerEvents
                 {
@@ -94,6 +108,7 @@ namespace Sakan
                         return context.Response.WriteAsync("{\"error\": \"Unauthorized\"}");
                     }
                 };
+
             });
 
 
