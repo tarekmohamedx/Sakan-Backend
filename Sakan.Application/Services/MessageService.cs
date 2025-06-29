@@ -18,6 +18,11 @@ namespace Sakan.Application.Services
 
         public IMessage MessageRepo { get; }
 
+        public Task<Chat> CreateChatIfNotExistsAsync(string senderId, string receiverId, int listingId)
+        {
+            return MessageRepo.CreateChatIfNotExistsAsync(senderId, receiverId, listingId);
+        }
+
         public async Task<IEnumerable<Message>> GetChatHistoryAsync(int chatId)
         {
             var messages = await MessageRepo.GetMessagesByChatIdAsync(chatId);
@@ -27,8 +32,8 @@ namespace Sakan.Application.Services
         public async Task<IEnumerable<UserChatSummary>> GetUserChatsAsync(string userId)
         {
             var chats = await MessageRepo.GetUserChatsAsync(userId);
-            if (chats == null || !chats.Any())
-                throw new KeyNotFoundException("No chats found for this user.");
+            //if (chats == null || !chats.Any())
+            //    throw new KeyNotFoundException("No chats found for this user.");
 
             return chats;
         }

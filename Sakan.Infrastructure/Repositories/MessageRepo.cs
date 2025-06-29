@@ -49,6 +49,17 @@ namespace Sakan.Infrastructure.Repositories
            {
                ChatId = chat.ChatId,
                ListingId = chat.ListingId,
+               ListingTitle = "Mansoura Apartmentt",
+               UserName = Context.Users
+                .Where(u =>
+                    u.Id == Context.Messages
+                        .Where(m => m.ChatId == chat.ChatId)
+                        .OrderByDescending(m => m.Timestamp)
+                        .Select(m => m.SenderId == userId ? m.ReceiverId : m.SenderId)
+                        .FirstOrDefault()
+                )
+                .Select(u => u.UserName)
+                .FirstOrDefault(),
                LastMessage = Context.Messages
                    .Where(m => m.ChatId == chat.ChatId)
                    .OrderByDescending(m => m.Timestamp)
@@ -63,6 +74,39 @@ namespace Sakan.Infrastructure.Repositories
            })
            .ToListAsync();
         }
+
+        public async Task<Chat> CreateChatIfNotExistsAsync(string senderId, string receiverId, int listingId)
+        {
+    
+            var existingChat = await Context.Chats
+                .FirstOrDefaultAsync(c => c.ListingId == listingId &&
+                    Context.Messages.Any(m =>
+                        m.ChatId == c.ChatId &&
+                        ((m.SenderId == senderId && m.ReceiverId == receiverId) ||
+                         (m.SenderId == receiverId && m.ReceiverId == senderId)))
+                );
+
+            if (existingChat != null)
+                return existingChat;
+
+            var possibleChat = await Context.Chats
+                .FirstOrDefaultAsync(c => c.ListingId == listingId);
+
+            if (possibleChat != null)
+                return possibleChat;
+
+            var newChat = new Chat
+            {
+                ListingId = listingId,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            Context.Chats.Add(newChat);
+            await Context.SaveChangesAsync();
+
+            return newChat;
+        }
+
 
         public async Task SaveChangesAsync()
         {
