@@ -20,7 +20,7 @@ namespace Sakan.Controllers
     public class AccountController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> userManager;
-        private readonly SignInManager<ApplicationUser> signInManager; 
+        private readonly SignInManager<ApplicationUser> signInManager;
         private readonly IConfiguration config;
         public AccountController(UserManager<ApplicationUser> userManager, IConfiguration config)
         {
@@ -171,105 +171,109 @@ namespace Sakan.Controllers
                 Token = new JwtSecurityTokenHandler().WriteToken(token),
                 ExpiresAt = token.ValidTo
             });
-     
-        //    [HttpGet("sakanak")]
-        //    public async Task<IActionResult> ExternalLoginCallback()
-        //    {
-        //        var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
-        //        if (!result.Succeeded)
-        //            return BadRequest("External login failed.");
+            //    [HttpGet("sakanak")]
+            //    public async Task<IActionResult> ExternalLoginCallback()
+            //    {
+            //        var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
-        //        var externalUser = result.Principal;
-        //        var email = externalUser.FindFirst(ClaimTypes.Email)?.Value;
+            //        if (!result.Succeeded)
+            //            return BadRequest("External login failed.");
 
-        //        var user = await userManager.FindByEmailAsync(email);
+            //        var externalUser = result.Principal;
+            //        var email = externalUser.FindFirst(ClaimTypes.Email)?.Value;
 
-        //        if (user == null)
-        //        {
-        //            user = new ApplicationUser
-        //            {
-        //                UserName = email,
-        //                Email = email
-        //            };
-        //            await userManager.CreateAsync(user);
-        //            await userManager.AddToRoleAsync(user, "Customer");
-        //        }
+            //        var user = await userManager.FindByEmailAsync(email);
 
-        //        // Now generate JWT token
-        //        var claims = new List<Claim>
-        //{
-        //    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-        //    new Claim(ClaimTypes.NameIdentifier, user.Id),
-        //    new Claim(ClaimTypes.Name, user.UserName),
-        //    new Claim(ClaimTypes.Email, user.Email)
-        //};
+            //        if (user == null)
+            //        {
+            //            user = new ApplicationUser
+            //            {
+            //                UserName = email,
+            //                Email = email
+            //            };
+            //            await userManager.CreateAsync(user);
+            //            await userManager.AddToRoleAsync(user, "Customer");
+            //        }
 
-        //        var roles = await userManager.GetRolesAsync(user);
-        //        foreach (var role in roles)
-        //        {
-        //            claims.Add(new Claim(ClaimTypes.Role, role));
-        //        }
+            //        // Now generate JWT token
+            //        var claims = new List<Claim>
+            //{
+            //    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            //    new Claim(ClaimTypes.NameIdentifier, user.Id),
+            //    new Claim(ClaimTypes.Name, user.UserName),
+            //    new Claim(ClaimTypes.Email, user.Email)
+            //};
 
-        //        var signKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["jwt:key"]));
-        //        var token = new JwtSecurityToken(
-        //            issuer: config["jwt:issuer"],
-        //            audience: config["jwt:audience"],
-        //            expires: DateTime.UtcNow.AddDays(1),
-        //            claims: claims,
-        //            signingCredentials: new SigningCredentials(signKey, SecurityAlgorithms.HmacSha256)
-        //        );
+            //        var roles = await userManager.GetRolesAsync(user);
+            //        foreach (var role in roles)
+            //        {
+            //            claims.Add(new Claim(ClaimTypes.Role, role));
+            //        }
 
-        //        return Ok(new
-        //        {
-        //            Token = new JwtSecurityTokenHandler().WriteToken(token),
-        //            Expiration = token.ValidTo
-        //        });
-        //    }
+            //        var signKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["jwt:key"]));
+            //        var token = new JwtSecurityToken(
+            //            issuer: config["jwt:issuer"],
+            //            audience: config["jwt:audience"],
+            //            expires: DateTime.UtcNow.AddDays(1),
+            //            claims: claims,
+            //            signingCredentials: new SigningCredentials(signKey, SecurityAlgorithms.HmacSha256)
+            //        );
 
-        //[HttpPost("sakanak")]
-        //public async Task<IActionResult> GoogleLogin([FromBody] GoogleloginDTO model)
-        //{
-        //    try
-        //    {
-        //        var payload = await GoogleJsonWebSignature.ValidateAsync(model.IdToken, new GoogleJsonWebSignature.ValidationSettings()
-        //        {
-        //            Audience = new[] { config["Google:ClientId"] }
-        //        });
+            //        return Ok(new
+            //        {
+            //            Token = new JwtSecurityTokenHandler().WriteToken(token),
+            //            Expiration = token.ValidTo
+            //        });
+            //    }
 
-        //        // Here you can find/create the user in your DB
+            //[HttpPost("sakanak")]
+            //public async Task<IActionResult> GoogleLogin([FromBody] GoogleloginDTO model)
+            //{
+            //    try
+            //    {
+            //        var payload = await GoogleJsonWebSignature.ValidateAsync(model.IdToken, new GoogleJsonWebSignature.ValidationSettings()
+            //        {
+            //            Audience = new[] { config["Google:ClientId"] }
+            //        });
 
-        //        var claims = new[]
-        //        {
-        //        new Claim(ClaimTypes.NameIdentifier, payload.Subject),
-        //        new Claim(ClaimTypes.Name, payload.Name),
-        //        new Claim(ClaimTypes.Email, payload.Email),
-        //    };
+            //        // Here you can find/create the user in your DB
 
-        //        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]));
-        //        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            //        var claims = new[]
+            //        {
+            //        new Claim(ClaimTypes.NameIdentifier, payload.Subject),
+            //        new Claim(ClaimTypes.Name, payload.Name),
+            //        new Claim(ClaimTypes.Email, payload.Email),
+            //    };
 
-        //        var token = new JwtSecurityToken(
-        //            issuer: config["Jwt:Issuer"],
-        //            audience: config["Jwt:Audience"],
-        //            claims: claims,
-        //            expires: DateTime.UtcNow.AddDays(1),
-        //            signingCredentials: creds);
+            //        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]));
+            //        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-        //        return Ok(new
-        //        {
-        //            token = new JwtSecurityTokenHandler().WriteToken(token),
-        //            expiration = token.ValidTo
-        //        });
-        //    }
-        //    catch
-        //    {
-        //        return BadRequest("Invalid Google token");
-        //    }
-        //}
+            //        var token = new JwtSecurityToken(
+            //            issuer: config["Jwt:Issuer"],
+            //            audience: config["Jwt:Audience"],
+            //            claims: claims,
+            //            expires: DateTime.UtcNow.AddDays(1),
+            //            signingCredentials: creds);
 
-        // AccountController.cs
-        
+            //        return Ok(new
+            //        {
+            //            token = new JwtSecurityTokenHandler().WriteToken(token),
+            //            expiration = token.ValidTo
+            //        });
+            //    }
+            //    catch
+            //    {
+            //        return BadRequest("Invalid Google token");
+            //    }
+            //}
+
+            // AccountController.cs
+
+
+
+
+        }
 
 
 
