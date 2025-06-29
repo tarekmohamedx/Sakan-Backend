@@ -16,6 +16,9 @@ using Sakan.Infrastructure.Models;
 using Sakan.Infrastructure.Repositories;
 using System.Text;
 using System.Security.Claims;
+using Sakan.Application.Mapper;
+using Sakan.Domain.IUnitOfWork;
+using Sakan.Infrastructure.UnitOfWork;
 
 namespace Sakan
 {
@@ -208,6 +211,16 @@ namespace Sakan
             builder.Services.AddScoped<IMessageService, MessageService>();
             //builder.Services.AddScoped<IHostDashboard, HostDashboardRepo>();
             //builder.Services.AddScoped<IHostDashboardService, HostDashboardService>();
+            builder.Services.AddScoped<IListingRepository, ListingRepository>();
+            builder.Services.AddScoped<IListingService, ListingService>();
+            builder.Services.AddScoped<IAmenityRepository, AmenityRepository>();
+            builder.Services.AddScoped<IAmenityService, AmenityService>();
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            builder.Services.AddScoped<IFavoriteRepository, FavoriteRepository>();
+            builder.Services.AddScoped<IFavoriteService, FavoriteService>();
+
+            builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
             var app = builder.Build();
 
