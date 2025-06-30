@@ -15,7 +15,7 @@ namespace Sakan.Application.Services
         private readonly IConfiguration _configuration;
         private readonly ImagekitClient _imagekit;
 
-        public ImageKitService(IConfiguration configuration, ImagekitClient imagekit)
+        public ImageKitService(IConfiguration configuration)
         {
             _configuration = configuration;
             _imagekit = new ImagekitClient(
