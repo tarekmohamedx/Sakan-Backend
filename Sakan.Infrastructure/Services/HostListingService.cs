@@ -78,7 +78,7 @@ namespace Sakan.Infrastructure.Services
         public async Task<bool> UpdateListingWithPhotosAsync(int id, string hostId, ListingEditDto updated)
         {
             var listing = await _context.Listings
-                //.Include(l => l.ListingPhotos)
+                .Include(l => l.ListingPhotos)
                 .FirstOrDefaultAsync(l => l.Id == id && l.HostId == hostId);
 
             if (listing == null) return false;
@@ -94,15 +94,15 @@ namespace Sakan.Infrastructure.Services
             listing.IsActive = updated.IsActive;
 
             //// Replace photos
-            //listing.ListingPhotos.Clear();
-            //foreach (var photoUrl in updated.PhotoUrls)
-            //{
-            //    listing.ListingPhotos.Add(new ListingPhoto
-            //    {
-            //        PhotoUrl = photoUrl,
-            //        ListingId = listing.Id
-            //    });
-            //}
+            listing.ListingPhotos.Clear();
+            foreach (var photoUrl in updated.PhotoUrls)
+            {
+                listing.ListingPhotos.Add(new ListingPhoto
+                {
+                    PhotoUrl = photoUrl,
+                    ListingId = listing.Id
+                });
+            }
 
             await _context.SaveChangesAsync();
             return true;
