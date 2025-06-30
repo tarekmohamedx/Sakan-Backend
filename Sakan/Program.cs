@@ -2,7 +2,7 @@
 using Sakan.Infrastructure.Services;
 using Sakan.Application.Interfaces;
 using Sakan.Infrastructure.Models;
-
+using System.Diagnostics;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
@@ -59,6 +59,7 @@ namespace Sakan
             {
                 options.SaveToken = true;
                 options.RequireHttpsMetadata = false;
+                //var jwtKey = builder.Configuration["jwt:key"];
 
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -92,60 +93,6 @@ namespace Sakan
                     }
                 };
             });
-
-
-
-
-            //builder.Services.AddAuthentication(options =>
-            //{
-            //    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            //    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            //    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            //})
-            //.AddJwtBearer(options =>
-            //{
-            //    options.SaveToken = true;
-            //    options.RequireHttpsMetadata = false;
-
-            //    options.Events = new JwtBearerEvents
-            //    {
-            //        OnAuthenticationFailed = context =>
-            //        {
-            //            Console.WriteLine("❌ Token validation failed: " + context.Exception.Message);
-            //            return Task.CompletedTask;
-            //        },
-            //        OnTokenValidated = context =>
-            //        {
-            //            Console.WriteLine("✅ Token validated for: " +
-            //                context.Principal.Identity.Name);
-            //            return Task.CompletedTask;
-            //        }
-            //    };
-
-            //    options.TokenValidationParameters = new TokenValidationParameters()
-            //    {
-            //        //ValidIssuer = builder.Configuration["jwt:issuer"],
-            //        //ValidAudience = builder.Configuration["jwt:audience"],
-            //        //IssuerSigningKey = new SymmetricSecurityKey(
-            //        //    Encoding.UTF8.GetBytes(builder.Configuration["jwt:key"]))
-
-            //        ValidateIssuer = false,
-            //        ValidateAudience = false,
-            //        ValidateLifetime = true,
-            //        ValidateIssuerSigningKey = true,
-
-            //        ValidIssuer = builder.Configuration["jwt:issuer"],
-            //        ValidAudience = builder.Configuration["jwt:audience"],
-            //        IssuerSigningKey = new SymmetricSecurityKey(
-            //            Encoding.UTF8.GetBytes(builder.Configuration["jwt:key"])),
-
-            //        // 👇 This tells ASP.NET to map `ClaimTypes.NameIdentifier` correctly
-            //        NameClaimType = ClaimTypes.NameIdentifier,
-            //        RoleClaimType = ClaimTypes.Role
-
-            //    };
-
-            //});
 
 
             // conect with dbcontext 

@@ -20,10 +20,10 @@ namespace Sakan.Infrastructure.Services
             _context = context;
         }
 
-        public async Task<object> GetHostListingsPagedAsync(string hostId, int page, int pageSize)
+        public async Task<object> GetHostListingsAsync(string hostId, int page, int pageSize, string? search)
         {
             var query = _context.Listings
-                .Where(l => l.HostId == hostId)
+                .Where(l => l.HostId == hostId && !l.IsDeleted)
                 .Select(l => new HostListingDto
                 {
                     Id = l.Id,
@@ -33,6 +33,8 @@ namespace Sakan.Infrastructure.Services
                     MaxGuests = l.MaxGuests ?? 0,
                     PreviewImage = l.ListingPhotos.FirstOrDefault().PhotoUrl
                 });
+            if (!string.IsNullOrEmpty(search))
+                query = query.Where(l => l.Title.Contains(search));
 
             var total = await query.CountAsync();
             var listings = await query
@@ -50,10 +52,11 @@ namespace Sakan.Infrastructure.Services
         }
 
 
+
         public async Task<ListingEditDto> GetListingByIdAsync(int id, string hostId)
         {
             var listing = await _context.Listings
-                .Where(l => l.Id == id && l.HostId == hostId)
+                .Where(l => l.Id == id && l.HostId == hostId && !l.IsDeleted)
                 .Select(l => new ListingEditDto
                 {
                     Title = l.Title,
@@ -107,12 +110,26 @@ namespace Sakan.Infrastructure.Services
 
         public async Task<bool> DeleteListingAsync(int id, string hostId)
         {
-            var listing = await _context.Listings.FirstOrDefaultAsync(l => l.Id == id && l.HostId == hostId);
+            var listing = await _context.Listings
+                .FirstOrDefaultAsync(l => l.Id == id && l.HostId == hostId && !l.IsDeleted);
+
             if (listing == null) return false;
 
-            _context.Listings.Remove(listing);
+            listing.IsDeleted = true;
+            _context.Listings.Update(listing);
             await _context.SaveChangesAsync();
             return true;
         }
+
+
+        //public async Task<bool> DeleteListingAsync(int id, string hostId)
+        //{
+        //    var listing = await _context.Listings.FirstOrDefaultAsync(l => l.Id == id && l.HostId == hostId);
+        //    if (listing == null) return false;
+
+        //    _context.Listings.Remove(listing);
+        //    await _context.SaveChangesAsync();
+        //    return true;
+        //}
     }
 }
