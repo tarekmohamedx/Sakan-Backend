@@ -16,6 +16,9 @@ using Sakan.Infrastructure.Models;
 using Sakan.Infrastructure.Repositories;
 using System.Text;
 using System.Security.Claims;
+using Sakan.Application.Mapper;
+using Sakan.Domain.IUnitOfWork;
+using Sakan.Infrastructure.UnitOfWork;
 
 namespace Sakan
 {
@@ -38,7 +41,14 @@ namespace Sakan
             builder.Services.AddScoped<IListingDetailsService, ListingDetailsService>();
             builder.Services.AddScoped<IRoomDetailsService, RoomDetailsService>();
             builder.Services.AddScoped<IBookingRequestService, BookingRequestService>();
+
+            builder.Services.AddScoped<IImageKitService, ImageKitService>();
+            builder.Services.AddScoped<IListRepository, ListingRepo>();
+            builder.Services.AddScoped<IListingService, ListingService>(); 
+
+
             builder.Services.AddScoped<IHostListingService, HostListingService>();
+
 
 
             //builder.Services.AddDbContext<sakanContext>(options =>
@@ -76,22 +86,29 @@ namespace Sakan
                     NameClaimType = ClaimTypes.NameIdentifier
                 };
 
-                // 🔥 THIS disables redirect to Account/Login for APIs
-                options.Events = new JwtBearerEvents
-                {
-                    OnAuthenticationFailed = context =>
-                    {
-                        Console.WriteLine("❌ JWT validation failed: " + context.Exception.Message);
-                        return Task.CompletedTask;
-                    },
-                    OnChallenge = context =>
-                    {
-                        context.HandleResponse(); // suppress default redirect
-                        context.Response.StatusCode = 401;
-                        context.Response.ContentType = "application/json";
-                        return context.Response.WriteAsync("{\"error\": \"Unauthorized\"}");
-                    }
-                };
+
+            //}).AddGoogle(googleoption =>
+            //{
+            //    googleoption.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+            //    googleoption.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+            //    googleoption.CallbackPath = "/signin-google";
+            //    // 🔥 THIS disables redirect to Account/Login for APIs
+            //    googleoption.Events = new JwtBearerEvents
+            //    {
+            //        OnAuthenticationFailed = context =>
+            //        {
+            //            Console.WriteLine("❌ JWT validation failed: " + context.Exception.Message);
+            //            return Task.CompletedTask;
+            //        },
+            //        OnChallenge = context =>
+            //        {
+            //            context.HandleResponse(); // suppress default redirect
+            //            context.Response.StatusCode = 401;
+            //            context.Response.ContentType = "application/json";
+            //            return context.Response.WriteAsync("{\"error\": \"Unauthorized\"}");
+            //        }
+            //    };
+
             });
 
 
@@ -155,6 +172,16 @@ namespace Sakan
             builder.Services.AddScoped<IMessageService, MessageService>();
             //builder.Services.AddScoped<IHostDashboard, HostDashboardRepo>();
             //builder.Services.AddScoped<IHostDashboardService, HostDashboardService>();
+            builder.Services.AddScoped<IListingRepository, ListingRepository>();
+            builder.Services.AddScoped<IListingService, ListingService>();
+            builder.Services.AddScoped<IAmenityRepository, AmenityRepository>();
+            builder.Services.AddScoped<IAmenityService, AmenityService>();
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            builder.Services.AddScoped<IFavoriteRepository, FavoriteRepository>();
+            builder.Services.AddScoped<IFavoriteService, FavoriteService>();
+
+            builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
             var app = builder.Build();
 

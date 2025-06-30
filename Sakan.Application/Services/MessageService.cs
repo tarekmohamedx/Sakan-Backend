@@ -32,8 +32,8 @@ namespace Sakan.Application.Services
         public async Task<IEnumerable<UserChatSummary>> GetUserChatsAsync(string userId)
         {
             var chats = await MessageRepo.GetUserChatsAsync(userId);
-            if (chats == null || !chats.Any())
-                throw new KeyNotFoundException("No chats found for this user.");
+            //if (chats == null || !chats.Any())
+            //    throw new KeyNotFoundException("No chats found for this user.");
 
             return chats;
         }
