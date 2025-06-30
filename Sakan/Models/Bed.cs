@@ -21,6 +21,8 @@ public partial class Bed
 
     public bool IsActive { get; set; }
 
+    public bool IsDeleted { get; set; }
+
     public virtual ICollection<BedPhoto> BedPhotos { get; set; } = new List<BedPhoto>();
 
     public virtual ICollection<BookingRequest> BookingRequests { get; set; } = new List<BookingRequest>();

@@ -32,4 +32,5 @@ public partial class Room
     public virtual Listing Listing { get; set; }
 
     public virtual ICollection<RoomPhoto> RoomPhotos { get; set; } = new List<RoomPhoto>();
+    public bool IsDeleted { get; set; }
 }

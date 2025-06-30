@@ -19,6 +19,7 @@ using System.Security.Claims;
 using Sakan.Application.Mapper;
 using Sakan.Domain.IUnitOfWork;
 using Sakan.Infrastructure.UnitOfWork;
+using Imagekit.Sdk;
 
 namespace Sakan
 {
@@ -161,6 +162,13 @@ namespace Sakan
                 options.Lockout.AllowedForNewUsers = false;
 
             });
+
+            builder.Services.AddSingleton<ImagekitClient>(sp =>
+            new ImagekitClient(
+                sp.GetRequiredService<IConfiguration>()["ImageKit:PublicKey"],
+                sp.GetRequiredService<IConfiguration>()["ImageKit:PrivateKey"],
+                sp.GetRequiredService<IConfiguration>()["ImageKit:UrlEndpoint"]
+            ));
 
 
 

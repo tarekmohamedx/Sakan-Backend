@@ -31,6 +31,7 @@ namespace Sakan.Infrastructure.Services
                     Location = l.Governorate + ", " + l.District,
                     PricePerMonth = l.PricePerMonth ?? 0,
                     MaxGuests = l.MaxGuests ?? 0,
+                    IsActive = l.IsActive,
                     PreviewImage = l.ListingPhotos.FirstOrDefault().PhotoUrl
                 });
             if (!string.IsNullOrEmpty(search))
