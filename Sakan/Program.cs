@@ -1,25 +1,25 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Sakan.Infrastructure.Services;
-using Sakan.Application.Interfaces;
-using Sakan.Infrastructure.Models;
-
+﻿using Imagekit.Sdk;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Sakan.Application.Interfaces;
+using Sakan.Application.Mapper;
 using Sakan.Application.Services;
 using Sakan.Domain.Interfaces;
+using Sakan.Domain.IUnitOfWork;
 using Sakan.Domain.Models;
 using Sakan.Hubs;
 using Sakan.Infrastructure.Models;
+using Sakan.Infrastructure.Models;
 using Sakan.Infrastructure.Repositories;
-using System.Text;
-using System.Security.Claims;
-using Sakan.Application.Mapper;
-using Sakan.Domain.IUnitOfWork;
+using Sakan.Infrastructure.Services;
 using Sakan.Infrastructure.UnitOfWork;
+using System.Security.Claims;
+using System.Text;
 
 namespace Sakan
 {
@@ -49,6 +49,19 @@ namespace Sakan
 
 
             builder.Services.AddScoped<IHostListingService, HostListingService>();
+
+            builder.Services.AddScoped<ImagekitClient>(provider =>
+            {
+                var configuration = provider.GetRequiredService<IConfiguration>();
+                var publicKey = configuration["ImageKit:PublicKey"];
+                var privateKey = configuration["ImageKit:PrivateKey"];
+                var urlEndpoint = configuration["ImageKit:UrlEndpoint"];
+
+                return new ImagekitClient(publicKey, privateKey, urlEndpoint);
+            });
+
+
+
 
 
 
@@ -224,8 +237,8 @@ namespace Sakan
             builder.Services.AddScoped<IProfileService, Userprofileservice>();
             builder.Services.AddScoped<IMessage, MessageRepo>();
             builder.Services.AddScoped<IMessageService, MessageService>();
-            //builder.Services.AddScoped<IHostDashboard, HostDashboardRepo>();
-            //builder.Services.AddScoped<IHostDashboardService, HostDashboardService>();
+            builder.Services.AddScoped<IHostDashboard, HostDashboardRepo>();
+            builder.Services.AddScoped<IHostDashboardService, HostDashboardService>();
             builder.Services.AddScoped<IListingRepository, ListingRepository>();
             builder.Services.AddScoped<IListingService, ListingService>();
             builder.Services.AddScoped<IAmenityRepository, AmenityRepository>();
