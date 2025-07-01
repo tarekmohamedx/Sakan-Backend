@@ -2,8 +2,6 @@
 using Sakan.Infrastructure.Services;
 using Sakan.Application.Interfaces;
 using Sakan.Infrastructure.Models;
-
-using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
@@ -15,9 +13,10 @@ using Sakan.Hubs;
 using Sakan.Infrastructure.Repositories;
 using System.Text;
 using System.Security.Claims;
-using Sakan.Application.Mapper;
 using Sakan.Domain.IUnitOfWork;
 using Sakan.Infrastructure.UnitOfWork;
+using Sakan.Application.Mapper;
+
 
 namespace Sakan
 {
