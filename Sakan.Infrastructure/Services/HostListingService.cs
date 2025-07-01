@@ -83,7 +83,7 @@ namespace Sakan.Infrastructure.Services
 
             if (listing == null) return false;
 
-            // Update listing fields
+            // Update basic fields
             listing.Title = updated.Title;
             listing.Description = updated.Description;
             listing.PricePerMonth = updated.PricePerMonth;
@@ -93,13 +93,20 @@ namespace Sakan.Infrastructure.Services
             listing.IsBookableAsWhole = updated.IsBookableAsWhole;
             listing.IsActive = updated.IsActive;
 
-            //// Replace photos
-            listing.ListingPhotos.Clear();
-            foreach (var photoUrl in updated.PhotoUrls)
+            // ✨ Update photos
+            var currentUrls = listing.ListingPhotos.Select(p => p.PhotoUrl).ToList();
+
+            // Remove photos no longer included
+            var photosToRemove = listing.ListingPhotos.Where(p => !updated.PhotoUrls.Contains(p.PhotoUrl)).ToList();
+            _context.RemoveRange(photosToRemove);
+
+            // Add new photos
+            var newPhotos = updated.PhotoUrls.Except(currentUrls);
+            foreach (var url in newPhotos)
             {
                 listing.ListingPhotos.Add(new ListingPhoto
                 {
-                    PhotoUrl = photoUrl,
+                    PhotoUrl = url,
                     ListingId = listing.Id
                 });
             }
@@ -107,6 +114,40 @@ namespace Sakan.Infrastructure.Services
             await _context.SaveChangesAsync();
             return true;
         }
+
+
+        //public async Task<bool> UpdateListingWithPhotosAsync(int id, string hostId, ListingEditDto updated)
+        //{
+        //    var listing = await _context.Listings
+        //        .Include(l => l.ListingPhotos)
+        //        .FirstOrDefaultAsync(l => l.Id == id && l.HostId == hostId);
+
+        //    if (listing == null) return false;
+
+        //    // Update listing fields
+        //    listing.Title = updated.Title;
+        //    listing.Description = updated.Description;
+        //    listing.PricePerMonth = updated.PricePerMonth;
+        //    listing.MaxGuests = updated.MaxGuests;
+        //    listing.Governorate = updated.Governorate;
+        //    listing.District = updated.District;
+        //    listing.IsBookableAsWhole = updated.IsBookableAsWhole;
+        //    listing.IsActive = updated.IsActive;
+
+        //    //// Replace photos
+        //    listing.ListingPhotos.Clear();
+        //    foreach (var photoUrl in updated.PhotoUrls)
+        //    {
+        //        listing.ListingPhotos.Add(new ListingPhoto
+        //        {
+        //            PhotoUrl = photoUrl,
+        //            ListingId = listing.Id
+        //        });
+        //    }
+
+        //    await _context.SaveChangesAsync();
+        //    return true;
+        //}
 
 
         public async Task<bool> DeleteListingAsync(int id, string hostId)

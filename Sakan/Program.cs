@@ -53,20 +53,22 @@ namespace Sakan
             builder.Services.AddScoped<IListingService, ListingService>(); 
             builder.Services.AddScoped<IHostBookingService, HostBookingService>();
             builder.Services.AddScoped<IHostReviewsService, HostReviewsService>();
+            //builder.Services.AddScoped<ImageKitServices>();
+
 
 
 
             builder.Services.AddScoped<IHostListingService, HostListingService>();
 
-            builder.Services.AddScoped<ImagekitClient>(provider =>
-            {
-                var configuration = provider.GetRequiredService<IConfiguration>();
-                var publicKey = configuration["ImageKit:PublicKey"];
-                var privateKey = configuration["ImageKit:PrivateKey"];
-                var urlEndpoint = configuration["ImageKit:UrlEndpoint"];
+            //builder.Services.AddScoped<ImagekitClient>(provider =>
+            //{
+            //    var configuration = provider.GetRequiredService<IConfiguration>();
+            //    var publicKey = configuration["ImageKit:PublicKey"];
+            //    var privateKey = configuration["ImageKit:PrivateKey"];
+            //    var urlEndpoint = configuration["ImageKit:UrlEndpoint"];
 
-                return new ImagekitClient(publicKey, privateKey, urlEndpoint);
-            });
+            //    return new ImagekitClient(publicKey, privateKey, urlEndpoint);
+            //});
 
 
 

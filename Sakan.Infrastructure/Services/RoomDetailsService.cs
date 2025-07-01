@@ -169,30 +169,43 @@ public class RoomDetailsService : IRoomDetailsService
         room.IsBookableAsWhole = dto.IsBookableAsWhole;
         room.IsActive = dto.IsActive;
 
-        // Process beds
-        var incomingBedIds = dto.Beds
-            .Where(b => b.Id.HasValue)
-            .Select(b => b.Id.Value)
-            .ToList();
+        // --- Sync Room Photos ---
+        var existingRoomPhotos = await _context.RoomPhotos.Where(p => p.RoomId == room.Id).ToListAsync();
 
-        // Remove beds that are no longer included
-        var bedsToRemove = room.Beds
-            .Where(b => !incomingBedIds.Contains(b.Id))
-            .ToList();
+        var existingRoomPhotoUrls = existingRoomPhotos.Select(p => p.PhotoUrl).ToHashSet();
 
+        // Delete removed photos
+        var removedRoomPhotos = existingRoomPhotos.Where(p => !dto.RoomPhotoUrls.Contains(p.PhotoUrl)).ToList();
+        _context.RoomPhotos.RemoveRange(removedRoomPhotos);
+
+        // Add new photos
+        var newRoomPhotoUrls = dto.RoomPhotoUrls.Where(url => !existingRoomPhotoUrls.Contains(url)).ToList();
+
+        foreach (var url in newRoomPhotoUrls)
+        {
+            _context.RoomPhotos.Add(new RoomPhoto
+            {
+                RoomId = room.Id,
+                PhotoUrl = url
+            });
+        }
+
+        // --- Sync Beds ---
+        var incomingBedIds = dto.Beds.Where(b => b.Id.HasValue).Select(b => b.Id.Value).ToList();
+
+        // Remove beds not in the DTO
+        var bedsToRemove = room.Beds.Where(b => !incomingBedIds.Contains(b.Id)).ToList();
         foreach (var bed in bedsToRemove)
         {
             bed.IsDeleted = true;
         }
 
-
-        // Update or add beds
         foreach (var bedDto in dto.Beds)
         {
+            Bed bed;
             if (bedDto.Id.HasValue)
             {
-                // Update existing bed
-                var bed = room.Beds.FirstOrDefault(b => b.Id == bedDto.Id.Value);
+                bed = room.Beds.FirstOrDefault(b => b.Id == bedDto.Id.Value);
                 if (bed != null)
                 {
                     bed.Label = bedDto.Label;
@@ -200,24 +213,45 @@ public class RoomDetailsService : IRoomDetailsService
                     bed.Price = bedDto.Price;
                     bed.IsAvailable = bedDto.IsAvailable;
                 }
+                else continue;
             }
             else
             {
-                // Add new bed
-                room.Beds.Add(new Bed
+                bed = new Bed
                 {
                     Label = bedDto.Label,
                     Type = bedDto.Type,
                     Price = bedDto.Price,
                     IsAvailable = bedDto.IsAvailable
+                };
+                room.Beds.Add(bed);
+                await _context.SaveChangesAsync(); // generate bed.Id
+            }
+
+            // --- Sync Bed Photos ---
+            var existingBedPhotos = await _context.BedPhotos.Where(p => p.BedId == bed.Id).ToListAsync();
+
+            var existingBedPhotoUrls = existingBedPhotos.Select(p => p.PhotoUrl).ToHashSet();
+
+            var removedBedPhotos = existingBedPhotos.Where(p => !bedDto.BedPhotos.Contains(p.PhotoUrl)).ToList();
+            _context.BedPhotos.RemoveRange(removedBedPhotos);
+
+            var newBedPhotoUrls = bedDto.BedPhotos.Where(url => !existingBedPhotoUrls.Contains(url)).ToList();
+
+            foreach (var url in newBedPhotoUrls)
+            {
+                _context.BedPhotos.Add(new BedPhoto
+                {
+                    BedId = bed.Id,
+                    PhotoUrl = url
                 });
             }
         }
 
-        _context.Rooms.Update(room);
         await _context.SaveChangesAsync();
         return true;
     }
+
 
 
     public async Task<bool> DeleteRoomAsync(int roomId, string hostId)

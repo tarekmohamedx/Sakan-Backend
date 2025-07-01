@@ -35,7 +35,7 @@ namespace Sakan.Application.DTOs
         public decimal? Price { get; set; }
         public bool? IsAvailable { get; set; }
         public bool IsDeleted { get; set; }
-        public List<string> BedPhotos { get; set; }
+        public List<string> BedPhotos { get; set; } = new();
     }
 
     // for host page 
@@ -64,6 +64,7 @@ namespace Sakan.Application.DTOs
         public int? MaxGuests { get; set; }
         public bool? IsBookableAsWhole { get; set; }
         public bool IsActive { get; set; }
+        public List<string> RoomPhotoUrls { get; set; } = new();
         public List<BedDto> Beds { get; set; } = new();
     }
 
