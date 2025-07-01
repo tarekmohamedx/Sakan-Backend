@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -277,6 +278,12 @@ namespace Sakan
 
             app.MapHub<ChatHub>("/chat");
             app.MapControllers();
+
+            //app.MapGet("/host-rating", async ([FromQuery] string userId, HostDashboardRepo repo) =>
+            //{
+            //    var LatestRating = await repo.GetLatestReviewForHostAsync(userId);
+            //    return Results.Ok(new { LatestRating = LatestRating });
+            //});
 
             app.Run();
         }

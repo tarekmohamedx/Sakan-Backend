@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sakan.Application.Services
+namespace Sakan.Infrastructure.Services
 {
-    public interface IHostDashboardService
+    internal interface IHostDashboardService
     {
-        Task<int> GetRequestedCountAsync(string userId);
         Task<HostDashboardDTO> GetDashboardAsync(string hostId);
+
     }
 }
