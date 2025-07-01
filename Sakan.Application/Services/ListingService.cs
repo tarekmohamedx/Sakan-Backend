@@ -46,7 +46,7 @@ namespace Sakan.Application.Services
                 IsBookableAsWhole = dto.IsBookableAsWhole,
                 CreatedAt = DateTime.UtcNow,
                 IsApproved = false,
-                IsActive = true,
+                IsActive = false,
                 HostId = hostId,
             };
 

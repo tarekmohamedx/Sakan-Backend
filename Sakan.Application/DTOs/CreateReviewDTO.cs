@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace Sakan.Application.DTOs
 {
-    internal class CreateReviewDTO
+    public class CreateReviewDTO
     {
+        public string ReviewedUserId { get; set; }  
+        public int BookingId { get; set; }
+        public int Rating { get; set; }
+        public string Comment { get; set; }
     }
 }
