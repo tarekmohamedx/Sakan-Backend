@@ -1,22 +1,39 @@
+<<<<<<< HEAD
 ﻿using Microsoft.EntityFrameworkCore;
 using Sakan.Infrastructure.Services;
 using Sakan.Application.Interfaces;
 using Sakan.Infrastructure.Models;
+=======
+﻿using Imagekit.Sdk;
+using Microsoft.AspNetCore.Authentication.Google;
+>>>>>>> 69fef05e930c8e7f28806bba791f383e9c2ec8c8
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Sakan.Application.Interfaces;
+using Sakan.Application.Mapper;
 using Sakan.Application.Services;
 using Sakan.Domain.Interfaces;
+using Sakan.Domain.IUnitOfWork;
 using Sakan.Domain.Models;
 using Sakan.Hubs;
+using Sakan.Infrastructure.Models;
 using Sakan.Infrastructure.Repositories;
-using System.Text;
+using Sakan.Infrastructure.Services;
+using Sakan.Infrastructure.UnitOfWork;
 using System.Security.Claims;
 using Sakan.Domain.IUnitOfWork;
 using Sakan.Infrastructure.UnitOfWork;
+<<<<<<< HEAD
 using Sakan.Application.Mapper;
 
+=======
+using System.Text;
+using Stripe;
+>>>>>>> 69fef05e930c8e7f28806bba791f383e9c2ec8c8
 
 namespace Sakan
 {
@@ -46,9 +63,25 @@ namespace Sakan
             builder.Services.AddScoped<IListRepository, ListingRepo>();
             builder.Services.AddScoped<IListingService, ListingService>();
             builder.Services.AddScoped<IReviewService, ReviewService>();
+            builder.Services.AddScoped<IHostBookingService, HostBookingService>();
+            builder.Services.AddScoped<IHostReviewsService, HostReviewsService>();
+
 
 
             builder.Services.AddScoped<IHostListingService, HostListingService>();
+
+            builder.Services.AddScoped<ImagekitClient>(provider =>
+            {
+                var configuration = provider.GetRequiredService<IConfiguration>();
+                var publicKey = configuration["ImageKit:PublicKey"];
+                var privateKey = configuration["ImageKit:PrivateKey"];
+                var urlEndpoint = configuration["ImageKit:UrlEndpoint"];
+
+                return new ImagekitClient(publicKey, privateKey, urlEndpoint);
+            });
+
+
+
 
 
 
@@ -70,6 +103,7 @@ namespace Sakan
             {
                 options.SaveToken = true;
                 options.RequireHttpsMetadata = false;
+                //var jwtKey = builder.Configuration["jwt:key"];
 
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -110,60 +144,6 @@ namespace Sakan
             //    };
 
             });
-
-
-
-
-            //builder.Services.AddAuthentication(options =>
-            //{
-            //    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            //    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            //    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            //})
-            //.AddJwtBearer(options =>
-            //{
-            //    options.SaveToken = true;
-            //    options.RequireHttpsMetadata = false;
-
-            //    options.Events = new JwtBearerEvents
-            //    {
-            //        OnAuthenticationFailed = context =>
-            //        {
-            //            Console.WriteLine("❌ Token validation failed: " + context.Exception.Message);
-            //            return Task.CompletedTask;
-            //        },
-            //        OnTokenValidated = context =>
-            //        {
-            //            Console.WriteLine("✅ Token validated for: " +
-            //                context.Principal.Identity.Name);
-            //            return Task.CompletedTask;
-            //        }
-            //    };
-
-            //    options.TokenValidationParameters = new TokenValidationParameters()
-            //    {
-            //        //ValidIssuer = builder.Configuration["jwt:issuer"],
-            //        //ValidAudience = builder.Configuration["jwt:audience"],
-            //        //IssuerSigningKey = new SymmetricSecurityKey(
-            //        //    Encoding.UTF8.GetBytes(builder.Configuration["jwt:key"]))
-
-            //        ValidateIssuer = false,
-            //        ValidateAudience = false,
-            //        ValidateLifetime = true,
-            //        ValidateIssuerSigningKey = true,
-
-            //        ValidIssuer = builder.Configuration["jwt:issuer"],
-            //        ValidAudience = builder.Configuration["jwt:audience"],
-            //        IssuerSigningKey = new SymmetricSecurityKey(
-            //            Encoding.UTF8.GetBytes(builder.Configuration["jwt:key"])),
-
-            //        // 👇 This tells ASP.NET to map `ClaimTypes.NameIdentifier` correctly
-            //        NameClaimType = ClaimTypes.NameIdentifier,
-            //        RoleClaimType = ClaimTypes.Role
-
-            //    };
-
-            //});
 
 
             // conect with dbcontext 
@@ -216,6 +196,13 @@ namespace Sakan
 
             });
 
+            builder.Services.AddSingleton<ImagekitClient>(sp =>
+            new ImagekitClient(
+                sp.GetRequiredService<IConfiguration>()["ImageKit:PublicKey"],
+                sp.GetRequiredService<IConfiguration>()["ImageKit:PrivateKey"],
+                sp.GetRequiredService<IConfiguration>()["ImageKit:UrlEndpoint"]
+            ));
+
 
             builder.Services.AddScoped<IImageKitService, ImageKitService>();
 
@@ -225,14 +212,16 @@ namespace Sakan
             builder.Services.AddScoped<IProfileService, Userprofileservice>();
             builder.Services.AddScoped<IMessage, MessageRepo>();
             builder.Services.AddScoped<IMessageService, MessageService>();
-            //builder.Services.AddScoped<IHostDashboard, HostDashboardRepo>();
-            //builder.Services.AddScoped<IHostDashboardService, HostDashboardService>();
+            builder.Services.AddScoped<IHostDashboard, HostDashboardRepo>();
+            builder.Services.AddScoped<IHostDashboardService, HostDashboardService>();
             builder.Services.AddScoped<IListingRepository, ListingRepository>();
             builder.Services.AddScoped<IListingService, ListingService>();
             builder.Services.AddScoped<IAmenityRepository, AmenityRepository>();
             builder.Services.AddScoped<IAmenityService, AmenityService>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
+            builder.Services.AddScoped<IPaymentService, PaymentService>();
+            builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+            builder.Services.AddScoped<IBookingRepository, BookingRepository>();
             builder.Services.AddScoped<IFavoriteRepository, FavoriteRepository>();
             builder.Services.AddScoped<IFavoriteService, FavoriteService>();
 
@@ -275,6 +264,12 @@ namespace Sakan
 
             app.MapHub<ChatHub>("/chat");
             app.MapControllers();
+
+            //app.MapGet("/host-rating", async ([FromQuery] string userId, HostDashboardRepo repo) =>
+            //{
+            //    var LatestRating = await repo.GetLatestReviewForHostAsync(userId);
+            //    return Results.Ok(new { LatestRating = LatestRating });
+            //});
 
             app.Run();
         }

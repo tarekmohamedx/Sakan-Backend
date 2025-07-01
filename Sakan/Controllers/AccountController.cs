@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.IdentityModel.Tokens;
 using Sakan.Application.DTOs;
 using Sakan.Domain.Models;
@@ -76,6 +77,12 @@ namespace Sakan.Controllers
                         }
 
                         var signkey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["jwt:key"]));
+
+                        //var key = config["jwt:key"];
+                        //var signkey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key!));
+                        //Console.WriteLine("🔐 LOGIN: jwt:key = " + key);
+
+
                         SigningCredentials signingCredentials = new SigningCredentials(signkey, SecurityAlgorithms.HmacSha256);
 
                         JwtSecurityToken token = new JwtSecurityToken(
@@ -154,6 +161,11 @@ namespace Sakan.Controllers
 
             // Prepare the signing key
             var signKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["jwt:key"]));
+
+            //var key = config["jwt:key"];
+            //var signKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key!));
+            //System.Diagnostics.Debug.WriteLine("🔐 LOGIN: jwt:key = " + key);
+
 
             var signingCredentials = new SigningCredentials(signKey, SecurityAlgorithms.HmacSha256);
 
