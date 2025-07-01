@@ -46,15 +46,25 @@ namespace Sakan.Application.Services
                     })
                     .ToList();
 
-            ReviewDetailsDto LatestReviewDTO = new ReviewDetailsDto
+            //ReviewDetailsDto LatestReviewDTO = new ReviewDetailsDto
+            //{
+            //    ReviewerName = latestReview.Reviewer?.UserName ?? "Unknown",
+            //    ListingId = latestReview.Booking.Listing.Id,
+            //    ListingTitle = latestReview.Booking.Listing.Title,
+            //    Rating = (double)latestReview.Rating,
+            //    Comment = latestReview.Comment,
+            //    CreatedAt = (DateTime)latestReview.CreatedAt
+            //};
+
+            ReviewDetailsDto LatestReviewDTO = latestReview != null ? new ReviewDetailsDto
             {
                 ReviewerName = latestReview.Reviewer?.UserName ?? "Unknown",
-                ListingId = latestReview.Booking.Listing.Id,
-                ListingTitle = latestReview.Booking.Listing.Title,
-                Rating = (double)latestReview.Rating,
-                Comment = latestReview.Comment,
-                CreatedAt = (DateTime)latestReview.CreatedAt
-            };
+                ListingId = latestReview.Booking?.Listing?.Id ?? 0,
+                ListingTitle = latestReview.Booking?.Listing?.Title ?? "N/A",
+                Rating = (double?)latestReview.Rating ?? 0,
+                Comment = latestReview.Comment ?? "No comment",
+                CreatedAt = latestReview.CreatedAt ?? DateTime.MinValue
+            } : null;
 
             return new HostDashboardDTO
             {

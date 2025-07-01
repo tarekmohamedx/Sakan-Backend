@@ -24,6 +24,7 @@ using Sakan.Application.Mapper;
 using Sakan.Domain.IUnitOfWork;
 using Sakan.Infrastructure.UnitOfWork;
 using System.Text;
+using Stripe;
 
 namespace Sakan
 {
@@ -50,6 +51,9 @@ namespace Sakan
             builder.Services.AddScoped<IImageKitService, ImageKitService>();
             builder.Services.AddScoped<IListRepository, ListingRepo>();
             builder.Services.AddScoped<IListingService, ListingService>(); 
+            builder.Services.AddScoped<IHostBookingService, HostBookingService>();
+            builder.Services.AddScoped<IHostReviewsService, HostReviewsService>();
+
 
 
             builder.Services.AddScoped<IHostListingService, HostListingService>();
