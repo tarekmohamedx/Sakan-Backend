@@ -17,8 +17,8 @@ namespace Sakan.Controllers
             _listingService = listingService;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateListing([FromForm] CreateListingDTO dto , [FromRoute]string hostId)
+        [HttpPost("{hostId}")]
+        public async Task<IActionResult> CreateListing([FromBody] CreateListingDTO dto , [FromRoute]string hostId)
         {
             try
             {
