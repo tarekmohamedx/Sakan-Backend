@@ -7,13 +7,11 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Sakan.Application.Services;
 using Sakan.Domain.Interfaces;
 using Sakan.Domain.Models;
 using Sakan.Hubs;
-using Sakan.Infrastructure.Models;
 using Sakan.Infrastructure.Repositories;
 using System.Text;
 using System.Security.Claims;
@@ -42,10 +40,13 @@ namespace Sakan
             builder.Services.AddScoped<IListingDetailsService, ListingDetailsService>();
             builder.Services.AddScoped<IRoomDetailsService, RoomDetailsService>();
             builder.Services.AddScoped<IBookingRequestService, BookingRequestService>();
+            builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+
 
             builder.Services.AddScoped<IImageKitService, ImageKitService>();
             builder.Services.AddScoped<IListRepository, ListingRepo>();
-            builder.Services.AddScoped<IListingService, ListingService>(); 
+            builder.Services.AddScoped<IListingService, ListingService>();
+            builder.Services.AddScoped<IReviewService, ReviewService>();
 
 
             builder.Services.AddScoped<IHostListingService, HostListingService>();
@@ -217,6 +218,7 @@ namespace Sakan
             });
 
 
+            builder.Services.AddScoped<IImageKitService, ImageKitService>();
 
             builder.Services.AddScoped<ITestRepo, TestRepo>();
             builder.Services.AddScoped<IProfile, ProfileRepo>();
@@ -236,6 +238,16 @@ namespace Sakan
             builder.Services.AddScoped<IFavoriteService, FavoriteService>();
 
             builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
+
+
+            builder.Services.AddScoped(provider =>
+            {
+                return new Imagekit.Sdk.ImagekitClient(
+                    publicKey: builder.Configuration["ImageKit:PublicKey"],
+                    privateKey: builder.Configuration["ImageKit:PrivateKey"],
+                    urlEndPoint: builder.Configuration["ImageKit:UrlEndpoint"]
+                );
+            });
 
             var app = builder.Build();
 
