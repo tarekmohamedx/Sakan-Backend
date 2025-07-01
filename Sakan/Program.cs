@@ -23,6 +23,7 @@ using System.Security.Claims;
 using Sakan.Application.Mapper;
 using Sakan.Domain.IUnitOfWork;
 using Sakan.Infrastructure.UnitOfWork;
+using System.Text;
 
 namespace Sakan
 {
