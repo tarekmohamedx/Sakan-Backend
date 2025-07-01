@@ -18,9 +18,6 @@ public partial class sakanContext:IdentityDbContext<ApplicationUser>
     {
     }
 
-
-
-
     public virtual DbSet<Amenity> Amenities { get; set; }
 
     public virtual DbSet<Bed> Beds { get; set; }

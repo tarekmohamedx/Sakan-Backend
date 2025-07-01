@@ -8,34 +8,28 @@ namespace Sakan.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Roles = "Customer")]
     public class HostListingsController : ControllerBase
     {
         private readonly IHostListingService _listingService;
-        public string hostId = "host-123";
 
         public HostListingsController(IHostListingService listingService)
         {
             _listingService = listingService;
         }
 
-
         [HttpGet("my")]
-        public async Task<IActionResult> GetMyListings([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetMyListings(string hostId,[FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] string? search = null)
         {
-            //var hostId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(hostId))
-                return Unauthorized("Host ID not found in token.");
+            var listings = await _listingService.GetHostListingsAsync(hostId, page, pageSize, search);
 
-            var pagedResult = await _listingService.GetHostListingsPagedAsync(hostId, page, pageSize);
-            return Ok(pagedResult);
+            return Ok(listings);
         }
 
 
+
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetListingById(int id)
+        public async Task<IActionResult> GetListingById(int id, string hostId)
         {
-            //var hostId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(hostId))
                 return Unauthorized("Host ID not found in token.");
 
@@ -47,9 +41,8 @@ namespace Sakan.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateListing(int id, [FromBody] ListingEditDto updated)
+        public async Task<IActionResult> UpdateListing(int id, string hostId, [FromBody] ListingEditDto updated)
         {
-            //var hostId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(hostId))
                 return Unauthorized("Host ID not found in token.");
 
@@ -61,9 +54,8 @@ namespace Sakan.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteListing(int id)
+        public async Task<IActionResult> DeleteListing(int id, string hostId)
         {
-            //var hostId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(hostId))
                 return Unauthorized("Host ID not found in token.");
 

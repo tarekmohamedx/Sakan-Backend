@@ -20,10 +20,10 @@ namespace Sakan.Infrastructure.Services
             _context = context;
         }
 
-        public async Task<object> GetHostListingsPagedAsync(string hostId, int page, int pageSize)
+        public async Task<object> GetHostListingsAsync(string hostId, int page, int pageSize, string? search)
         {
             var query = _context.Listings
-                .Where(l => l.HostId == hostId)
+                .Where(l => l.HostId == hostId && !l.IsDeleted)
                 .Select(l => new HostListingDto
                 {
                     Id = l.Id,
@@ -31,8 +31,11 @@ namespace Sakan.Infrastructure.Services
                     Location = l.Governorate + ", " + l.District,
                     PricePerMonth = l.PricePerMonth ?? 0,
                     MaxGuests = l.MaxGuests ?? 0,
+                    IsActive = l.IsActive,
                     PreviewImage = l.ListingPhotos.FirstOrDefault().PhotoUrl
                 });
+            if (!string.IsNullOrEmpty(search))
+                query = query.Where(l => l.Title.Contains(search));
 
             var total = await query.CountAsync();
             var listings = await query
@@ -50,10 +53,11 @@ namespace Sakan.Infrastructure.Services
         }
 
 
+
         public async Task<ListingEditDto> GetListingByIdAsync(int id, string hostId)
         {
             var listing = await _context.Listings
-                .Where(l => l.Id == id && l.HostId == hostId)
+                .Where(l => l.Id == id && l.HostId == hostId && !l.IsDeleted)
                 .Select(l => new ListingEditDto
                 {
                     Title = l.Title,
@@ -74,7 +78,7 @@ namespace Sakan.Infrastructure.Services
         public async Task<bool> UpdateListingWithPhotosAsync(int id, string hostId, ListingEditDto updated)
         {
             var listing = await _context.Listings
-                //.Include(l => l.ListingPhotos)
+                .Include(l => l.ListingPhotos)
                 .FirstOrDefaultAsync(l => l.Id == id && l.HostId == hostId);
 
             if (listing == null) return false;
@@ -90,15 +94,15 @@ namespace Sakan.Infrastructure.Services
             listing.IsActive = updated.IsActive;
 
             //// Replace photos
-            //listing.ListingPhotos.Clear();
-            //foreach (var photoUrl in updated.PhotoUrls)
-            //{
-            //    listing.ListingPhotos.Add(new ListingPhoto
-            //    {
-            //        PhotoUrl = photoUrl,
-            //        ListingId = listing.Id
-            //    });
-            //}
+            listing.ListingPhotos.Clear();
+            foreach (var photoUrl in updated.PhotoUrls)
+            {
+                listing.ListingPhotos.Add(new ListingPhoto
+                {
+                    PhotoUrl = photoUrl,
+                    ListingId = listing.Id
+                });
+            }
 
             await _context.SaveChangesAsync();
             return true;
@@ -107,12 +111,26 @@ namespace Sakan.Infrastructure.Services
 
         public async Task<bool> DeleteListingAsync(int id, string hostId)
         {
-            var listing = await _context.Listings.FirstOrDefaultAsync(l => l.Id == id && l.HostId == hostId);
+            var listing = await _context.Listings
+                .FirstOrDefaultAsync(l => l.Id == id && l.HostId == hostId && !l.IsDeleted);
+
             if (listing == null) return false;
 
-            _context.Listings.Remove(listing);
+            listing.IsDeleted = true;
+            _context.Listings.Update(listing);
             await _context.SaveChangesAsync();
             return true;
         }
+
+
+        //public async Task<bool> DeleteListingAsync(int id, string hostId)
+        //{
+        //    var listing = await _context.Listings.FirstOrDefaultAsync(l => l.Id == id && l.HostId == hostId);
+        //    if (listing == null) return false;
+
+        //    _context.Listings.Remove(listing);
+        //    await _context.SaveChangesAsync();
+        //    return true;
+        //}
     }
 }

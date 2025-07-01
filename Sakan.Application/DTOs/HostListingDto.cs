@@ -14,6 +14,7 @@ namespace Sakan.Application.DTOs
         public decimal PricePerMonth { get; set; }
         public int MaxGuests { get; set; }
         public string PreviewImage { get; set; }
+        public bool IsActive { get; set; }
 
     }
 

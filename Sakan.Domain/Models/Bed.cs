@@ -32,4 +32,5 @@ public partial class Bed
     public virtual ApplicationUser OccupiedByUser { get; set; }
 
     public virtual Room Room { get; set; }
+    public bool IsDeleted { get; set; }
 }
