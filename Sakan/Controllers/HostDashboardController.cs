@@ -20,5 +20,16 @@ namespace Sakan.Controllers
             var count = await HostDashboardService.GetRequestedCountAsync(userId);
             return Ok(count);
         }
+
+        [HttpGet("{hostId}")]
+        public async Task<IActionResult> GetDashboard(string hostId)
+        {
+            var dashboard = await HostDashboardService.GetDashboardAsync(hostId);
+
+            if (dashboard == null)
+                return NotFound();
+
+            return Ok(dashboard);
+        }
     }
 }
