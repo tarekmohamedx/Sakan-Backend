@@ -12,13 +12,15 @@ namespace Sakan.Controllers
     {
         private readonly UserManager<ApplicationUser> userManager;
         private readonly ITestService testService;
+        private readonly IProfileService ProfileService;
         private readonly RoleManager<IdentityRole> roleManager;
-        public TestController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, ITestService testService)
+        public TestController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, ITestService testService, IProfileService profileService)
         {
             this.userManager = userManager;
 
             this.roleManager = roleManager;
             this.testService = testService;
+            this.ProfileService = profileService;
         }
 
 
@@ -34,6 +36,17 @@ namespace Sakan.Controllers
         {
             var tests = testService.testsnames(); 
             return Ok(tests); 
+        }
+
+        [HttpGet("profile/{userId}")]
+        public IActionResult GetUserData(string userId)
+        {
+            var profile = ProfileService.GetUserprofilebyid(userId);
+
+            if (profile == null)
+                return NotFound("User not found"); // أو 404
+
+            return Ok(profile);
         }
 
     }

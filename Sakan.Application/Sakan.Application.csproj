@@ -7,6 +7,10 @@
 	</PropertyGroup>
 
   <ItemGroup>
+
+    <PackageReference Include="Imagekit" Version="5.0.0" />
+    <PackageReference Include="AutoMapper" Version="14.0.0" />
+    <PackageReference Include="Stripe.net" Version="48.2.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.1" />
   </ItemGroup>
 

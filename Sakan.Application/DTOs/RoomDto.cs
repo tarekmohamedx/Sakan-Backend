@@ -19,6 +19,8 @@ namespace Sakan.Application.DTOs
         public ListingLocationDto Listing { get; set; }
     }
 
+
+
     public class ListingLocationDto
     {
         public double Latitude { get; set; }
@@ -27,12 +29,43 @@ namespace Sakan.Application.DTOs
 
     public class BedDto
     {
-        public int Id { get; set; }
+        public int? Id { get; set; }
         public string Label { get; set; }
         public string Type { get; set; }
         public decimal? Price { get; set; }
         public bool? IsAvailable { get; set; }
+        public bool IsDeleted { get; set; }
         public List<string> BedPhotos { get; set; }
     }
+
+    // for host page 
+    public class RoomDetailsDto
+    {
+        public int Id { get; set; }
+        public string? Name { get; set; }
+        public string? Type { get; set; }
+        public decimal? PricePerNight { get; set; }
+        public int? MaxGuests { get; set; }
+        public bool? IsBookableAsWhole { get; set; }
+        public bool IsActive { get; set; }
+        public bool IsDeleted { get; set; }
+        public string? ListingTitle { get; set; }
+        public int? ListingId { get; set; }
+
+        public List<BedDto> Beds { get; set; } = new();
+        public List<string> PhotoUrls { get; set; } = new();
+    }
+
+    public class RoomUpdateDto
+    {
+        public string? Name { get; set; }
+        public string? Type { get; set; }
+        public decimal? PricePerNight { get; set; }
+        public int? MaxGuests { get; set; }
+        public bool? IsBookableAsWhole { get; set; }
+        public bool IsActive { get; set; }
+        public List<BedDto> Beds { get; set; } = new();
+    }
+
 
 }

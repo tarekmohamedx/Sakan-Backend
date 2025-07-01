@@ -18,6 +18,8 @@ public partial class sakanContext:IdentityDbContext<ApplicationUser>
     {
     }
 
+    public virtual DbSet<Amenity> Amenities { get; set; }
+
     public virtual DbSet<Bed> Beds { get; set; }
 
     public virtual DbSet<BedPhoto> BedPhotos { get; set; }
@@ -25,6 +27,7 @@ public partial class sakanContext:IdentityDbContext<ApplicationUser>
     public virtual DbSet<Booking> Bookings { get; set; }
 
     public virtual DbSet<BookingRequest> BookingRequests { get; set; }
+    public virtual DbSet<Favorite> Favorites { get; set; }
 
     public virtual DbSet<Listing> Listings { get; set; }
 
@@ -32,6 +35,8 @@ public partial class sakanContext:IdentityDbContext<ApplicationUser>
 
     public virtual DbSet<Message> Messages { get; set; }
     public virtual DbSet<Chat> Chats { get; set; }
+
+    public virtual DbSet<Notification> Notifications { get; set; }
 
     public virtual DbSet<Payment> Payments { get; set; }
 
@@ -41,7 +46,11 @@ public partial class sakanContext:IdentityDbContext<ApplicationUser>
 
     public virtual DbSet<RoomPhoto> RoomPhotos { get; set; }
 
+    public virtual DbSet<SupportTicket> SupportTickets { get; set; }
+
     public virtual DbSet<Test> Tests { get; set; }
+
+    public virtual DbSet<TicketReply> TicketReplies { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
