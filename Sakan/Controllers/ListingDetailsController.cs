@@ -72,8 +72,12 @@ namespace Sakan.Controllers
         }
 
         [HttpPost("request")]
-        public async Task<IActionResult> CreateBookingRequest([FromBody] BookingRequestDto dto)
+        public async Task<IActionResult> CreateBookingRequest([FromBody] BookingRequestsDto dto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);  // <-- This returns validation errors
+            }
             var result = await _bookingService.CreateAsync(dto);
             return Ok(new { requestId = result.requestId, hostId = result.hostId });
         }

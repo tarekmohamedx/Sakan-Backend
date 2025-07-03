@@ -9,7 +9,7 @@ namespace Sakan.Application.Interfaces
 {
     public interface IBookingRequestService
     {
-        Task<(int requestId, string hostId)> CreateAsync(BookingRequestDto dto);
+        Task<(int requestId, string hostId)> CreateAsync(BookingRequestsDto dto);
     }
 
 }

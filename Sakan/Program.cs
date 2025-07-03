@@ -1,12 +1,6 @@
-<<<<<<< HEAD
-﻿using Microsoft.EntityFrameworkCore;
-using Sakan.Infrastructure.Services;
-using Sakan.Application.Interfaces;
-using Sakan.Infrastructure.Models;
-=======
+
 ﻿using Imagekit.Sdk;
 using Microsoft.AspNetCore.Authentication.Google;
->>>>>>> 69fef05e930c8e7f28806bba791f383e9c2ec8c8
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -25,15 +19,9 @@ using Sakan.Infrastructure.Repositories;
 using Sakan.Infrastructure.Services;
 using Sakan.Infrastructure.UnitOfWork;
 using System.Security.Claims;
-using Sakan.Domain.IUnitOfWork;
-using Sakan.Infrastructure.UnitOfWork;
-<<<<<<< HEAD
-using Sakan.Application.Mapper;
-
-=======
 using System.Text;
 using Stripe;
->>>>>>> 69fef05e930c8e7f28806bba791f383e9c2ec8c8
+using ReviewService = Sakan.Application.Services.ReviewService;
 
 namespace Sakan
 {
