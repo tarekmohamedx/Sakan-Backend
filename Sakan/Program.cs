@@ -1,12 +1,5 @@
-<<<<<<< HEAD
-﻿using Microsoft.EntityFrameworkCore;
-using Sakan.Infrastructure.Services;
-using Sakan.Application.Interfaces;
-using Sakan.Infrastructure.Models;
-=======
-﻿using Imagekit.Sdk;
+using Imagekit.Sdk;
 using Microsoft.AspNetCore.Authentication.Google;
->>>>>>> 69fef05e930c8e7f28806bba791f383e9c2ec8c8
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -25,15 +18,10 @@ using Sakan.Infrastructure.Repositories;
 using Sakan.Infrastructure.Services;
 using Sakan.Infrastructure.UnitOfWork;
 using System.Security.Claims;
-using Sakan.Domain.IUnitOfWork;
-using Sakan.Infrastructure.UnitOfWork;
-<<<<<<< HEAD
-using Sakan.Application.Mapper;
-
-=======
 using System.Text;
 using Stripe;
->>>>>>> 69fef05e930c8e7f28806bba791f383e9c2ec8c8
+using ReviewService = Sakan.Application.Services.ReviewService;
+
 
 namespace Sakan
 {
@@ -121,27 +109,27 @@ namespace Sakan
                 };
 
 
-            //}).AddGoogle(googleoption =>
-            //{
-            //    googleoption.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-            //    googleoption.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-            //    googleoption.CallbackPath = "/signin-google";
-            //    // 🔥 THIS disables redirect to Account/Login for APIs
-            //    googleoption.Events = new JwtBearerEvents
-            //    {
-            //        OnAuthenticationFailed = context =>
-            //        {
-            //            Console.WriteLine("❌ JWT validation failed: " + context.Exception.Message);
-            //            return Task.CompletedTask;
-            //        },
-            //        OnChallenge = context =>
-            //        {
-            //            context.HandleResponse(); // suppress default redirect
-            //            context.Response.StatusCode = 401;
-            //            context.Response.ContentType = "application/json";
-            //            return context.Response.WriteAsync("{\"error\": \"Unauthorized\"}");
-            //        }
-            //    };
+                //}).AddGoogle(googleoption =>
+                //{
+                //    googleoption.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+                //    googleoption.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+                //    googleoption.CallbackPath = "/signin-google";
+                //    // 🔥 THIS disables redirect to Account/Login for APIs
+                //    googleoption.Events = new JwtBearerEvents
+                //    {
+                //        OnAuthenticationFailed = context =>
+                //        {
+                //            Console.WriteLine("❌ JWT validation failed: " + context.Exception.Message);
+                //            return Task.CompletedTask;
+                //        },
+                //        OnChallenge = context =>
+                //        {
+                //            context.HandleResponse(); // suppress default redirect
+                //            context.Response.StatusCode = 401;
+                //            context.Response.ContentType = "application/json";
+                //            return context.Response.WriteAsync("{\"error\": \"Unauthorized\"}");
+                //        }
+                //    };
 
             });
 
@@ -173,15 +161,16 @@ namespace Sakan
             // Add CORS policy
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy(name: MyAllowSpecificOrigins,
-                    policy =>
-                    {
-                        policy.WithOrigins("http://localhost:4200")
-                              .AllowAnyHeader()
-                              .AllowAnyMethod();
-                              //.AllowCredentials();
-                    });
+                options.AddPolicy("AllowSpecificOrigins", policy =>
+                {
+                    policy
+                        .WithOrigins("http://localhost:4200") // Angular dev server
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                });
             });
+
 
 
             builder.Services.Configure<IdentityOptions>(options =>
