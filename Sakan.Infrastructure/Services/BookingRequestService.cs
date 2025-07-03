@@ -47,6 +47,71 @@ namespace Sakan.Infrastructure.Services
 
             return (booking.Id, hostId);
         }
+
+        //use the BookingRequestsDTO then return all the booking requests for the user with the given userId
+        public async Task<IEnumerable<BookingRequestsDTO>> GetBookingRequestsByUserIdAsync(string userId)
+        {
+            var requests = await _context.BookingRequests
+                .Where(br => br.GuestId == userId)
+                .Select(br => new BookingRequestsDTO
+                {
+                    BookingRequestId = br.Id,
+                    ListingTitle = _context.Listings
+                        .Where(l => l.Id == br.ListingId)
+                        .Select(l => l.Title)
+                        .FirstOrDefault(),
+                    BedPrice = _context.Beds
+                        .Where(b => b.Id == br.BedId)
+                        .Select(b => b.Price)
+                        .FirstOrDefault(),
+                    ListingLocation = _context.Listings
+                        .Where(l => l.Id == br.ListingId)
+                        .Select(l => l.Governorate + " - " + l.District)
+                        .FirstOrDefault(),
+                    FromDate = (DateTime)br.FromDate,
+                    ToDate = (DateTime)br.ToDate
+                })
+                .ToListAsync();
+
+            return requests;
+        }
+
+        public async Task<bool> UpdateBookingRequestAsync(int requestId,bool isAccepted)
+        {
+            var bookingRequest= await _context.BookingRequests.FindAsync(requestId);
+            if (bookingRequest == null) return false;
+            bookingRequest.HostApproved=isAccepted;
+            if(bookingRequest.GuestApproved==true && isAccepted)
+                bookingRequest.IsActive = true;
+            else if(bookingRequest.GuestApproved==false && !isAccepted)
+                bookingRequest.IsActive = false;
+            _context.BookingRequests.Update(bookingRequest);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<IEnumerable<HostBookingRequestDTO>> GetBookingRequestsByHostIdAsync(string hostId)
+        {
+            var requests = await _context.BookingRequests
+                .Where(br => _context.Listings.Any(l => l.Id == br.ListingId && l.HostId == hostId))
+                .Select(br => new HostBookingRequestDTO
+                {
+                    BookingRequestId = br.Id,
+                    GuestId = br.GuestId,
+                    GuestName = _context.Users.Where(u => u.Id == br.GuestId).Select(u => u.UserName).FirstOrDefault(),
+                    ListingTitle = _context.Listings.Where(l => l.Id == br.ListingId).Select(l => l.Title).FirstOrDefault(),
+                    RoomTitle = _context.Rooms.Where(r => r.Id == br.RoomId).Select(r => r.Name).FirstOrDefault(),
+                    BedTitle = _context.Beds.Where(b => b.Id == br.BedId).Select(b => b.Label).FirstOrDefault(),
+                    ListingLocation = _context.Listings.Where(l => l.Id == br.ListingId)
+                        .Select(l => l.Governorate + " - " + l.District).FirstOrDefault(),
+                    FromDate = (DateTime)br.FromDate,
+                    ToDate = (DateTime)br.ToDate,
+                    IsApproved = (bool)br.HostApproved
+                })
+                .ToListAsync();
+
+            return requests;
+        }
     }
 
 }
