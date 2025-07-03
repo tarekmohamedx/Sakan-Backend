@@ -8,7 +8,7 @@ using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text;
 
-namespace Sakan.Controllers
+namespace Sakan.Controllers.Host
 {
     [Route("api/[controller]")]
     [ApiController]

@@ -6,7 +6,7 @@ using Sakan.Domain.Interfaces;
 using Stripe;
 using System.Security.Claims;
 
-namespace Sakan.Controllers
+namespace Sakan.Controllers.Host
 {
     [Route("api/[controller]")]
     [ApiController]

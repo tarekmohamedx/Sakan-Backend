@@ -22,6 +22,9 @@ using System.Security.Claims;
 using System.Text;
 using Stripe;
 using ReviewService = Sakan.Application.Services.ReviewService;
+using Sakan.Application.Services.Admin;
+using Sakan.Application.Interfaces.Admin;
+using Sakan.Infrastructure.Services.Admin;
 
 namespace Sakan
 {
@@ -53,6 +56,8 @@ namespace Sakan
             builder.Services.AddScoped<IReviewService, ReviewService>();
             builder.Services.AddScoped<IHostBookingService, HostBookingService>();
             builder.Services.AddScoped<IHostReviewsService, HostReviewsService>();
+            builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
+            builder.Services.AddScoped<IAdminListingService, AdminListingService>();
             //builder.Services.AddScoped<ImageKitServices>();
 
 

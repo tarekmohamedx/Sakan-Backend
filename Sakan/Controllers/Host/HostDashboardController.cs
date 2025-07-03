@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Sakan.Application.Services;
 
-namespace Sakan.Controllers
+namespace Sakan.Controllers.Host
 {
     [Route("api/[controller]")]
     [ApiController]

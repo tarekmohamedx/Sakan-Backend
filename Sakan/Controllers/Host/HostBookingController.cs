@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Sakan.Application.Interfaces;
 using Sakan.Domain.Interfaces;
 
-namespace Sakan.Controllers
+namespace Sakan.Controllers.Host
 {
     [Route("api/[controller]")]
     [ApiController]
