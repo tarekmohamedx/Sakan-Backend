@@ -157,6 +157,7 @@ public class RoomDetailsService : IRoomDetailsService
         var room = await _context.Rooms
             .Include(r => r.Beds)
             .Include(r => r.Listing)
+             .Include(r => r.RoomPhotos)
             .FirstOrDefaultAsync(r => r.Id == roomId && r.Listing.HostId == hostId);
 
         if (room == null) return false;
@@ -170,9 +171,17 @@ public class RoomDetailsService : IRoomDetailsService
         room.IsActive = dto.IsActive;
 
         // --- Sync Room Photos ---
-        var existingRoomPhotos = await _context.RoomPhotos.Where(p => p.RoomId == room.Id).ToListAsync();
+        //var existingRoomPhotos = await _context.RoomPhotos.Where(p => p.RoomId == room.Id).ToListAsync();
 
-        var existingRoomPhotoUrls = existingRoomPhotos.Select(p => p.PhotoUrl).ToHashSet();
+        //var existingRoomPhotoUrls = existingRoomPhotos.Select(p => p.PhotoUrl).ToHashSet();
+        var existingRoomPhotos = await _context.RoomPhotos
+            .Where(p => p.RoomId == room.Id)
+            .ToListAsync();
+        var existingRoomPhotoUrls = existingRoomPhotos
+            .Select(p => p.PhotoUrl)
+            .Where(url => url != null)
+            .ToHashSet();
+
 
         // Delete removed photos
         var removedRoomPhotos = existingRoomPhotos.Where(p => !dto.RoomPhotoUrls.Contains(p.PhotoUrl)).ToList();
@@ -251,6 +260,7 @@ public class RoomDetailsService : IRoomDetailsService
         await _context.SaveChangesAsync();
         return true;
     }
+
 
 
 

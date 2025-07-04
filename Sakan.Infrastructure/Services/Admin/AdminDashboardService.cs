@@ -69,8 +69,7 @@ namespace Sakan.Application.Services.Admin
                 select new ActivityLogDto
                 {
                     ActivityType = $"New {role.Name} Signup",
-                    Description = $"{user.UserName} joined as {role.Name}",
-                    Timestamp = DateTime.UtcNow // fallback if no CreatedAt
+                    Description = $"{user.UserName} joined as {role.Name}"
                 }).Take(10).ToListAsync();
 
             logs.AddRange(recentUsers);
