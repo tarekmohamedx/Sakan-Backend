@@ -39,6 +39,8 @@ public partial class Listing
 
     public bool IsActive { get; set; }
 
+    public bool IsDeleted { get; set; } = false;
+
     public virtual ICollection<BookingRequest> BookingRequests { get; set; } = new List<BookingRequest>();
 
     public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
