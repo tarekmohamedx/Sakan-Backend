@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Sakan.Application.Services
 {
-    public interface IAdminListingService
+    public interface IAdminApproveListingService
     {
         Task<(List<AdminListingsTableDTO> Items, int TotalCount)> GetNotApprovedListingsAsync(int pageNumber, int pageSize);
         Task<bool> ApproveListingAsync(int listingId);

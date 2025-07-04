@@ -2,15 +2,15 @@
 using Microsoft.AspNetCore.Mvc;
 using Sakan.Application.Services;
 
-namespace Sakan.Controllers
+namespace Sakan.Controllers.Admin
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AdminController : ControllerBase
+    public class AdminApproveController : ControllerBase
     {
-        private readonly IAdminListingService _adminListingService;
+        private readonly IAdminApproveListingService _adminListingService;
 
-        public AdminController(IAdminListingService adminListingService)
+        public AdminApproveController(IAdminApproveListingService adminListingService)
         {
             _adminListingService = adminListingService;
         }
@@ -31,7 +31,7 @@ namespace Sakan.Controllers
             var result = await _adminListingService.ApproveListingAsync(listingId);
             return result
                  ? Ok(new { message = "Listing approved" })
-      : BadRequest(new { message = "Approval failed" });        
+      : BadRequest(new { message = "Approval failed" });
         }
 
         [HttpPost("reject/{listingId}")]
@@ -43,4 +43,5 @@ namespace Sakan.Controllers
     : BadRequest(new { message = "Rejection failed" });
         }
     }
+
 }

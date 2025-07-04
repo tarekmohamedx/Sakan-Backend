@@ -1,10 +1,5 @@
-<<<<<<< HEAD
-﻿using Microsoft.EntityFrameworkCore;
-using Sakan.Infrastructure.Services;
-using Sakan.Application.Interfaces;
-using Sakan.Infrastructure.Models;
-=======
-﻿using Imagekit.Sdk;
+﻿
+using Imagekit.Sdk;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -26,7 +21,10 @@ using Sakan.Infrastructure.UnitOfWork;
 using System.Security.Claims;
 using System.Text;
 using Stripe;
->>>>>>> 69fef05e930c8e7f28806bba791f383e9c2ec8c8
+using ReviewService = Sakan.Application.Services.ReviewService;
+using Sakan.Application.Services.Admin;
+using Sakan.Application.Interfaces.Admin;
+using Sakan.Infrastructure.Services.Admin;
 
 namespace Sakan
 {
@@ -61,6 +59,8 @@ namespace Sakan
             builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
             builder.Services.AddScoped<IAdminListingService, AdminListingService>();
             //builder.Services.AddScoped<ImageKitServices>();
+            builder.Services.AddScoped<IAdminApproveListingService, AdminApproveListingService>();
+
 
 
 
@@ -170,16 +170,15 @@ namespace Sakan
             // Add CORS policy
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("AllowSpecificOrigins", policy =>
-                {
-                    policy
-                        .WithOrigins("http://localhost:4200") // Angular dev server
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .AllowCredentials();
-                });
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                    policy =>
+                    {
+                        policy.WithOrigins("http://localhost:4200")
+                              .AllowAnyHeader()
+                              .AllowAnyMethod();
+                        //.AllowCredentials();
+                    });
             });
-
 
 
             builder.Services.Configure<IdentityOptions>(options =>
@@ -222,7 +221,6 @@ namespace Sakan
             builder.Services.AddScoped<IBookingRepository, BookingRepository>();
             builder.Services.AddScoped<IFavoriteRepository, FavoriteRepository>();
             builder.Services.AddScoped<IFavoriteService, FavoriteService>();
-            builder.Services.AddScoped<IAdminListingService, AdminListingService>();
 
             builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 

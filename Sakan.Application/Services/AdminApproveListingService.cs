@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace Sakan.Application.Services
 {
-    public class AdminListingService : IAdminListingService
+    public class AdminApproveListingService : IAdminApproveListingService
     {
-        public AdminListingService(IListingRepository listingRepository)
+        public AdminApproveListingService(IListingRepository listingRepository)
         {
             ListingRepository = listingRepository;
         }

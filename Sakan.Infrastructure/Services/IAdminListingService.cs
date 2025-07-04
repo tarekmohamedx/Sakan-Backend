@@ -6,7 +6,5 @@ using System.Threading.Tasks;
 
 namespace Sakan.Infrastructure.Services
 {
-    internal interface IAdminListingService
-    {
-    }
+    
 }
