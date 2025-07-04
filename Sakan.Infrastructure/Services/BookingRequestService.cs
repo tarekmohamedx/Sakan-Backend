@@ -53,7 +53,7 @@ namespace Sakan.Infrastructure.Services
                 .Select(l => l.HostId)
                 .FirstOrDefaultAsync();
 
-            return (booking.Id, hostId);
+            return (firstRequestId, hostId);
         }
 
         //use the BookingRequestsDTO then return all the booking requests for the user with the given userId
@@ -121,8 +121,8 @@ namespace Sakan.Infrastructure.Services
             return requests;
         }
     }
-            return (firstRequestId, hostId);
-        }
+    //        return (firstRequestId, hostId);
+    //    }
 
-    }
+    //}
 }

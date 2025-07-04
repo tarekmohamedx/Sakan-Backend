@@ -171,33 +171,41 @@ public class RoomDetailsService : IRoomDetailsService
         room.IsActive = dto.IsActive;
 
         // --- Sync Room Photos ---
-        //var existingRoomPhotos = await _context.RoomPhotos.Where(p => p.RoomId == room.Id).ToListAsync();
-
-        //var existingRoomPhotoUrls = existingRoomPhotos.Select(p => p.PhotoUrl).ToHashSet();
-        var existingRoomPhotos = await _context.RoomPhotos
-            .Where(p => p.RoomId == room.Id)
-            .ToListAsync();
-        var existingRoomPhotoUrls = existingRoomPhotos
-            .Select(p => p.PhotoUrl)
-            .Where(url => url != null)
-            .ToHashSet();
-
+        var existingRoomPhotos = await _context.RoomPhotos.Where(p => p.RoomId == room.Id).ToListAsync();
+        var existingRoomPhotoUrls = existingRoomPhotos.Select(p => p.PhotoUrl).ToHashSet();
 
         // Delete removed photos
-        var removedRoomPhotos = existingRoomPhotos.Where(p => !dto.RoomPhotoUrls.Contains(p.PhotoUrl)).ToList();
-        _context.RoomPhotos.RemoveRange(removedRoomPhotos);
+        if (dto.RoomPhotoUrls != null && dto.RoomPhotoUrls.Count > 0)
+        {
+            var removedRoomPhotos = existingRoomPhotos
+                .Where(p => !dto.RoomPhotoUrls.Contains(p.PhotoUrl))
+                .ToList();
+            _context.RoomPhotos.RemoveRange(removedRoomPhotos);
+        }
+
+        var newRoomPhotoUrls = dto.RoomPhotoUrls.Where(url => !existingRoomPhotoUrls.Contains(url)).ToList();
+        if (newRoomPhotoUrls.Any())
+        {
+            foreach (var url in newRoomPhotoUrls)
+            {
+                _context.RoomPhotos.Add(new RoomPhoto
+                {
+                    RoomId = room.Id,
+                    PhotoUrl = url
+                });
+            }
+        }
 
         // Add new photos
-        var newRoomPhotoUrls = dto.RoomPhotoUrls.Where(url => !existingRoomPhotoUrls.Contains(url)).ToList();
 
-        foreach (var url in newRoomPhotoUrls)
-        {
-            _context.RoomPhotos.Add(new RoomPhoto
-            {
-                RoomId = room.Id,
-                PhotoUrl = url
-            });
-        }
+        //foreach (var url in newRoomPhotoUrls)
+        //{
+        //    _context.RoomPhotos.Add(new RoomPhoto
+        //    {
+        //        RoomId = room.Id,
+        //        PhotoUrl = url
+        //    });
+        //}
 
         // --- Sync Beds ---
         var incomingBedIds = dto.Beds.Where(b => b.Id.HasValue).Select(b => b.Id.Value).ToList();
