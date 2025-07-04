@@ -4,7 +4,7 @@ using Sakan.Application.Interfaces;
 using Sakan.Domain.Interfaces;
 using Sakan.Infrastructure.Services;
 
-namespace Sakan.Controllers
+namespace Sakan.Controllers.Host
 {
     [Route("api/[controller]")]
     [ApiController]

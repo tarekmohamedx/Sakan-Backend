@@ -17,12 +17,12 @@ namespace Sakan.Controllers
             _listingService = listingService;
         }
 
-        [HttpPost]
+        [HttpPost("{hostId}")]
         public async Task<IActionResult> CreateListing([FromForm] CreateListingDTO dto , [FromRoute]string hostId)
         {
             try
             {
-              //  var hostId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                //var hostId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 await _listingService.CreateListingAsync(dto, hostId);
                 return Ok(new { message = "Listing created successfully." });
             }

@@ -21,25 +21,33 @@ namespace Sakan.Infrastructure.Services
             _context = context;
         }
 
-        public async Task<(int requestId, string hostId)> CreateAsync(BookingRequestDto dto)
+        public async Task<(int requestId, string hostId)> CreateAsync(BookingRequestsDto dto)
         {
+            int firstRequestId = 0;
 
-            var booking = new BookingRequest
+            foreach (var bedId in dto.BedIds)
             {
-                GuestId = dto.GuestId,
-                ListingId = dto.ListingId,
-                RoomId = dto.RoomId,
-                BedId = dto.BedId,
-                FromDate = dto.FromDate,
-                ToDate = dto.ToDate,
-                HostApproved = false,
-                GuestApproved = false
-            };
+                var booking = new BookingRequest
+                {
+                    GuestId = dto.GuestId,
+                    ListingId = dto.ListingId ?? 0,
+                    RoomId = dto.RoomId,
+                    BedId = bedId,
+                    FromDate = dto.FromDate,
+                    ToDate = dto.ToDate,
+                    HostApproved = false,
+                    GuestApproved = false
+                };
 
-            _context.BookingRequests.Add(booking);
-            await _context.SaveChangesAsync();
+                _context.BookingRequests.Add(booking);
+                await _context.SaveChangesAsync();
 
-            // Try to get the host ID explicitly
+                // Save the first inserted ID to return
+                if (firstRequestId == 0)
+                    firstRequestId = booking.Id;
+            }
+
+            // Get the host ID once
             string hostId = await _context.Listings
                 .Where(l => l.Id == dto.ListingId)
                 .Select(l => l.HostId)
@@ -113,5 +121,8 @@ namespace Sakan.Infrastructure.Services
             return requests;
         }
     }
+            return (firstRequestId, hostId);
+        }
 
+    }
 }

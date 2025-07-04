@@ -4,7 +4,7 @@ using Sakan.Application.DTOs;
 using Sakan.Application.Interfaces;
 using System.Security.Claims;
 
-namespace Sakan.Controllers
+namespace Sakan.Controllers.Host
 {
     [Route("api/[controller]")]
     [ApiController]

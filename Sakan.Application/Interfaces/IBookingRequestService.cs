@@ -16,6 +16,7 @@ namespace Sakan.Application.Interfaces
         Task<IEnumerable<BookingRequestsDTO>> GetBookingRequestsByUserIdAsync(string userId);
 
         Task<IEnumerable<HostBookingRequestDTO>> GetBookingRequestsByHostIdAsync(string hostId);
+        Task<(int requestId, string hostId)> CreateAsync(BookingRequestsDto dto);
     }
 
 }
