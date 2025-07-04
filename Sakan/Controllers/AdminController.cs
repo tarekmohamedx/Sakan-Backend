@@ -29,14 +29,18 @@ namespace Sakan.Controllers
         public async Task<IActionResult> ApproveListing(int listingId)
         {
             var result = await _adminListingService.ApproveListingAsync(listingId);
-            return result ? Ok("Listing approved") : BadRequest("Approval failed");
+            return result
+                 ? Ok(new { message = "Listing approved" })
+      : BadRequest(new { message = "Approval failed" });        
         }
 
         [HttpPost("reject/{listingId}")]
         public async Task<IActionResult> RejectListing(int listingId)
         {
             var result = await _adminListingService.RejectListingAsync(listingId);
-            return result ? Ok("Listing rejected") : BadRequest("Rejection failed");
+            return result
+    ? Ok(new { message = "Listing rejected" })
+    : BadRequest(new { message = "Rejection failed" });
         }
     }
 }
