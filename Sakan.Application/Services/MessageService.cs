@@ -18,6 +18,51 @@ namespace Sakan.Application.Services
 
         public IMessage MessageRepo { get; }
 
+        public async Task<BookingApprovalResult> ApproveBookingAsync(string userId, int chatId, bool isHost)
+        {
+            var chat = await MessageRepo.GetChatWithListingAsync(chatId);
+            if (chat == null)
+                throw new Exception("Chat not found");
+
+            var booking = await MessageRepo.GetLatestActiveBookingAsync(chat.ListingId);
+            if (booking == null)
+                throw new Exception("No active booking request");
+
+            if (isHost)
+                booking.HostApproved = true;
+            else
+                booking.GuestApproved = true;
+
+            await MessageRepo.SaveChangesAsync();
+
+            // determine status
+            string status;
+            if (booking.HostApproved == true && booking.GuestApproved == true)
+            {
+                status = isHost ? "PendingUserBooking" : "GoToPayment";
+            }
+            else if (!booking.HostApproved.HasValue || booking.HostApproved == false)
+            {
+                status = isHost ? "Pending" : "PendingHost";
+            }
+            else if (!booking.GuestApproved.HasValue || booking.GuestApproved == false)
+            {
+                status = isHost ? "PendingGuest" : "Pending";
+            }
+            else
+            {
+                status = "Pending";
+            }
+
+            return new BookingApprovalResult
+            {
+                GuestApproved = booking.GuestApproved ?? false,
+                HostApproved = booking.HostApproved ?? false,
+                Status = status
+            };
+        }
+        
+
         public Task<Chat> CreateChatIfNotExistsAsync(string senderId, string receiverId, int listingId)
         {
             return MessageRepo.CreateChatIfNotExistsAsync(senderId, receiverId, listingId);

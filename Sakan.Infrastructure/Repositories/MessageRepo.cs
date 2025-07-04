@@ -125,5 +125,20 @@ namespace Sakan.Infrastructure.Repositories
         {
             await Context.SaveChangesAsync();
         }
+
+        public async Task<Chat?> GetChatWithListingAsync(int chatId)
+        {
+            return await Context.Chats
+            .Include(c => c.Listing)
+            .FirstOrDefaultAsync(c => c.ChatId == chatId);
+        }
+
+        public async Task<BookingRequest?> GetLatestActiveBookingAsync(int listingId)
+        {
+            return await Context.BookingRequests
+            .Where(br => br.ListingId == listingId && br.IsActive)
+            .OrderByDescending(br => br.FromDate)
+            .FirstOrDefaultAsync();
+        }
     }
 }
