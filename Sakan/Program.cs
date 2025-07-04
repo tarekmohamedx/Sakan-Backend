@@ -1,4 +1,10 @@
-using Imagekit.Sdk;
+<<<<<<< HEAD
+﻿using Microsoft.EntityFrameworkCore;
+using Sakan.Infrastructure.Services;
+using Sakan.Application.Interfaces;
+using Sakan.Infrastructure.Models;
+=======
+﻿using Imagekit.Sdk;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -20,8 +26,7 @@ using Sakan.Infrastructure.UnitOfWork;
 using System.Security.Claims;
 using System.Text;
 using Stripe;
-using ReviewService = Sakan.Application.Services.ReviewService;
-
+>>>>>>> 69fef05e930c8e7f28806bba791f383e9c2ec8c8
 
 namespace Sakan
 {
@@ -50,23 +55,27 @@ namespace Sakan
             builder.Services.AddScoped<IImageKitService, ImageKitService>();
             builder.Services.AddScoped<IListRepository, ListingRepo>();
             builder.Services.AddScoped<IListingService, ListingService>();
-            builder.Services.AddScoped<IReviewService, ReviewService>();
+            //builder.Services.AddScoped<IReviewService, ReviewService>();
             builder.Services.AddScoped<IHostBookingService, HostBookingService>();
             builder.Services.AddScoped<IHostReviewsService, HostReviewsService>();
+            builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
+            builder.Services.AddScoped<IAdminListingService, AdminListingService>();
+            //builder.Services.AddScoped<ImageKitServices>();
+
 
 
 
             builder.Services.AddScoped<IHostListingService, HostListingService>();
 
-            builder.Services.AddScoped<ImagekitClient>(provider =>
-            {
-                var configuration = provider.GetRequiredService<IConfiguration>();
-                var publicKey = configuration["ImageKit:PublicKey"];
-                var privateKey = configuration["ImageKit:PrivateKey"];
-                var urlEndpoint = configuration["ImageKit:UrlEndpoint"];
+            //builder.Services.AddScoped<ImagekitClient>(provider =>
+            //{
+            //    var configuration = provider.GetRequiredService<IConfiguration>();
+            //    var publicKey = configuration["ImageKit:PublicKey"];
+            //    var privateKey = configuration["ImageKit:PrivateKey"];
+            //    var urlEndpoint = configuration["ImageKit:UrlEndpoint"];
 
-                return new ImagekitClient(publicKey, privateKey, urlEndpoint);
-            });
+            //    return new ImagekitClient(publicKey, privateKey, urlEndpoint);
+            //});
 
 
 

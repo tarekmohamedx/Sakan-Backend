@@ -31,4 +31,18 @@ namespace Sakan.Application.DTOs
         public List<string> PhotoUrls { get; set; } = new();
     }
 
+    public class AdminHostListingDto
+    {
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public string Location { get; set; }
+        public decimal PricePerMonth { get; set; }
+        public int MaxGuests { get; set; }
+        public bool IsActive { get; set; }
+        public string PreviewImage { get; set; }
+        public bool IsApproved { get; set; }
+        public string HostName { get; set; } // ✅ Add this
+    }
+
+
 }
