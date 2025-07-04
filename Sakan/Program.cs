@@ -53,7 +53,7 @@ namespace Sakan
             builder.Services.AddScoped<IImageKitService, ImageKitService>();
             builder.Services.AddScoped<IListRepository, ListingRepo>();
             builder.Services.AddScoped<IListingService, ListingService>();
-            builder.Services.AddScoped<IReviewService, ReviewService>();
+            //builder.Services.AddScoped<IReviewService, ReviewService>();
             builder.Services.AddScoped<IHostBookingService, HostBookingService>();
             builder.Services.AddScoped<IHostReviewsService, HostReviewsService>();
             builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
