@@ -1,35 +1,46 @@
-﻿//using Microsoft.EntityFrameworkCore;
-//using Sakan.Domain.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Sakan.Application.DTOs;
+using Sakan.Application.Interfaces;
+using Sakan.Domain.Models;
+using Sakan.Infrastructure.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-//public async Task<(int requestId, string hostId)> CreateAsync(BookingRequestsDto dto)
-//{
-//    int firstRequestId = 0;
+namespace Sakan.Infrastructure.Services
+{
+    // BookingRequestService.cs
+    public class BookingRequestService : IBookingRequestService
+    {
+        private readonly sakanContext _context;
 
-//    foreach (var bedId in dto.BedIds)
-//    {
-//        var booking = new BookingRequest
-//        {
-//            GuestId = dto.GuestId,
-//            ListingId = dto.ListingId ?? 0,
-//            RoomId = dto.RoomId,
-//            BedId = bedId,
-//            FromDate = dto.FromDate,
-//            ToDate = dto.ToDate,
-//            HostApproved = false,
-//            GuestApproved = false
-//        };
+        public BookingRequestService(sakanContext context)
+        {
+            _context = context;
+        }
 
-//        _context.BookingRequests.Add(booking);
-//        await _context.SaveChangesAsync();
+        public async Task<(int requestId, string hostId)> CreateAsync(BookingRequestsDto dto)
+        {
+            int firstRequestId = 0;
 
-//        if (firstRequestId == 0)
-//            firstRequestId = booking.Id;
-//    }
+            foreach (var bedId in dto.BedIds)
+            {
+                var booking = new BookingRequest
+                {
+                    GuestId = dto.GuestId,
+                    ListingId = dto.ListingId ?? 0,
+                    RoomId = dto.RoomId,
+                    BedId = bedId,
+                    FromDate = dto.FromDate,
+                    ToDate = dto.ToDate,
+                    HostApproved = false,
+                    GuestApproved = false
+                };
 
-//    string hostId = await _context.Listings
-//        .Where(l => l.Id == dto.ListingId)
-//        .Select(l => l.HostId)
-//        .FirstOrDefaultAsync();
+                _context.BookingRequests.Add(booking);
+                await _context.SaveChangesAsync();
 
                 // Save the first inserted ID to return
                 if (firstRequestId == 0)
@@ -73,14 +84,14 @@
             return requests;
         }
 
-        public async Task<bool> UpdateBookingRequestAsync(int requestId,bool isAccepted)
+        public async Task<bool> UpdateBookingRequestAsync(int requestId, bool isAccepted)
         {
-            var bookingRequest= await _context.BookingRequests.FindAsync(requestId);
+            var bookingRequest = await _context.BookingRequests.FindAsync(requestId);
             if (bookingRequest == null) return false;
-            bookingRequest.HostApproved=isAccepted;
-            if(bookingRequest.GuestApproved==true && isAccepted)
+            bookingRequest.HostApproved = isAccepted;
+            if (bookingRequest.GuestApproved == true && isAccepted)
                 bookingRequest.IsActive = true;
-            else if(bookingRequest.GuestApproved==false && !isAccepted)
+            else if (bookingRequest.GuestApproved == false && !isAccepted)
                 bookingRequest.IsActive = false;
             _context.BookingRequests.Update(bookingRequest);
             await _context.SaveChangesAsync();
@@ -110,8 +121,5 @@
             return requests;
         }
     }
-    //        return (firstRequestId, hostId);
-    //    }
 
-    //}
 }
