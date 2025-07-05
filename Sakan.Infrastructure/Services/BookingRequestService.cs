@@ -121,7 +121,7 @@ namespace Sakan.Infrastructure.Services
                     FromDate = (DateTime)br.FromDate,
                     ToDate = (DateTime)br.ToDate,
                     IsApproved = br.HostApproved == true ? "Accepted" :
-                             br.IsActive == false ? "Rejected" :
+                             br.HostApproved == false ? "Rejected" :
                              "Pending"
 
                 })
