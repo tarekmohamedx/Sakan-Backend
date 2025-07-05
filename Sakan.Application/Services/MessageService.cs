@@ -37,15 +37,22 @@ namespace Sakan.Application.Services
 
             // determine status
             string status;
-            if (booking.HostApproved == true && booking.GuestApproved == true)
+            // ✅ 1. Reject takes priority
+            if (booking.HostApproved == false || booking.GuestApproved == false)
+            {
+                status = "Rejected";
+            }
+            // ✅ 2. Both approved
+            else if (booking.HostApproved == true && booking.GuestApproved == true)
             {
                 status = isHost ? "PendingUserBooking" : "GoToPayment";
             }
-            else if (!booking.HostApproved.HasValue || booking.HostApproved == false)
+            // ✅ 3. Pending cases
+            else if (booking.HostApproved != true)
             {
                 status = isHost ? "Pending" : "PendingHost";
             }
-            else if (!booking.GuestApproved.HasValue || booking.GuestApproved == false)
+            else if (booking.GuestApproved != true)
             {
                 status = isHost ? "PendingGuest" : "Pending";
             }
