@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Sakan.Application.DTOs;
 using Sakan.Application.Services;
 using Sakan.Domain.Models;
+using System.Security.Claims;
 
 namespace Sakan.Controllers
 {
@@ -58,6 +59,14 @@ namespace Sakan.Controllers
         {
             var chat = await _messageService.CreateChatIfNotExistsAsync(request.SenderId, request.ReceiverId, request.ListingId);
             return Ok(chat);
+        }
+
+        [HttpPost("approve")]
+        public async Task<IActionResult> ApproveBooking([FromBody] ApproveBookingRequest request)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _messageService.ApproveBookingAsync(userId, request.ChatId, request.IsHost);
+            return Ok(result);
         }
 
     }

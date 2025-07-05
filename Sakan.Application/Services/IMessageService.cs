@@ -14,5 +14,6 @@ namespace Sakan.Application.Services
         Task<IEnumerable<Message>> GetChatHistoryAsync(int chatId);
         Task<IEnumerable<UserChatSummary>> GetUserChatsAsync(string userId);
         Task<Chat> CreateChatIfNotExistsAsync(string senderId, string receiverId, int listingId);
+        Task<BookingApprovalResult> ApproveBookingAsync(string userId, int chatId, bool isHost);
     }
 }

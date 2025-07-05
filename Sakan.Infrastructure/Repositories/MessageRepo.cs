@@ -41,40 +41,53 @@ namespace Sakan.Infrastructure.Repositories
 
         public async Task<IEnumerable<UserChatSummary>> GetUserChatsAsync(string userId)
         {
-            return await Context.Chats
-           .Where(chat => Context.Messages
-               .Any(m => m.ChatId == chat.ChatId &&
-                        (m.SenderId == userId || m.ReceiverId == userId)))
-           .Select(chat => new UserChatSummary
-           {
-               ChatId = chat.ChatId,
-               ListingId = chat.ListingId,
-               ListingTitle = "Mansoura Apartmentt",
-               UserName = Context.Users
-                .Where(u =>
-                    u.Id == Context.Messages
-                        .Where(m => m.ChatId == chat.ChatId)
+            var chats = await Context.Chats
+                .Include(c => c.Listing)
+                    .ThenInclude(l => l.Host)
+                .Include(c => c.Messages)
+                .Where(c => c.Messages.Any(m => m.SenderId == userId || m.ReceiverId == userId))
+                .Select(c => new UserChatSummary
+                {
+                    ChatId = c.ChatId,
+                    ListingId = c.ListingId,
+                    ListingTitle = c.Listing.Title,
+                    HostName = c.Listing.Host.UserName,
+
+                    UserName = c.Messages
                         .OrderByDescending(m => m.Timestamp)
                         .Select(m => m.SenderId == userId ? m.ReceiverId : m.SenderId)
-                        .FirstOrDefault()
-                )
-                .Select(u => u.UserName)
-                .FirstOrDefault(),
-               LastMessage = Context.Messages
-                   .Where(m => m.ChatId == chat.ChatId)
-                   .OrderByDescending(m => m.Timestamp)
-                   .Select(m => new LastMessageInfo
-                   {
-                       Content = m.Content,
-                       Timestamp = m.Timestamp.Value,
-                       SenderID = m.SenderId,
-                       ReceiverID = m.ReceiverId
-                   })
-                   .FirstOrDefault()
-           })
-           .ToListAsync();
-        }
+                        .Select(otherId => Context.Users
+                            .Where(u => u.Id == otherId)
+                            .Select(u => u.UserName)
+                            .FirstOrDefault()
+                        )
+                        .FirstOrDefault(),
 
+                    ListingStatus = Context.BookingRequests
+    .Where(br => br.ListingId == c.ListingId)
+    .OrderByDescending(br => br.FromDate)
+    .Select(br =>
+        br.HostApproved == true && br.GuestApproved == true ? "Approved" :
+        (br.HostApproved == false || br.GuestApproved == false) ? "Rejected" :
+        "Pending"
+    )
+    .FirstOrDefault() ?? "Pending",
+
+                    LastMessage = c.Messages
+                        .OrderByDescending(m => m.Timestamp)
+                        .Select(m => new LastMessageInfo
+                        {
+                            Content = m.Content,
+                            Timestamp = m.Timestamp ?? DateTime.MinValue,
+                            SenderID = m.SenderId,
+                            ReceiverID = m.ReceiverId
+                        })
+                        .FirstOrDefault()
+                })
+                .ToListAsync();
+
+            return chats;
+        }
         public async Task<Chat> CreateChatIfNotExistsAsync(string senderId, string receiverId, int listingId)
         {
     
@@ -111,6 +124,21 @@ namespace Sakan.Infrastructure.Repositories
         public async Task SaveChangesAsync()
         {
             await Context.SaveChangesAsync();
+        }
+
+        public async Task<Chat?> GetChatWithListingAsync(int chatId)
+        {
+            return await Context.Chats
+            .Include(c => c.Listing)
+            .FirstOrDefaultAsync(c => c.ChatId == chatId);
+        }
+
+        public async Task<BookingRequest?> GetLatestActiveBookingAsync(int listingId)
+        {
+            return await Context.BookingRequests
+            .Where(br => br.ListingId == listingId)
+            .OrderByDescending(br => br.FromDate)
+            .FirstOrDefaultAsync();
         }
     }
 }

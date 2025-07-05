@@ -46,7 +46,7 @@ namespace Sakan
             builder.Services.AddControllers();
             builder.Services.AddScoped<IListingDetailsService, ListingDetailsService>();
             builder.Services.AddScoped<IRoomDetailsService, RoomDetailsService>();
-            builder.Services.AddScoped<IBookingRequestService, BookingRequestService>();
+            //builder.Services.AddScoped<IBookingRequestService, BookingRequestService>();
             builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 
 
@@ -175,8 +175,8 @@ namespace Sakan
                     {
                         policy.WithOrigins("http://localhost:4200")
                               .AllowAnyHeader()
-                              .AllowAnyMethod();
-                        //.AllowCredentials();
+                              .AllowAnyMethod()
+                              .AllowCredentials();
                     });
             });
 
