@@ -29,6 +29,8 @@ public partial class SupportTicket
 
     public DateTime? LastUpdatedAt { get; set; }
 
+    public string? GuestAccessToken { get; set; }
+
     public virtual Booking? Booking { get; set; }
 
     public virtual ICollection<TicketReply> TicketReplies { get; set; } = new List<TicketReply>();

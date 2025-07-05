@@ -51,6 +51,8 @@ public partial class Listing
 
     public virtual ICollection<ListingPhoto> ListingPhotos { get; set; } = new List<ListingPhoto>();
 
+    public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
+
     public virtual ICollection<Room> Rooms { get; set; } = new List<Room>();
 
     public virtual ICollection<Amenity> Amenities { get; set; } = new List<Amenity>();
