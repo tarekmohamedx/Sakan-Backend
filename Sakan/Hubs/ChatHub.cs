@@ -1,8 +1,8 @@
 ﻿using Sakan.Infrastructure.Models;
 using System.Text.Json;
 using Microsoft.AspNetCore.SignalR;
-using Sakan.Application.DTOs;
 using Sakan.Application.Services;
+using Sakan.Application.DTOs.User;
 
 namespace Sakan.Hubs
 {

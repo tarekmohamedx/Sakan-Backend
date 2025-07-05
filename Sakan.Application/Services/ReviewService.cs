@@ -1,5 +1,5 @@
-﻿using Sakan.Application.DTOs;
-using Sakan.Application.Interfaces;
+﻿using Sakan.Application.DTOs.User;
+using Sakan.Application.Interfaces.User;
 using Sakan.Domain.Interfaces;
 using Sakan.Domain.Models;
 using System;

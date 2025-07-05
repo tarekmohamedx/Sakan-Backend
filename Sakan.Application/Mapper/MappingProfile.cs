@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Sakan.Application.DTOs;
 using Sakan.Domain.Models;
 using AutoMapper;
+using Sakan.Application.DTOs.User;
 
 namespace Sakan.Application.Mapper
 {

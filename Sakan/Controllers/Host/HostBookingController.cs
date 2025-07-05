@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Sakan.Application.Interfaces;
-using Sakan.Domain.Interfaces;
+using Sakan.Application.Interfaces.Host;
 using Sakan.Infrastructure.Services;
 
 namespace Sakan.Controllers.Host
