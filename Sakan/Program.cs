@@ -62,6 +62,7 @@ namespace Sakan
             builder.Services.AddScoped<IAdminListingService, AdminListingService>();
             //builder.Services.AddScoped<ImageKitServices>();
             builder.Services.AddScoped<IAdminApproveListingService, AdminApproveListingService>();
+            builder.Services.AddScoped<IUserReviewService, UserReviewService>();
 
 
 

@@ -286,14 +286,14 @@ public partial class SakanContext : DbContext
                 .UsingEntity<Dictionary<string, object>>(
                     "ListingAmenity",
                     r => r.HasOne<Amenity>().WithMany()
-                        .HasForeignKey("AmenityId")
+                        .HasForeignKey("AmenitiesId")
                         .HasConstraintName("FK_ListingAmenities_Amenities"),
                     l => l.HasOne<Listing>().WithMany()
-                        .HasForeignKey("ListingId")
+                        .HasForeignKey("ListingsId")
                         .HasConstraintName("FK_ListingAmenities_Listings"),
                     j =>
                     {
-                        j.HasKey("ListingId", "AmenityId").HasName("PK__ListingA__177C11808CFF318D");
+                        j.HasKey("ListingsId", "AmenitiesId").HasName("PK__ListingA__177C11808CFF318D");
                         j.ToTable("ListingAmenities");
                     });
         });
@@ -395,6 +395,10 @@ public partial class SakanContext : DbContext
                 .HasForeignKey(d => d.BookingId)
                 .HasConstraintName("FK_Reviews_Bookings");
 
+            entity.HasOne(d => d.Listing).WithMany(p => p.Reviews)
+                .HasForeignKey(d => d.ListingId)
+                .HasConstraintName("FK_Review_Listing");
+
             entity.HasOne(d => d.ReviewedUser).WithMany(p => p.ReviewReviewedUsers)
                 .HasForeignKey(d => d.ReviewedUserId)
                 .HasConstraintName("FK__Reviews__Reviewe__3E1D39E1");
@@ -436,6 +440,7 @@ public partial class SakanContext : DbContext
 
             entity.Property(e => e.Category).HasMaxLength(50);
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getutcdate())");
+            entity.Property(e => e.GuestAccessToken).HasMaxLength(100);
             entity.Property(e => e.GuestEmail).HasMaxLength(200);
             entity.Property(e => e.GuestName).HasMaxLength(200);
             entity.Property(e => e.Priority)

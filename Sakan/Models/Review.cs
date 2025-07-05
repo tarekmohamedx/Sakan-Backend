@@ -21,7 +21,11 @@ public partial class Review
 
     public bool IsActive { get; set; }
 
+    public int? ListingId { get; set; }
+
     public virtual Booking Booking { get; set; } = null!;
+
+    public virtual Listing? Listing { get; set; }
 
     public virtual AspNetUser? ReviewedUser { get; set; }
 
