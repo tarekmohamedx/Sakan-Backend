@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Sakan.Application.DTOs;
+using Sakan.Application.DTOs.Admin;
+using Sakan.Application.DTOs.Host;
 using Sakan.Application.Interfaces.Admin;
 using Sakan.Infrastructure.Models;
 using System;

@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Sakan.Application.Interfaces;
 using Sakan.Application.Mapper;
 using Sakan.Application.Services;
 using Sakan.Domain.Interfaces;
@@ -16,7 +15,6 @@ using Sakan.Domain.Models;
 using Sakan.Hubs;
 using Sakan.Infrastructure.Models;
 using Sakan.Infrastructure.Repositories;
-using Sakan.Infrastructure.Services;
 using Sakan.Infrastructure.UnitOfWork;
 using System.Security.Claims;
 using System.Text;
@@ -25,6 +23,10 @@ using ReviewService = Sakan.Application.Services.ReviewService;
 using Sakan.Application.Services.Admin;
 using Sakan.Application.Interfaces.Admin;
 using Sakan.Infrastructure.Services.Admin;
+using Sakan.Infrastructure.Services.Host;
+using Sakan.Infrastructure.Services.User;
+using Sakan.Application.Interfaces.Host;
+using Sakan.Application.Interfaces.User;
 
 namespace Sakan
 {
@@ -46,7 +48,7 @@ namespace Sakan
             builder.Services.AddControllers();
             builder.Services.AddScoped<IListingDetailsService, ListingDetailsService>();
             builder.Services.AddScoped<IRoomDetailsService, RoomDetailsService>();
-            //builder.Services.AddScoped<IBookingRequestService, BookingRequestService>();
+            builder.Services.AddScoped<IBookingRequestService, BookingRequestService>();
             builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 
 

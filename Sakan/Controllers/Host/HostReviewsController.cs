@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Sakan.Application.DTOs;
-using Sakan.Application.Interfaces;
+using Sakan.Application.DTOs.Host;
+using Sakan.Application.Interfaces.Host;
 using Sakan.Domain.Interfaces;
 using Stripe;
 using System.Security.Claims;

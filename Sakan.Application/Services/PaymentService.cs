@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
-using Sakan.Application.Interfaces;
+using Sakan.Application.Interfaces.User;
 using Sakan.Domain.Interfaces;
 using Sakan.Domain.IUnitOfWork;
 using Sakan.Domain.Models;

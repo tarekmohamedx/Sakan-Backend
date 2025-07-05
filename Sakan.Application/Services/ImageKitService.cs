@@ -1,7 +1,7 @@
 ﻿using Imagekit.Sdk;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using Sakan.Application.Interfaces;
+using Sakan.Application.Interfaces.User;
 using System;
 using System.Collections.Generic;
 using System.Linq;

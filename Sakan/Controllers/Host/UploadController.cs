@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Sakan.Application.DTOs;
-using Sakan.Application.Interfaces;
+using Sakan.Application.Interfaces.User;
 using Sakan.Application.Services;
 using Sakan.Infrastructure.Services;
 using System.Net.Http.Headers;
