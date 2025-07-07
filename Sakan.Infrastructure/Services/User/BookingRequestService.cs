@@ -144,6 +144,25 @@ namespace Sakan.Infrastructure.Services.User
 
             return requests;
         }
-    }
 
+
+        public async Task<ChatWithHostDTO?> GetLatestBookingRequestAsync(int listingId, string guestId)
+        {
+            var latestRequest = await _context.BookingRequests
+                .Where(br => br.ListingId == listingId && br.GuestId == guestId)
+                .OrderByDescending(br => br.FromDate)
+                .Select(br => new ChatWithHostDTO
+                {
+                    ListingId = br.ListingId,
+                    ListingTitle = br.Listing.Title ?? "Unknown",
+                    HostId = br.Listing.HostId,
+                    HostName = br.Listing.Host.UserName ?? "Unknown",
+                    GuestId = br.GuestId,
+                    GuestName = br.Guest.UserName ?? "Unknown"
+                })
+                .FirstOrDefaultAsync();
+
+            return latestRequest;
+        }
+    }
 }
