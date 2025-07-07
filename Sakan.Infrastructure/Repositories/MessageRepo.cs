@@ -90,23 +90,15 @@ namespace Sakan.Infrastructure.Repositories
         }
         public async Task<Chat> CreateChatIfNotExistsAsync(string senderId, string receiverId, int listingId)
         {
-    
             var existingChat = await Context.Chats
-                .FirstOrDefaultAsync(c => c.ListingId == listingId &&
-                    Context.Messages.Any(m =>
-                        m.ChatId == c.ChatId &&
-                        ((m.SenderId == senderId && m.ReceiverId == receiverId) ||
-                         (m.SenderId == receiverId && m.ReceiverId == senderId)))
-                );
+                .Where(c => c.ListingId == listingId)
+                .Where(c => c.Messages.Any(m =>
+                    (m.SenderId == senderId && m.ReceiverId == receiverId) ||
+                    (m.SenderId == receiverId && m.ReceiverId == senderId)))
+                .FirstOrDefaultAsync();
 
             if (existingChat != null)
                 return existingChat;
-
-            var possibleChat = await Context.Chats
-                .FirstOrDefaultAsync(c => c.ListingId == listingId);
-
-            if (possibleChat != null)
-                return possibleChat;
 
             var newChat = new Chat
             {

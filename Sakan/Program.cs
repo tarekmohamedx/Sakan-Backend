@@ -262,7 +262,7 @@ namespace Sakan
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.MapHub<ChatHub>("/chat");
+            app.MapHub<ChatHub>("/ChatHub");
             app.MapControllers();
 
             //app.MapGet("/host-rating", async ([FromQuery] string userId, HostDashboardRepo repo) =>
