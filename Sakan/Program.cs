@@ -69,6 +69,8 @@ namespace Sakan
             builder.Services.AddScoped<IUserReviewService, UserReviewService>();
 
             builder.Services.Configure<OpenAIOptions>(builder.Configuration.GetSection("OpenAI"));
+            builder.Services.AddScoped<IAdminHostsService, AdminHostsApproveService>();
+
 
 
 
