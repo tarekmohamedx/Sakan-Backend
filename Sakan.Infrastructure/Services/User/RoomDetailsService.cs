@@ -17,7 +17,8 @@ public class RoomDetailsService : IRoomDetailsService
     {
         var room = await _context.Rooms
             .Include(r => r.RoomPhotos)
-            .Include(r => r.Beds).ThenInclude(b => b.BedPhotos)
+            .Include(r => r.Beds)
+                .ThenInclude(b => b.BedPhotos)
             .Include(r => r.Listing)
             .FirstOrDefaultAsync(r => r.Id == roomId);
 
@@ -31,6 +32,7 @@ public class RoomDetailsService : IRoomDetailsService
             PricePerNight = room.PricePerNight,
             IsBookableAsWhole = room.IsBookableAsWhole,
             Photos = room.RoomPhotos.Select(p => p.PhotoUrl).ToList(),
+
             Beds = room.Beds.Select(b => new BedDto
             {
                 Id = b.Id,
@@ -40,6 +42,7 @@ public class RoomDetailsService : IRoomDetailsService
                 IsAvailable = b.IsAvailable,
                 BedPhotos = b.BedPhotos.Select(p => p.PhotoUrl).ToList()
             }).ToList(),
+
             Listing = new ListingLocationDto
             {
                 Latitude = room.Listing.Latitude ?? 0,
@@ -47,6 +50,7 @@ public class RoomDetailsService : IRoomDetailsService
             }
         };
     }
+
 
     // for host page 
     public async Task<(List<RoomDetailsDto> Rooms, int TotalCount)> GetRoomsByListingIdAsync(int listingId, string hostId, int page, int pageSize, string? search)
