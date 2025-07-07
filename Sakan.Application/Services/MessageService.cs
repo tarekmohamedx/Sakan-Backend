@@ -24,42 +24,41 @@ namespace Sakan.Application.Services
             if (chat == null)
                 throw new Exception("Chat not found");
 
-            var booking = await MessageRepo.GetLatestActiveBookingAsync(chat.ListingId);
+            var booking = await MessageRepo.GetLatestActiveBookingAsync(chat.ListingId, userId);
             if (booking == null)
                 throw new Exception("No active booking request");
 
-            if (isHost)
+            // Don't allow changing a previous rejection
+            if (isHost && booking.HostApproved == false)
+                throw new Exception("Host already rejected this booking");
+            if (!isHost && booking.GuestApproved == false)
+                throw new Exception("Guest already rejected this booking");
+
+            // Update approval only if not already set
+            if (isHost && booking.HostApproved == null)
                 booking.HostApproved = true;
-            else
+            else if (!isHost && booking.GuestApproved == null)
                 booking.GuestApproved = true;
 
             await MessageRepo.SaveChangesAsync();
 
-            // determine status
+            // Determine status
             string status;
-            // ✅ 1. Reject takes priority
-            if (booking.HostApproved == false || booking.GuestApproved == false)
-            {
-                status = "Rejected";
-            }
-            // ✅ 2. Both approved
-            else if (booking.HostApproved == true && booking.GuestApproved == true)
-            {
-                status = isHost ? "PendingUserBooking" : "GoToPayment";
-            }
-            // ✅ 3. Pending cases
-            else if (booking.HostApproved != true)
-            {
-                status = isHost ? "Pending" : "PendingHost";
-            }
-            else if (booking.GuestApproved != true)
-            {
-                status = isHost ? "PendingGuest" : "Pending";
-            }
-            else
-            {
+
+            if (booking.HostApproved == null && booking.GuestApproved == null)
                 status = "Pending";
-            }
+            else if (booking.HostApproved == false)
+                status = "RejectedByHost";
+            else if (booking.GuestApproved == false)
+                status = "RejectedByGuest";
+            else if (booking.HostApproved == true && booking.GuestApproved == true)
+                status = isHost ? "PendingUserBooking" : "GoToPayment";
+            else if (booking.HostApproved == true)
+                status = "ApprovedByHost";
+            else if (booking.GuestApproved == true)
+                status = "ApprovedByGuest";
+            else
+                status = "Pending";
 
             return new BookingApprovalResult
             {
@@ -68,7 +67,64 @@ namespace Sakan.Application.Services
                 Status = status
             };
         }
-        
+
+
+        public async Task<BookingApprovalResult> GetBookingApprovalStatusAsync(string userId, int chatId, bool isHost)
+        {
+            var chat = await MessageRepo.GetChatWithListingAsync(chatId);
+            if (chat == null)
+                throw new Exception("Chat not found");
+
+            // لازم تبعت الـ userId هنا عشان تجيب الحجز الصح
+            var booking = await MessageRepo.GetLatestActiveBookingAsync(chat.ListingId, userId);
+
+            if (booking == null)
+                throw new Exception("No active booking request");
+
+            System.Diagnostics.Debug.WriteLine($"BookingRequestId = {booking?.Id}, GuestApproved = {booking?.GuestApproved}, HostApproved = {booking?.HostApproved}, IsActive = {booking?.IsActive}");
+
+            // Determine status
+            string status;
+            bool? host = booking.HostApproved;
+            bool? guest = booking.GuestApproved;
+
+            if (host == null && guest == null)
+            {
+                status = "Pending";
+            }
+            else if (host == true && guest == true)
+            {
+                status = "Approved";
+            }
+            else if (host == false)
+            {
+                status = "RejectedByHost";
+            }
+            else if (guest == false)
+            {
+                status = "RejectedByGuest";
+            }
+            else if (host == true)
+            {
+                status = "ApprovedByHost";
+            }
+            else if (guest == true)
+            {
+                status = "ApprovedByGuest";
+            }
+            else
+            {
+                status = "Pending";
+            }
+
+            return new BookingApprovalResult
+            {
+                GuestApproved = guest ?? false,
+                HostApproved = host ?? false,
+                Status = status
+            };
+        }
+
 
         public Task<Chat> CreateChatIfNotExistsAsync(string senderId, string receiverId, int listingId)
         {

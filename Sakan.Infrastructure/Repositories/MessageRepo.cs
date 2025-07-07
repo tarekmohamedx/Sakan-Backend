@@ -127,10 +127,19 @@ namespace Sakan.Infrastructure.Repositories
 
         public async Task<BookingRequest?> GetLatestActiveBookingAsync(int listingId)
         {
+
             return await Context.BookingRequests
             .Where(br => br.ListingId == listingId)
             .OrderByDescending(br => br.FromDate)
             .FirstOrDefaultAsync();
+        }
+
+        public async Task<BookingRequest?> GetLatestActiveBookingAsync(int listingId, string guestId)
+        {
+            return await Context.BookingRequests
+                .Where(br => br.ListingId == listingId && br.GuestId == guestId && br.IsActive)
+                .OrderByDescending(br => br.FromDate)
+                .FirstOrDefaultAsync();
         }
     }
 }

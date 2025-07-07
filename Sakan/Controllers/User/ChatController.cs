@@ -68,6 +68,13 @@ namespace Sakan.Controllers.User
             var result = await _messageService.ApproveBookingAsync(userId, request.ChatId, request.IsHost);
             return Ok(result);
         }
+        [HttpGet("approval-status")]
+        public async Task<IActionResult> GetApprovalStatus(int chatId, string userId, bool isHost)
+        {
+            //var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _messageService.GetBookingApprovalStatusAsync(userId, chatId, isHost);
+            return Ok(result);
 
+        }
     }
-}
+   }
