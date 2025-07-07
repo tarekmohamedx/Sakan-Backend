@@ -138,7 +138,7 @@ namespace Sakan.Infrastructure.Repositories
 
         public async Task<BookingRequest?> GetLatestActiveBookingAsync(int listingId, string guestId)
         {
-            System.Diagnostics.Debug.WriteLine("listing id: " + listingId + " guestid: " + guestId);
+            System.Diagnostics.Debug.WriteLine("From GetLatestActiveBookingAsync Repo listing id: " + listingId + " guestid: " + guestId);
              return await Context.BookingRequests
                 .Where(br => br.ListingId == listingId && br.GuestId == guestId && br.IsActive)
                 .OrderByDescending(br => br.FromDate)

@@ -39,7 +39,7 @@ namespace Sakan.Application.Services
                 guestId = userId;
             }
 
-            var booking = await MessageRepo.GetLatestActiveBookingAsync(chat.ListingId, userId);
+            var booking = await MessageRepo.GetLatestActiveBookingAsync(chat.ListingId, guestId);
             if (booking == null)
                 throw new Exception("No active booking request");
 
@@ -64,7 +64,9 @@ namespace Sakan.Application.Services
             {
                 GuestApproved = booking.GuestApproved ?? false,
                 HostApproved = booking.HostApproved ?? false,
-                Status = status
+                Status = status,
+                ListingTitle = chat.Listing?.Title ?? "Listing",
+                ApproverName = isHost ? chat.Listing?.Host?.UserName : booking.Guest?.UserName ?? "User"
             };
         }
 
@@ -153,6 +155,11 @@ namespace Sakan.Application.Services
         public async Task<Chat> GetChatWithListingAsync(int chatId)
         {
             return await MessageRepo.GetChatWithListingAsync(chatId);
+        }
+
+        public async Task<BookingRequest?> GetLatestActiveBookingAsync(int listingId, string guestId)
+        {
+            return await MessageRepo.GetLatestActiveBookingAsync(listingId, guestId);
         }
     }
 }

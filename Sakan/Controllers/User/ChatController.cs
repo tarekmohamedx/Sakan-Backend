@@ -93,38 +93,37 @@ namespace Sakan.Controllers.User
             // 1. Call core logic
             var result = await _messageService.ApproveBookingAsync("6a2f6c64-510c-43a8-a900-ce8ecbb2e889", request.ChatId, request.IsHost);
 
-            // 2. Get chat + listing + sender
+            // 2. Get chat + listing
             var chat = await _messageService.GetChatWithListingAsync(request.ChatId);
 
             if (chat?.Listing == null)
                 return BadRequest("Listing not found");
 
             var listingTitle = chat.Listing.Title ?? "Listing";
-
-            // 3. Identify host and guest
             var hostId = chat.Listing.HostId;
-            var guestId = chat.Messages.FirstOrDefault()?.SenderId;
 
-            if (guestId == null)
+            // 3. Get booking to extract GuestId
+            var booking = await _messageService.GetLatestActiveBookingAsync(chat.ListingId, userId);
+            if (booking == null || string.IsNullOrEmpty(booking.GuestId))
                 return BadRequest("Guest not found");
+
+            var guestId = booking.GuestId;
 
             var receiverId = request.IsHost ? guestId : hostId;
 
-            // 4. Sender name
-            //var userName = await UserManager.GetUserNameAsync(User);
-
-            // 5. Send SignalR
+            // 4. Send SignalR
             await _hubContext.Clients.User(receiverId).SendAsync("ReceiveBookingStatusUpdate", new
             {
                 GuestApproved = result.GuestApproved,
                 HostApproved = result.HostApproved,
                 Status = result.Status,
                 ListingTitle = listingTitle,
-                UserName = "Tarek Mohamed"
+                UserName = result.ApproverName // Already calculated في service
             });
 
             return Ok(result);
         }
+
 
     }
 }
