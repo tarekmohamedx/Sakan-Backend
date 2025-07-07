@@ -127,14 +127,14 @@ namespace Sakan.Infrastructure.Repositories
             .ThenInclude(m => m.Sender)
         .FirstOrDefaultAsync(c => c.ChatId == chatId);
 }
-        //public async Task<BookingRequest?> GetLatestActiveBookingAsync(int listingId)
-        //{
-        //    return await Context.BookingRequests
-        //        .Include(br => br.Guest)
-        //        .Where(br => br.ListingId == listingId)
-        //        .OrderByDescending(br => br.FromDate)
-        //        .FirstOrDefaultAsync();
-        //}
+        public async Task<BookingRequest?> GetLatestActiveBookingAsync(int listingId)
+        {
+            return await Context.BookingRequests
+                .Include(br => br.Guest)
+                .Where(br => br.ListingId == listingId)
+                .OrderByDescending(br => br.FromDate)
+                .FirstOrDefaultAsync();
+        }
 
         public async Task<BookingRequest?> GetLatestActiveBookingAsync(int listingId, string guestId)
         {

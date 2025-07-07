@@ -23,7 +23,6 @@ namespace Sakan.Application.Services
         public async Task<BookingApprovalResult> ApproveBookingAsync(string userId, int chatId, bool isHost)
         {
             var chat = await MessageRepo.GetChatWithListingAsync(chatId);
-            System.Diagnostics.Debug.WriteLine($"ListingId: {chat?.ListingId}, GuestId: {userId}");
 
             if (chat == null)
                 throw new Exception("Chat not found");
@@ -32,7 +31,10 @@ namespace Sakan.Application.Services
 
             if (isHost)
             {
-                guestId = await MessageRepo.GetGuestIdByChatId(chatId);
+                //guestId = await MessageRepo.GetGuestIdByChatId(chatId);
+                var latestBooking = await MessageRepo.GetLatestActiveBookingAsync(chat.ListingId);
+                guestId = latestBooking?.GuestId;
+
             }
             else
             {
@@ -40,6 +42,7 @@ namespace Sakan.Application.Services
             }
 
             var booking = await MessageRepo.GetLatestActiveBookingAsync(chat.ListingId, guestId);
+
             if (booking == null)
                 throw new Exception("No active booking request");
 
@@ -160,6 +163,11 @@ namespace Sakan.Application.Services
         public async Task<BookingRequest?> GetLatestActiveBookingAsync(int listingId, string guestId)
         {
             return await MessageRepo.GetLatestActiveBookingAsync(listingId, guestId);
+        }
+
+        public async Task<BookingRequest?> GetLatestActiveBookingAsync(int listingId)
+        {
+            return await MessageRepo.GetLatestActiveBookingAsync(listingId);
         }
     }
 }

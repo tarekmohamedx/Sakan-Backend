@@ -18,6 +18,7 @@ namespace Sakan.Application.Services
         Task<BookingApprovalResult> GetBookingApprovalStatusAsync(string userId, int chatId, bool isHost);
         Task<Chat> GetChatWithListingAsync(int chatId);
         Task<BookingRequest?> GetLatestActiveBookingAsync(int listingId, string guestId);
+        Task<BookingRequest?> GetLatestActiveBookingAsync(int listingId);
 
     }
 }
