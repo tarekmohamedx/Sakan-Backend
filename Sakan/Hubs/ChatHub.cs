@@ -42,5 +42,11 @@ namespace Sakan.Hubs
             
         }
 
+        public async Task NotifyBookingStatusChanged(string receiverId, BookingApprovalResult result)
+        {
+            await Clients.User(receiverId).SendAsync("ReceiveBookingStatusUpdate", result);
+        }
+
+
     }
 }

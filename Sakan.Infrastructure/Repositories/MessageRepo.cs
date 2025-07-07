@@ -118,27 +118,39 @@ namespace Sakan.Infrastructure.Repositories
             await Context.SaveChangesAsync();
         }
 
-        public async Task<Chat?> GetChatWithListingAsync(int chatId)
-        {
-            return await Context.Chats
-            .Include(c => c.Listing)
-            .FirstOrDefaultAsync(c => c.ChatId == chatId);
-        }
-
-        public async Task<BookingRequest?> GetLatestActiveBookingAsync(int listingId)
-        {
-
-            return await Context.BookingRequests
-            .Where(br => br.ListingId == listingId)
-            .OrderByDescending(br => br.FromDate)
-            .FirstOrDefaultAsync();
-        }
+     public async Task<Chat?> GetChatWithListingAsync(int chatId)
+{
+    return await Context.Chats
+        .Include(c => c.Listing)
+            .ThenInclude(l => l.Host)
+        .Include(c => c.Messages)
+            .ThenInclude(m => m.Sender)
+        .FirstOrDefaultAsync(c => c.ChatId == chatId);
+}
+        //public async Task<BookingRequest?> GetLatestActiveBookingAsync(int listingId)
+        //{
+        //    return await Context.BookingRequests
+        //        .Include(br => br.Guest)
+        //        .Where(br => br.ListingId == listingId)
+        //        .OrderByDescending(br => br.FromDate)
+        //        .FirstOrDefaultAsync();
+        //}
 
         public async Task<BookingRequest?> GetLatestActiveBookingAsync(int listingId, string guestId)
         {
-            return await Context.BookingRequests
+            System.Diagnostics.Debug.WriteLine("listing id: " + listingId + " guestid: " + guestId);
+             return await Context.BookingRequests
                 .Where(br => br.ListingId == listingId && br.GuestId == guestId && br.IsActive)
                 .OrderByDescending(br => br.FromDate)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<string?> GetGuestIdByChatId(int chatId)
+        {
+            return await Context.Messages
+                .Where(m => m.ChatId == chatId && m.ReceiverId != null)
+                .OrderBy(m => m.Timestamp)
+                .Select(m => m.ReceiverId)
                 .FirstOrDefaultAsync();
         }
     }
