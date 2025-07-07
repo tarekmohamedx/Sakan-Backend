@@ -88,7 +88,8 @@ namespace Sakan.Controllers.User
         [HttpPost("approve")]
         public async Task<IActionResult> ApproveBooking([FromBody] ApproveBookingRequest request)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            //var userId = request.UserId ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = "6a2f6c64-510c-43a8-a900-ce8ecbb2e889";
 
             // 1. Call core logic
             var result = await _messageService.ApproveBookingAsync("6a2f6c64-510c-43a8-a900-ce8ecbb2e889", request.ChatId, request.IsHost);
