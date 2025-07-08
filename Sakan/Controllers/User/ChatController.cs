@@ -139,7 +139,7 @@ namespace Sakan.Controllers.User
             var hostId = listing.HostId;
 
             // 2. Call approval logic
-            var result = await _messageService.ApproveBookingByIdAsync(request.BookingId, userId, request.IsHost);
+            var result = await _messageService.ApproveBookingByIdAsync(request.BookingId, guestId, request.IsHost);
 
             var receiverId = request.IsHost ? guestId : hostId;
 

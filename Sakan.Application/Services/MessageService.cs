@@ -203,7 +203,8 @@ namespace Sakan.Application.Services
         public async Task<BookingApprovalResult> ApproveBookingByIdAsync(int bookingId, string approverId, bool isHost)
         {
             var booking = await MessageRepo.GetBookingByIdAsync(bookingId);
-            if (booking == null || !booking.IsActive)
+           // if (booking == null || !booking.IsActive)
+            if (booking == null)
                 throw new Exception("Booking not found or not active");
 
             if (isHost)
