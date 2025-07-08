@@ -9,9 +9,9 @@ using System.Text.Json;
 
 namespace Sakan.Hubs
 {
-    public class ChatHub:Hub
+    public class ChatHub : Hub
     {
-        public ChatHub( IMessageService messageService, IBookingRequestService bookingRequestService)
+        public ChatHub(IMessageService messageService, IBookingRequestService bookingRequestService)
         {
             MessageService = messageService;
             BookingRequestService = bookingRequestService;
@@ -46,6 +46,7 @@ namespace Sakan.Hubs
         {
             await Clients.User(receiverId).SendAsync("ReceiveBookingStatusUpdate", result);
         }
+
 
 
     }
