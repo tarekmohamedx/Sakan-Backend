@@ -77,13 +77,12 @@ namespace Sakan.Controllers.User
         }
 
         [HttpGet("approval-status")]
-        public async Task<IActionResult> GetApprovalStatus(int chatId, string userId, bool isHost)
+        public async Task<IActionResult> GetApprovalStatus(int bookingId, string userId, bool isHost)
         {
-            //var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _messageService.GetBookingApprovalStatusAsync(userId, chatId, isHost);
+            var result = await _messageService.GetBookingApprovalStatusAsync(userId, bookingId, isHost);
             return Ok(result);
-
         }
+
 
         //[HttpPost("approve")]
         //public async Task<IActionResult> ApproveBooking([FromBody] ApproveBookingRequest request)
@@ -157,10 +156,10 @@ namespace Sakan.Controllers.User
             return Ok(result);
         }
         [HttpGet("get-booking-id")]
-        public async Task<IActionResult> GetBookingIdFromChat(int chatId)
+        public async Task<IActionResult> GetBookingIdFromChat(int chatId, string guestId)
         {
             var chat = await _messageService.GetChatWithListingAsync(chatId);
-            var guestId = await _messageService.GetGuestIdFromChat(chatId);
+
             var booking = await _messageService.GetLatestActiveBookingAsync(chat.ListingId, guestId);
 
             if (booking == null)
@@ -168,7 +167,6 @@ namespace Sakan.Controllers.User
 
             return Ok(booking.Id);
         }
-
 
 
     }
