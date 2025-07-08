@@ -231,5 +231,10 @@ namespace Sakan.Application.Services
         {
             return await MessageRepo.GetBookingByIdAsync(bookingId);
         }
+
+        public async Task<string?> GetGuestIdFromChat(int chatId)
+        {
+            return await MessageRepo.GetGuestIdByChatId(chatId);
+        }
     }
 }
