@@ -138,5 +138,44 @@ namespace Sakan.Infrastructure.Repositories
                 .Take(count)
                 .ToListAsync();
         }
+
+        public async Task<(List<Listing> Items, int TotalCount)> GetAllNotApprovedListingAsync(int pageNumber, int pageSize)
+        {
+            var query = _context.Listings
+                .Include(l => l.ListingPhotos)
+                .Include(l => l.Host)
+                .Where(l => l.IsApproved == false)
+                .AsNoTracking();
+
+            var totalCount = await query.CountAsync();
+
+            var items = await query
+                .OrderByDescending(l => l.CreatedAt)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (items, totalCount);
+        }
+        public async Task<bool> ApproveExistingListing(int listingId)
+        {
+            var listing = await _context.Listings.FindAsync(listingId);
+            if (listing == null) throw new Exception("Listing not found");
+
+            listing.IsApproved = true;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> RejectExistingListing(int listingId)
+        {
+            var listing = await _context.Listings.FindAsync(listingId);
+            if (listing == null) throw new Exception("Listing not found");
+
+            listing.IsApproved = false;
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }

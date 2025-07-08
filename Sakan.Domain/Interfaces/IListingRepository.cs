@@ -18,5 +18,9 @@ namespace Sakan.Domain.Interfaces
         Task<List<Listing>> GetHighestRatedListingsAsync(int count);
         Task<List<Listing>> GetNewestListingsAsync(int count);
         Task<List<Listing>> GetMostAffordableListingsAsync(int count);
+        Task<(List<Listing> Items, int TotalCount)> GetAllNotApprovedListingAsync(int pageNumber, int pageSize);
+
+        Task<bool> ApproveExistingListing(int listingId);
+        Task<bool> RejectExistingListing(int listingId);
     }
 }
