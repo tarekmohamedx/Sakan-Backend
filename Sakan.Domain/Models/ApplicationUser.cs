@@ -24,7 +24,7 @@ namespace Sakan.Domain.Models
         public virtual ICollection<Booking> Bookings { get; set; }
         public virtual ICollection<Bed> Beds { get; set; }
 
-        public string HostVerificationStatus { get; set; } = "pending";
+        public string? HostVerificationStatus { get; set; }
 
 
 

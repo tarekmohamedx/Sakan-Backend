@@ -33,6 +33,15 @@ namespace Sakan.Controllers
             return Ok();
         }
 
+        [HttpGet("host-status/{userId}")]
+        public async Task<IActionResult> GetHostStatus(string userId)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null) return NotFound();
+            return Ok(new { status = user.HostVerificationStatus });
+        }
+
+
     }
 
     public class BecomeHostRequest
