@@ -225,6 +225,7 @@ namespace Sakan
             builder.Services.AddScoped<IFavoriteRepository, FavoriteRepository>();
             builder.Services.AddScoped<IFavoriteService, FavoriteService>();
 
+
             builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
 
