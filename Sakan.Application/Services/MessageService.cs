@@ -23,50 +23,80 @@ namespace Sakan.Application.Services
         public async Task<BookingApprovalResult> ApproveBookingAsync(string userId, int chatId, bool isHost)
         {
             var chat = await MessageRepo.GetChatWithListingAsync(chatId);
-
             if (chat == null)
                 throw new Exception("Chat not found");
 
-            string guestId;
+            string? guestId;
 
+            // لو المستخدم Host، نجيب الـ guest من أحدث booking
             if (isHost)
             {
-                //guestId = await MessageRepo.GetGuestIdByChatId(chatId);
                 var latestBooking = await MessageRepo.GetLatestActiveBookingAsync(chat.ListingId);
-                guestId = latestBooking?.GuestId;
+                if (latestBooking == null)
+                    throw new Exception("No booking found");
 
+                guestId = latestBooking.GuestId;
+                if (string.IsNullOrEmpty(guestId))
+                    throw new Exception("Guest ID not found in booking");
+
+                // نستخدم الـ latestBooking بدل ما ننده نفس الـ method تاني
+                var booking = latestBooking;
+
+                if (booking.HostApproved == false)
+                    throw new Exception("Host already rejected this booking");
+                if (booking.GuestApproved == false)
+                    throw new Exception("Guest already rejected this booking");
+
+                if (booking.HostApproved == null)
+                    booking.HostApproved = true;
+
+                await MessageRepo.SaveChangesAsync();
+
+                return GenerateResult(booking, chat, isHost);
             }
-            else
-            {
-                guestId = userId;
-            }
 
-            var booking = await MessageRepo.GetLatestActiveBookingAsync(chat.ListingId, guestId);
+            // لو المستخدم هو الضيف
+            guestId = userId;
+            var bookingForGuest = await MessageRepo.GetLatestActiveBookingAsync(chat.ListingId, guestId);
 
-            if (booking == null)
+            if (bookingForGuest == null)
                 throw new Exception("No active booking request");
 
-            // Prevent changing a previous rejection
-            if (isHost && booking.HostApproved == false)
-                throw new Exception("Host already rejected this booking");
-            if (!isHost && booking.GuestApproved == false)
-                throw new Exception("Guest already rejected this booking");
+            //if (bookingForGuest.HostApproved == false)
+            //    throw new Exception("Host already rejected this booking");
+            //if (bookingForGuest.GuestApproved == false)
+            //    throw new Exception("Guest already rejected this booking");
 
-            // Update approval only if not already set
-            if (isHost && booking.HostApproved == null)
-                booking.HostApproved = true;
-            else if (!isHost && booking.GuestApproved == null)
-                booking.GuestApproved = true;
+            if (bookingForGuest.GuestApproved == null)
+                bookingForGuest.GuestApproved = true;
 
             await MessageRepo.SaveChangesAsync();
 
-            // Get status
-            string status = GetBookingStatus(booking.HostApproved, booking.GuestApproved, isHost, out _);
+            return GenerateResult(bookingForGuest, chat, isHost);
+        }
+        private BookingApprovalResult GenerateResult(BookingRequest booking, Chat chat, bool isHost)
+        {
+            string status;
+            var host = booking.HostApproved;
+            var guest = booking.GuestApproved;
+
+            if (host == true && guest == true)
+                status = isHost ? "PendingUserBooking" : "GoToPayment";
+            else if (host == false)
+                status = "RejectedByHost";
+            else if (guest == false)
+                status = "RejectedByGuest";
+            else if (host == true)
+                status = "ApprovedByHost";
+            else if (guest == true)
+                status = "ApprovedByGuest";
+            else
+                status = "Pending";
 
             return new BookingApprovalResult
             {
-                GuestApproved = booking.GuestApproved ?? false,
-                HostApproved = booking.HostApproved ?? false,
+                GuestApproved = guest ?? false,
+                HostApproved = host ?? false,
                 Status = status,
                 ListingTitle = chat.Listing?.Title ?? "Listing",
                 ApproverName = isHost ? chat.Listing?.Host?.UserName : booking.Guest?.UserName ?? "User"
@@ -168,6 +198,38 @@ namespace Sakan.Application.Services
         public async Task<BookingRequest?> GetLatestActiveBookingAsync(int listingId)
         {
             return await MessageRepo.GetLatestActiveBookingAsync(listingId);
+        }
+
+        public async Task<BookingApprovalResult> ApproveBookingByIdAsync(int bookingId, string approverId, bool isHost)
+        {
+            var booking = await MessageRepo.GetBookingByIdAsync(bookingId);
+            if (booking == null || !booking.IsActive)
+                throw new Exception("Booking not found or not active");
+
+            if (isHost)
+                booking.HostApproved = true;
+            else
+                booking.GuestApproved = true;
+
+            await MessageRepo.SaveChangesAsync();
+
+            var status = booking.HostApproved == true && booking.GuestApproved == true
+                ? "GoToPayment"
+                : isHost ? "PendingGuest" : "PendingHost";
+
+            return new BookingApprovalResult
+            {
+                GuestApproved = booking.GuestApproved ?? false,
+                HostApproved = booking.HostApproved ?? false,
+                Status = status,
+                ListingTitle = booking.Listing?.Title ?? "Listing",
+                ApproverName = isHost ? booking.Listing?.Host?.UserName : booking.Guest?.UserName ?? "User"
+            };
+        }
+
+        public async Task<BookingRequest?> GetBookingByIdAsync(int bookingId)
+        {
+            return await MessageRepo.GetBookingByIdAsync(bookingId);
         }
     }
 }

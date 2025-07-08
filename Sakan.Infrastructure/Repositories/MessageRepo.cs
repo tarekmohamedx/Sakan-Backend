@@ -153,5 +153,18 @@ namespace Sakan.Infrastructure.Repositories
                 .Select(m => m.ReceiverId)
                 .FirstOrDefaultAsync();
         }
+        public async Task<BookingRequest?> GetBookingByIdAsync(int bookingId)
+        {
+            return await Context.BookingRequests
+                .Include(b => b.Guest)
+                .Include(b => b.Listing)
+                    .ThenInclude(l => l.Host)
+                .Include(b => b.Listing)
+                    .ThenInclude(l => l.Chats)
+                .FirstOrDefaultAsync(b => b.Id == bookingId);
+        }
+
+
+
     }
 }

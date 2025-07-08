@@ -19,6 +19,7 @@ namespace Sakan.Domain.Interfaces
         Task<BookingRequest?> GetLatestActiveBookingAsync(int listingId);
         Task<BookingRequest?> GetLatestActiveBookingAsync(int listingId, string guestId);
         Task<string?> GetGuestIdByChatId(int chatId);
+        Task<BookingRequest?> GetBookingByIdAsync(int bookingId);
 
     }
 }
