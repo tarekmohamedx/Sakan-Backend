@@ -235,6 +235,7 @@ namespace Sakan
             builder.Services.AddScoped<IFavoriteRepository, FavoriteRepository>();
             builder.Services.AddScoped<IFavoriteService, FavoriteService>();
 
+
             builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
 
@@ -272,7 +273,7 @@ namespace Sakan
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.MapHub<ChatHub>("/chat");
+            app.MapHub<ChatHub>("/ChatHub");
             app.MapControllers();
 
             //app.MapGet("/host-rating", async ([FromQuery] string userId, HostDashboardRepo repo) =>
