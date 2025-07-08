@@ -48,6 +48,5 @@ namespace Sakan.Hubs
         }
 
 
-
     }
 }
