@@ -27,6 +27,9 @@ using Sakan.Infrastructure.Services.Host;
 using Sakan.Infrastructure.Services.User;
 using Sakan.Application.Interfaces.Host;
 using Sakan.Application.Interfaces.User;
+using Sakan.Infrastructure.Services;
+using Sakan.Controllers;
+using static Sakan.Controllers.AiController;
 
 namespace Sakan
 {
@@ -46,6 +49,7 @@ namespace Sakan
             //});
 
             builder.Services.AddControllers();
+            builder.Services.AddHttpClient();
             builder.Services.AddScoped<IListingDetailsService, ListingDetailsService>();
             builder.Services.AddScoped<IRoomDetailsService, RoomDetailsService>();
             builder.Services.AddScoped<IBookingRequestService, BookingRequestService>();
@@ -63,6 +67,12 @@ namespace Sakan
             //builder.Services.AddScoped<ImageKitServices>();
             builder.Services.AddScoped<IAdminApproveListingService, AdminApproveListingService>();
             builder.Services.AddScoped<IUserReviewService, UserReviewService>();
+
+            builder.Services.Configure<OpenAIOptions>(builder.Configuration.GetSection("OpenAI"));
+            builder.Services.AddScoped<IAdminHostsService, AdminHostsApproveService>();
+
+
+
 
 
 

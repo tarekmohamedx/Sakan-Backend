@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Sakan.Application.DTOs;
 using Sakan.Application.DTOs.Host;
 using Sakan.Application.DTOs.User;
+using Sakan.Application.Interfaces;
 using Sakan.Application.Interfaces.User;
 using Sakan.Domain.Models;
 using Sakan.Infrastructure.Models;
@@ -10,7 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sakan.Infrastructure.Services.User
+namespace Sakan.Infrastructure.Services
 {
     // BookingRequestService.cs
     public class BookingRequestService : IBookingRequestService
@@ -37,8 +39,8 @@ namespace Sakan.Infrastructure.Services.User
                     BedId = null, // No specific bed
                     FromDate = dto.FromDate,
                     ToDate = dto.ToDate,
-                    HostApproved = false,
-                    GuestApproved = false
+                    HostApproved = null,
+                    GuestApproved = null
                 };
 
                 _context.BookingRequests.Add(booking);
@@ -58,8 +60,8 @@ namespace Sakan.Infrastructure.Services.User
                         BedId = bedId,
                         FromDate = dto.FromDate,
                         ToDate = dto.ToDate,
-                        HostApproved = false,
-                        GuestApproved = false
+                        HostApproved = null,
+                        GuestApproved = null
                     };
 
                     _context.BookingRequests.Add(booking);
@@ -78,7 +80,6 @@ namespace Sakan.Infrastructure.Services.User
             return (firstRequestId, hostId);
         }
 
-
         //use the BookingRequestsDTO then return all the booking requests for the user with the given userId
         public async Task<IEnumerable<BookingRequestsDTO>> GetBookingRequestsByUserIdAsync(string userId)
         {
@@ -86,6 +87,11 @@ namespace Sakan.Infrastructure.Services.User
                 .Where(br => br.GuestId == userId)
                 .Select(br => new BookingRequestsDTO
                 {
+                    GuestId = br.GuestId,
+                    HostId = _context.Listings
+                        .Where(l => l.Id == br.ListingId)
+                        .Select(l => l.HostId)
+                        .FirstOrDefault(),
                     BookingRequestId = br.Id,
                     ListingTitle = _context.Listings
                         .Where(l => l.Id == br.ListingId)
@@ -100,7 +106,10 @@ namespace Sakan.Infrastructure.Services.User
                         .Select(l => l.Governorate + " - " + l.District)
                         .FirstOrDefault(),
                     FromDate = (DateTime)br.FromDate,
-                    ToDate = (DateTime)br.ToDate
+                    ToDate = (DateTime)br.ToDate,
+                    Status = br.IsActive == true ? "Accepted" :
+                             br.IsActive == false ? "Rejected" :
+                             "Pending"
                 })
                 .ToListAsync();
 
@@ -114,8 +123,6 @@ namespace Sakan.Infrastructure.Services.User
             bookingRequest.HostApproved = isAccepted;
             if (bookingRequest.GuestApproved == true && isAccepted)
                 bookingRequest.IsActive = true;
-            else if (bookingRequest.GuestApproved == false && !isAccepted)
-                bookingRequest.IsActive = false;
             _context.BookingRequests.Update(bookingRequest);
             await _context.SaveChangesAsync();
             return true;
@@ -137,32 +144,14 @@ namespace Sakan.Infrastructure.Services.User
                         .Select(l => l.Governorate + " - " + l.District).FirstOrDefault(),
                     FromDate = (DateTime)br.FromDate,
                     ToDate = (DateTime)br.ToDate,
-                    IsApproved = br.HostApproved.HasValue ? br.HostApproved.Value.ToString() : "false"
-                    //IsApproved = (bool)br.HostApproved
+                    IsApproved = br.HostApproved == true ? "Accepted" :
+                             br.HostApproved == false ? "Rejected" :
+                             "Pending"
+
                 })
                 .ToListAsync();
 
             return requests;
-        }
-
-
-        public async Task<ChatWithHostDTO?> GetLatestBookingRequestAsync(int listingId, string guestId)
-        {
-            var latestRequest = await _context.BookingRequests
-                .Where(br => br.ListingId == listingId && br.GuestId == guestId)
-                .OrderByDescending(br => br.FromDate)
-                .Select(br => new ChatWithHostDTO
-                {
-                    ListingId = br.ListingId,
-                    ListingTitle = br.Listing.Title ?? "Unknown",
-                    HostId = br.Listing.HostId,
-                    HostName = br.Listing.Host.UserName ?? "Unknown",
-                    GuestId = br.GuestId,
-                    GuestName = br.Guest.UserName ?? "Unknown"
-                })
-                .FirstOrDefaultAsync();
-
-            return latestRequest;
         }
     }
 }
