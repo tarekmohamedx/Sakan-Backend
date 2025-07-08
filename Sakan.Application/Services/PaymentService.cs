@@ -35,13 +35,14 @@ namespace Sakan.Application.Services
             var booking = await _bookingRepository.GetByIdAsync(bookingId);
 
             // 1. التحقق من صحة الحجز
-            if (booking == null || booking.GuestId != userId || booking.PaymentStatus != "Pending")
+            if (booking == null || booking.GuestId != userId || booking.PaymentStatus != "Pending" ||
+                booking.Listing.IsActive == false || booking.Listing.IsApproved == false)
             {
                 throw new Exception("Invalid booking or booking already processed.");
             }
 
             // 2. حساب المبلغ **دائماً في الباك اند** لضمان الأمان
-            var amountInCents = (long)(booking.Price * 100); // Stripe تتعامل مع المبلغ بالـ cents/قروش
+            var amountInCents = (long)(booking.Price * 100); 
 
             var options = new PaymentIntentCreateOptions
             {

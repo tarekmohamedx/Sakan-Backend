@@ -242,6 +242,8 @@ public partial class sakanContext:IdentityDbContext<ApplicationUser>
                 .HasForeignKey(d => d.HostId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Listings__HostId__7F2BE32F");
+            entity.HasMany(d => d.Amenities).WithMany(p => p.Listings)
+                .UsingEntity(j => j.ToTable("ListingAmenities"));
         });
 
         modelBuilder.Entity<ListingPhoto>(entity =>
