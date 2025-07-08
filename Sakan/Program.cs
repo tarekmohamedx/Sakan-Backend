@@ -1,5 +1,5 @@
-
-﻿using Imagekit.Sdk;
+﻿
+using Imagekit.Sdk;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -59,6 +59,8 @@ namespace Sakan
             builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
             builder.Services.AddScoped<IAdminListingService, AdminListingService>();
             //builder.Services.AddScoped<ImageKitServices>();
+            builder.Services.AddScoped<IAdminApproveListingService, AdminApproveListingService>();
+
 
 
 
@@ -116,27 +118,27 @@ namespace Sakan
                 };
 
 
-            //}).AddGoogle(googleoption =>
-            //{
-            //    googleoption.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-            //    googleoption.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-            //    googleoption.CallbackPath = "/signin-google";
-            //    // 🔥 THIS disables redirect to Account/Login for APIs
-            //    googleoption.Events = new JwtBearerEvents
-            //    {
-            //        OnAuthenticationFailed = context =>
-            //        {
-            //            Console.WriteLine("❌ JWT validation failed: " + context.Exception.Message);
-            //            return Task.CompletedTask;
-            //        },
-            //        OnChallenge = context =>
-            //        {
-            //            context.HandleResponse(); // suppress default redirect
-            //            context.Response.StatusCode = 401;
-            //            context.Response.ContentType = "application/json";
-            //            return context.Response.WriteAsync("{\"error\": \"Unauthorized\"}");
-            //        }
-            //    };
+                //}).AddGoogle(googleoption =>
+                //{
+                //    googleoption.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+                //    googleoption.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+                //    googleoption.CallbackPath = "/signin-google";
+                //    // 🔥 THIS disables redirect to Account/Login for APIs
+                //    googleoption.Events = new JwtBearerEvents
+                //    {
+                //        OnAuthenticationFailed = context =>
+                //        {
+                //            Console.WriteLine("❌ JWT validation failed: " + context.Exception.Message);
+                //            return Task.CompletedTask;
+                //        },
+                //        OnChallenge = context =>
+                //        {
+                //            context.HandleResponse(); // suppress default redirect
+                //            context.Response.StatusCode = 401;
+                //            context.Response.ContentType = "application/json";
+                //            return context.Response.WriteAsync("{\"error\": \"Unauthorized\"}");
+                //        }
+                //    };
 
             });
 
@@ -174,7 +176,7 @@ namespace Sakan
                         policy.WithOrigins("http://localhost:4200")
                               .AllowAnyHeader()
                               .AllowAnyMethod();
-                              //.AllowCredentials();
+                        //.AllowCredentials();
                     });
             });
 

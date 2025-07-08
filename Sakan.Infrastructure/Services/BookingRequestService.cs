@@ -53,7 +53,7 @@ namespace Sakan.Infrastructure.Services
                 .Select(l => l.HostId)
                 .FirstOrDefaultAsync();
 
-            return (booking.Id, hostId);
+            return (firstRequestId, hostId);
         }
 
         //use the BookingRequestsDTO then return all the booking requests for the user with the given userId
@@ -63,6 +63,11 @@ namespace Sakan.Infrastructure.Services
                 .Where(br => br.GuestId == userId)
                 .Select(br => new BookingRequestsDTO
                 {
+                    GuestId = br.GuestId,
+                    HostId = _context.Listings
+                        .Where(l => l.Id == br.ListingId)
+                        .Select(l => l.HostId)
+                        .FirstOrDefault(),
                     BookingRequestId = br.Id,
                     ListingTitle = _context.Listings
                         .Where(l => l.Id == br.ListingId)
@@ -77,22 +82,23 @@ namespace Sakan.Infrastructure.Services
                         .Select(l => l.Governorate + " - " + l.District)
                         .FirstOrDefault(),
                     FromDate = (DateTime)br.FromDate,
-                    ToDate = (DateTime)br.ToDate
+                    ToDate = (DateTime)br.ToDate,
+                    Status = br.IsActive == true ? "Accepted" :
+                             br.IsActive == false ? "Rejected" :
+                             "Pending"
                 })
                 .ToListAsync();
 
             return requests;
         }
 
-        public async Task<bool> UpdateBookingRequestAsync(int requestId,bool isAccepted)
+        public async Task<bool> UpdateBookingRequestAsync(int requestId, bool isAccepted)
         {
-            var bookingRequest= await _context.BookingRequests.FindAsync(requestId);
+            var bookingRequest = await _context.BookingRequests.FindAsync(requestId);
             if (bookingRequest == null) return false;
-            bookingRequest.HostApproved=isAccepted;
-            if(bookingRequest.GuestApproved==true && isAccepted)
+            bookingRequest.HostApproved = isAccepted;
+            if (bookingRequest.GuestApproved == true && isAccepted)
                 bookingRequest.IsActive = true;
-            else if(bookingRequest.GuestApproved==false && !isAccepted)
-                bookingRequest.IsActive = false;
             _context.BookingRequests.Update(bookingRequest);
             await _context.SaveChangesAsync();
             return true;
@@ -114,15 +120,15 @@ namespace Sakan.Infrastructure.Services
                         .Select(l => l.Governorate + " - " + l.District).FirstOrDefault(),
                     FromDate = (DateTime)br.FromDate,
                     ToDate = (DateTime)br.ToDate,
-                    IsApproved = (bool)br.HostApproved
+                    IsApproved = br.HostApproved == true ? "Accepted" :
+                             br.HostApproved == false ? "Rejected" :
+                             "Pending"
+
                 })
                 .ToListAsync();
 
             return requests;
         }
     }
-            return (firstRequestId, hostId);
-        }
 
-    }
 }

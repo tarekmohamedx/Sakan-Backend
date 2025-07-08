@@ -69,5 +69,7 @@ namespace Sakan.Controllers.Admin
             var result = await _listingService.SetListingApprovalStatusAsync(id, false);
             return result ? Ok() : NotFound();
         }
+
+
     }
 }
