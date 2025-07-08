@@ -140,7 +140,7 @@ namespace Sakan.Infrastructure.Repositories
         {
             System.Diagnostics.Debug.WriteLine("From GetLatestActiveBookingAsync Repo listing id: " + listingId + " guestid: " + guestId);
              return await Context.BookingRequests
-                .Where(br => br.ListingId == listingId && br.GuestId == guestId && br.IsActive)
+                .Where(br => br.ListingId == listingId && br.GuestId == guestId)
                 .OrderByDescending(br => br.FromDate)
                 .FirstOrDefaultAsync();
         }

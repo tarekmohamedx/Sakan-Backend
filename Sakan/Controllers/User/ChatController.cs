@@ -157,10 +157,10 @@ namespace Sakan.Controllers.User
             return Ok(result);
         }
         [HttpGet("get-booking-id")]
-        public async Task<IActionResult> GetBookingIdFromChat(int chatId)
+        public async Task<IActionResult> GetBookingIdFromChat(int chatId, string guestId)
         {
             var chat = await _messageService.GetChatWithListingAsync(chatId);
-            var guestId = await _messageService.GetGuestIdFromChat(chatId);
+
             var booking = await _messageService.GetLatestActiveBookingAsync(chat.ListingId, guestId);
 
             if (booking == null)
@@ -168,7 +168,6 @@ namespace Sakan.Controllers.User
 
             return Ok(booking.Id);
         }
-
 
 
     }
