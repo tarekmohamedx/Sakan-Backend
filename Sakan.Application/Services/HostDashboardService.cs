@@ -1,4 +1,5 @@
-﻿using Sakan.Application.DTOs;
+﻿using Sakan.Application.DTOs.Host;
+using Sakan.Application.DTOs.User;
 using Sakan.Domain.Interfaces;
 using System;
 using System.Collections.Generic;

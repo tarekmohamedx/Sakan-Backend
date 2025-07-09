@@ -1,4 +1,5 @@
-﻿using Imagekit.Sdk;
+﻿
+using Imagekit.Sdk;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -6,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Sakan.Application.Interfaces;
 using Sakan.Application.Mapper;
 using Sakan.Application.Services;
 using Sakan.Domain.Interfaces;
@@ -15,12 +15,21 @@ using Sakan.Domain.Models;
 using Sakan.Hubs;
 using Sakan.Infrastructure.Models;
 using Sakan.Infrastructure.Repositories;
-using Sakan.Infrastructure.Services;
 using Sakan.Infrastructure.UnitOfWork;
 using System.Security.Claims;
 using System.Text;
 using Stripe;
 using ReviewService = Sakan.Application.Services.ReviewService;
+using Sakan.Application.Services.Admin;
+using Sakan.Application.Interfaces.Admin;
+using Sakan.Infrastructure.Services.Admin;
+using Sakan.Infrastructure.Services.Host;
+using Sakan.Infrastructure.Services.User;
+using Sakan.Application.Interfaces.Host;
+using Sakan.Application.Interfaces.User;
+using Sakan.Infrastructure.Services;
+using Sakan.Controllers;
+using static Sakan.Controllers.AiController;
 
 namespace Sakan
 {
@@ -40,6 +49,7 @@ namespace Sakan
             //});
 
             builder.Services.AddControllers();
+            builder.Services.AddHttpClient();
             builder.Services.AddScoped<IListingDetailsService, ListingDetailsService>();
             builder.Services.AddScoped<IRoomDetailsService, RoomDetailsService>();
             builder.Services.AddScoped<IBookingRequestService, BookingRequestService>();
@@ -49,23 +59,36 @@ namespace Sakan
             builder.Services.AddScoped<IImageKitService, ImageKitService>();
             builder.Services.AddScoped<IListRepository, ListingRepo>();
             builder.Services.AddScoped<IListingService, ListingService>();
-            builder.Services.AddScoped<IReviewService, ReviewService>();
+            //builder.Services.AddScoped<IReviewService, ReviewService>();
             builder.Services.AddScoped<IHostBookingService, HostBookingService>();
             builder.Services.AddScoped<IHostReviewsService, HostReviewsService>();
+            builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
+            builder.Services.AddScoped<IAdminListingService, AdminListingService>();
+            //builder.Services.AddScoped<ImageKitServices>();
+            builder.Services.AddScoped<IAdminApproveListingService, AdminApproveListingService>();
+            builder.Services.AddScoped<IUserReviewService, UserReviewService>();
+
+            builder.Services.Configure<OpenAIOptions>(builder.Configuration.GetSection("OpenAI"));
+            builder.Services.AddScoped<IAdminHostsService, AdminHostsApproveService>();
+
+
+
+
+
 
 
 
             builder.Services.AddScoped<IHostListingService, HostListingService>();
 
-            builder.Services.AddScoped<ImagekitClient>(provider =>
-            {
-                var configuration = provider.GetRequiredService<IConfiguration>();
-                var publicKey = configuration["ImageKit:PublicKey"];
-                var privateKey = configuration["ImageKit:PrivateKey"];
-                var urlEndpoint = configuration["ImageKit:UrlEndpoint"];
+            //builder.Services.AddScoped<ImagekitClient>(provider =>
+            //{
+            //    var configuration = provider.GetRequiredService<IConfiguration>();
+            //    var publicKey = configuration["ImageKit:PublicKey"];
+            //    var privateKey = configuration["ImageKit:PrivateKey"];
+            //    var urlEndpoint = configuration["ImageKit:UrlEndpoint"];
 
-                return new ImagekitClient(publicKey, privateKey, urlEndpoint);
-            });
+            //    return new ImagekitClient(publicKey, privateKey, urlEndpoint);
+            //});
 
 
 
@@ -123,27 +146,27 @@ namespace Sakan
                 };
 
 
-            //}).AddGoogle(googleoption =>
-            //{
-            //    googleoption.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-            //    googleoption.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-            //    googleoption.CallbackPath = "/signin-google";
-            //    // 🔥 THIS disables redirect to Account/Login for APIs
-            //    googleoption.Events = new JwtBearerEvents
-            //    {
-            //        OnAuthenticationFailed = context =>
-            //        {
-            //            Console.WriteLine("❌ JWT validation failed: " + context.Exception.Message);
-            //            return Task.CompletedTask;
-            //        },
-            //        OnChallenge = context =>
-            //        {
-            //            context.HandleResponse(); // suppress default redirect
-            //            context.Response.StatusCode = 401;
-            //            context.Response.ContentType = "application/json";
-            //            return context.Response.WriteAsync("{\"error\": \"Unauthorized\"}");
-            //        }
-            //    };
+                //}).AddGoogle(googleoption =>
+                //{
+                //    googleoption.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+                //    googleoption.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+                //    googleoption.CallbackPath = "/signin-google";
+                //    // 🔥 THIS disables redirect to Account/Login for APIs
+                //    googleoption.Events = new JwtBearerEvents
+                //    {
+                //        OnAuthenticationFailed = context =>
+                //        {
+                //            Console.WriteLine("❌ JWT validation failed: " + context.Exception.Message);
+                //            return Task.CompletedTask;
+                //        },
+                //        OnChallenge = context =>
+                //        {
+                //            context.HandleResponse(); // suppress default redirect
+                //            context.Response.StatusCode = 401;
+                //            context.Response.ContentType = "application/json";
+                //            return context.Response.WriteAsync("{\"error\": \"Unauthorized\"}");
+                //        }
+                //    };
 
             }).AddGoogle(GoogleDefaults.AuthenticationScheme, googleOptions =>
             {
@@ -198,6 +221,7 @@ namespace Sakan
                               .AllowCredentials()
                               .SetIsOriginAllowed(_ => true);
 
+
                     });
             });
 
@@ -245,6 +269,7 @@ namespace Sakan
             builder.Services.AddScoped<EmailService>();
 
 
+
             builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
 
@@ -282,7 +307,7 @@ namespace Sakan
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.MapHub<ChatHub>("/chat");
+            app.MapHub<ChatHub>("/ChatHub");
             app.MapControllers();
 
             //app.MapGet("/host-rating", async ([FromQuery] string userId, HostDashboardRepo repo) =>
