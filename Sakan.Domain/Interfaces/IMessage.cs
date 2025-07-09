@@ -15,6 +15,12 @@ namespace Sakan.Domain.Interfaces
         Task SaveChangesAsync();
         Task<IEnumerable<UserChatSummary>> GetUserChatsAsync(string userId);
         Task<Chat> CreateChatIfNotExistsAsync(string senderId, string receiverId, int listingId);
+        Task<Chat?> GetChatWithListingAsync(int chatId);
+        Task<BookingRequest?> GetLatestActiveBookingAsync(int listingId);
+        Task<BookingRequest?> GetLatestActiveBookingAsync(int listingId, string guestId);
+        Task<string?> GetGuestIdByChatId(int chatId);
+        Task<BookingRequest?> GetBookingByIdAsync(int bookingId);
+        Task<string?> GetGuestIdFromChat(int chatId);
 
     }
 }

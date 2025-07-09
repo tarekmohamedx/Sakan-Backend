@@ -1,4 +1,4 @@
-﻿using Sakan.Application.DTOs;
+﻿using Sakan.Application.DTOs.User;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,5 +10,6 @@ namespace Sakan.Application.Services
     public interface IProfileService
     {
         UserProfileDTO GetUserprofilebyid(string id);
+
     }
 }

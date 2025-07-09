@@ -11,6 +11,8 @@ namespace Sakan.Domain.Models
         public int ChatId { get; set; }
         public int ListingId { get; set; }
         public string ListingTitle { get; set; } = "Mansoura Apartment";
+        public string ListingStatus { get; set; } = "Pending";
+        public string HostName { get; set; } = "DefaultHost";
         public string UserName { get; set; } = "DefaultUserName";
         public LastMessageInfo? LastMessage { get; set; }
     }

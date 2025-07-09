@@ -1,10 +1,8 @@
 
-﻿using Microsoft.AspNetCore.Mvc;
-using Sakan.Application.DTOs;
-using Sakan.Application.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using Sakan.Domain.Interfaces;
 using Sakan.Domain.Models;
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +10,8 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Sakan.Application.Common;
 using Sakan.Domain.Common;
+using Sakan.Application.Interfaces.User;
+using Sakan.Application.DTOs.User;
 
 namespace Sakan.Application.Services
 {
@@ -97,8 +97,18 @@ namespace Sakan.Application.Services
                     room.Beds.Add(bed);
                 }
 
+
                 listing.Rooms.Add(room);
             }
+            if (dto.AmenityIds != null && dto.AmenityIds.Any())
+            {
+                listing.ListingAmenities = dto.AmenityIds.Select(id => new ListingAmenities
+                {
+                    AmenitiesId = id,
+                  //  listing = listing
+                }).ToList();
+            }
+
 
             // Save to DB
             await _listingRepository.Addlistasync(listing);

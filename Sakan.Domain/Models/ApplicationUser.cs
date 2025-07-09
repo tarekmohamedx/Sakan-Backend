@@ -10,7 +10,12 @@ namespace Sakan.Domain.Models
 {
     public class ApplicationUser : IdentityUser
     {
+
+        public bool IsDeleted { get; set; } = false;
+
+
         // Add any additional properties or methods specific to your application here
+       // public string ProfilePictureUrl { get; set; }
         public virtual ICollection<Review> ReviewReviewers { get; set; } 
         public virtual ICollection<Review> ReviewReviewedUsers { get; set; } 
 
@@ -23,6 +28,8 @@ namespace Sakan.Domain.Models
 
         public virtual ICollection<Booking> Bookings { get; set; }
         public virtual ICollection<Bed> Beds { get; set; }
+
+        public string? HostVerificationStatus { get; set; }
 
 
 

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Sakan.Application.DTOs;
-using Sakan.Application.Interfaces;
+using Sakan.Application.DTOs.Host;
+using Sakan.Application.Interfaces.Host;
 using System.Security.Claims;
 
 namespace Sakan.Controllers.Host

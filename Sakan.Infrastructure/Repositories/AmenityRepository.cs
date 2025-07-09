@@ -25,5 +25,10 @@ namespace Sakan.Infrastructure.Repositories
             // AsNoTracking لتحسين الأداء لأنها عملية قراءة فقط
             return await _context.Amenities.AsNoTracking().ToListAsync();
         }
+
+        Task<List<Domain.Models.Amenity>> IAmenityRepository.GetAllAsync()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

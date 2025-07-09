@@ -1,4 +1,4 @@
-﻿using Sakan.Application.DTOs;
+﻿using Sakan.Application.DTOs.User;
 using Sakan.Domain.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -52,18 +52,17 @@ namespace Sakan.Application.Services
             {
                 UserID = user.Id,
                 UserName = user.UserName,
-                ReservedType = reservedType,
-                ReservedName = reservedName,
+              
+                Email = user.Email, 
+                PhoneNumber = user.PhoneNumber,
                 FromDate = request?.FromDate ?? DateTime.MinValue,
                 ToDate = request?.ToDate ?? DateTime.MinValue,
-                Hostapproved = request?.HostApproved,
-                Guestapproved = request?.GuestApproved,
                 Title = listing?.Title,
                 Description = listing?.Description,
                 Price = listing?.PricePerMonth ?? 0,
-                Governorate = listing?.Governorate,
-                District = listing?.District
             };
         }
+
+      
     }
 }

@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Sakan.Application.Interfaces;
 using Sakan.Application.Mapper;
 using Sakan.Application.Services;
 using Sakan.Domain.Interfaces;
@@ -16,7 +15,6 @@ using Sakan.Domain.Models;
 using Sakan.Hubs;
 using Sakan.Infrastructure.Models;
 using Sakan.Infrastructure.Repositories;
-using Sakan.Infrastructure.Services;
 using Sakan.Infrastructure.UnitOfWork;
 using System.Security.Claims;
 using System.Text;
@@ -25,6 +23,13 @@ using ReviewService = Sakan.Application.Services.ReviewService;
 using Sakan.Application.Services.Admin;
 using Sakan.Application.Interfaces.Admin;
 using Sakan.Infrastructure.Services.Admin;
+using Sakan.Infrastructure.Services.Host;
+using Sakan.Infrastructure.Services.User;
+using Sakan.Application.Interfaces.Host;
+using Sakan.Application.Interfaces.User;
+using Sakan.Infrastructure.Services;
+using Sakan.Controllers;
+using static Sakan.Controllers.AiController;
 
 namespace Sakan
 {
@@ -44,6 +49,7 @@ namespace Sakan
             //});
 
             builder.Services.AddControllers();
+            builder.Services.AddHttpClient();
             builder.Services.AddScoped<IListingDetailsService, ListingDetailsService>();
             builder.Services.AddScoped<IRoomDetailsService, RoomDetailsService>();
             builder.Services.AddScoped<IBookingRequestService, BookingRequestService>();
@@ -60,6 +66,13 @@ namespace Sakan
             builder.Services.AddScoped<IAdminListingService, AdminListingService>();
             //builder.Services.AddScoped<ImageKitServices>();
             builder.Services.AddScoped<IAdminApproveListingService, AdminApproveListingService>();
+            builder.Services.AddScoped<IUserReviewService, UserReviewService>();
+
+            builder.Services.Configure<OpenAIOptions>(builder.Configuration.GetSection("OpenAI"));
+            builder.Services.AddScoped<IAdminHostsService, AdminHostsApproveService>();
+
+
+
 
 
 
@@ -102,6 +115,7 @@ namespace Sakan
                 options.RequireHttpsMetadata = false;
                 //var jwtKey = builder.Configuration["jwt:key"];
 
+
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
@@ -115,6 +129,20 @@ namespace Sakan
                     ),
                     RoleClaimType = ClaimTypes.Role,
                     NameClaimType = ClaimTypes.NameIdentifier
+                };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnAuthenticationFailed = context =>
+                    {
+                        Console.WriteLine("❌ JWT Validation failed: " + context.Exception.Message);
+                        return Task.CompletedTask;
+                    },
+                    OnTokenValidated = context =>
+                    {
+                        Console.WriteLine("✅ Token validated successfully.");
+                        return Task.CompletedTask;
+                    }
                 };
 
 
@@ -140,6 +168,17 @@ namespace Sakan
                 //        }
                 //    };
 
+            }).AddGoogle(GoogleDefaults.AuthenticationScheme, googleOptions =>
+            {
+                googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+                googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+                googleOptions.CallbackPath = "/api/Account/google-callback"; // ✅ must match your controller
+            });
+
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.Cookie.SameSite = SameSiteMode.Lax; // Or None with HTTPS
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
             });
 
 
@@ -147,12 +186,15 @@ namespace Sakan
             builder.Services.AddDbContext<sakanContext>(option =>
             {
                 option.UseSqlServer(connection);
+
             });
 
             builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
 
 
             //swagger
+            builder.Services.AddAuthentication().AddCookie();
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
@@ -175,8 +217,11 @@ namespace Sakan
                     {
                         policy.WithOrigins("http://localhost:4200")
                               .AllowAnyHeader()
-                              .AllowAnyMethod();
-                        //.AllowCredentials();
+                              .AllowAnyMethod()
+                              .AllowCredentials()
+                              .SetIsOriginAllowed(_ => true);
+
+
                     });
             });
 
@@ -221,6 +266,9 @@ namespace Sakan
             builder.Services.AddScoped<IBookingRepository, BookingRepository>();
             builder.Services.AddScoped<IFavoriteRepository, FavoriteRepository>();
             builder.Services.AddScoped<IFavoriteService, FavoriteService>();
+            builder.Services.AddScoped<EmailService>();
+
+
 
             builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
@@ -259,7 +307,7 @@ namespace Sakan
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.MapHub<ChatHub>("/chat");
+            app.MapHub<ChatHub>("/ChatHub");
             app.MapControllers();
 
             //app.MapGet("/host-rating", async ([FromQuery] string userId, HostDashboardRepo repo) =>
