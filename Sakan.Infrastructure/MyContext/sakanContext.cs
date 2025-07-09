@@ -51,6 +51,7 @@ public partial class sakanContext:IdentityDbContext<ApplicationUser>
     public virtual DbSet<Test> Tests { get; set; }
 
     public virtual DbSet<TicketReply> TicketReplies { get; set; }
+    public virtual DbSet<ListingAmenities> ListingAmenities { get; set; } 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -146,7 +147,18 @@ public partial class sakanContext:IdentityDbContext<ApplicationUser>
                 .HasForeignKey(d => d.RoomId)
                 .HasConstraintName("FK__Beds__RoomId__08B54D69");
         });
+        modelBuilder.Entity<ListingAmenities>()
+            .HasKey(la => new { la.listingId, la.AmenitiesId });
 
+        modelBuilder.Entity<ListingAmenities>()
+            .HasOne(la => la.listing)
+            .WithMany(l => l.ListingAmenities)
+            .HasForeignKey(la => la.listingId);
+
+        modelBuilder.Entity <ListingAmenities>()
+            .HasOne(la => la.amenity)
+            .WithMany(a => a.ListingAmenities)
+            .HasForeignKey(la => la.AmenitiesId);
         modelBuilder.Entity<BedPhoto>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__BedPhoto__3214EC0775C4C75B");

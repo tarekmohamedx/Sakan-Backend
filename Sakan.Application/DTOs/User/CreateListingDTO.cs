@@ -25,6 +25,8 @@ namespace Sakan.Application.DTOs.User
         public bool? IsBookableAsWhole { get; set; }
 
         public List<CreateRoomDTO> Rooms { get; set; } = new();
+        public List<int> AmenityIds { get; set; } 
+
         public List<IFormFile> ListingPhotos { get; set; } = new();
     }
 }

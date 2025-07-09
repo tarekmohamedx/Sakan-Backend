@@ -56,7 +56,7 @@ namespace Sakan.Infrastructure.Repositories
 
             if (filterParams.AmenityIds != null && filterParams.AmenityIds.Any())
                 foreach (var amenityId in filterParams.AmenityIds)
-                    query = query.Where(l => l.Amenities.Any(a => a.Id == amenityId));
+                    query = query.Where(l => l.ListingAmenities.Any(a => a.AmenitiesId == amenityId));
 
             if (filterParams.MinRating.HasValue)
                 query = query.Where(l => l.AverageRating >= filterParams.MinRating.Value);

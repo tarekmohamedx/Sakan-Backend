@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sakan.Application.DTOs.User
+namespace Sakan.Application.DTOs
 {
-    public class GoogleloginDTO
+    public class ForgotPasswordDTO
     {
-        public string Token { get; set; }
-
+        public string Email { get; set; }
     }
 }

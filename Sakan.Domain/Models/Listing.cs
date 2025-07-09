@@ -55,5 +55,5 @@ public partial class Listing
 
     public virtual ICollection<Room> Rooms { get; set; } = new List<Room>();
 
-    public virtual ICollection<Amenity> Amenities { get; set; } = new List<Amenity>();
+    public virtual ICollection<ListingAmenities> ListingAmenities { get; set; } = new List<ListingAmenities>();
 }

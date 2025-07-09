@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Sakan.Application.DTOs.User;
 using Sakan.Application.Interfaces.User;
@@ -17,6 +18,15 @@ namespace Sakan.Controllers.User
             _listingService = listingService;
         }
 
+      //  [Authorize(Roles = "Host")]  this filter will decode token after send it from client 
+        //[HttpPost]
+        //public async Task<IActionResult> CreateListing([FromForm] CreateListingDTO dto ,[FromRoute]string hostId)
+        //{
+        //    try
+        //    {
+        //       // var hostId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        //        var token = Request.Headers["Authorization"];
+
         [HttpPost("{hostId}")]
         public async Task<IActionResult> CreateListing([FromForm] CreateListingDTO dto , [FromRoute]string hostId)
         {
@@ -24,7 +34,7 @@ namespace Sakan.Controllers.User
             {
                 //var hostId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 await _listingService.CreateListingAsync(dto, hostId);
-                return Ok(new { message = "Listing created successfully." });
+                return Ok(new { message = $"Listing created successfully." });
             }
             catch (Exception ex)
             {
@@ -35,6 +45,20 @@ namespace Sakan.Controllers.User
                     message = ex.Message
                 });
             }
+        }
+
+
+        [Authorize]
+        [HttpGet("test-auth")]
+        public IActionResult TestAuth()
+        {
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                var name = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var role = User.FindFirst(ClaimTypes.Role)?.Value;
+                return Ok(new { name, role });
+            }
+            return Unauthorized("User is NOT authenticated");
         }
 
     }
