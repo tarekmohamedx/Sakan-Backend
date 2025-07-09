@@ -32,9 +32,9 @@ namespace Sakan.Controllers.User
         }
 
         [HttpGet("host/{hostId}")]
-        public async Task<IActionResult> GetHostReviews(string hostId)
+        public async Task<IActionResult> GetHostReviews(string userId)
         {
-            var reviews = await _reviewService.GetReviewsByHostIdAsync(hostId);
+            var reviews = await _reviewService.GetUserReviewsAsync(userId);
             return Ok(reviews);
         }
 

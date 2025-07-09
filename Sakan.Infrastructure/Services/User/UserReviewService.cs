@@ -21,25 +21,6 @@ namespace Sakan.Infrastructure.Services.User
             _context = context;
         }
 
-        //public async Task<bool> CreateReviewAsync(UserCreateReviewDto dto)
-        //{
-        //    var review = new Review
-        //    {
-        //        ReviewerId = dto.ReviewerId,
-        //        ReviewedUserId = dto.ReviewedUserId,
-        //        ListingId = dto.ListingId,
-        //        BookingId = dto.BookingId,
-        //        Rating = dto.Rating,
-        //        Comment = dto.Comment,
-        //        CreatedAt = DateTime.UtcNow,
-        //        IsActive = true
-        //    };
-
-        //    _context.Reviews.Add(review);
-        //    await _context.SaveChangesAsync();
-        //    return true;
-        //}
-
         public async Task<bool> CreateOrUpdateReviewAsync(string reviewerId, UserCreateReviewDto dto)
         {
             var existing = await _context.Reviews
@@ -91,10 +72,10 @@ namespace Sakan.Infrastructure.Services.User
         }
 
 
-        public async Task<IEnumerable<ReviewDetailsDto>> GetReviewsByHostIdAsync(string hostId)
+        public async Task<IEnumerable<ReviewDetailsDto>> GetUserReviewsAsync(string userId)
         {
             return await _context.Reviews
-                .Where(r => r.ReviewedUserId == hostId && r.IsActive)
+                .Where(r => r.ReviewerId == userId && r.IsActive)
                 .Select(r => new ReviewDetailsDto
                 {
                     ReviewerName = r.Reviewer.UserName,
@@ -116,12 +97,22 @@ namespace Sakan.Infrastructure.Services.User
                     ListingTitle = b.Listing.Title,
                     FromDate = DateOnly.FromDateTime(b.FromDate),
                     ToDate = DateOnly.FromDateTime(b.ToDate),
-                    HasReview = b.Reviews.Any(),
+
+                    // ✅ Fix here: Only reviews by the current user
+                    HasReview = b.Reviews.Any(r => r.ReviewerId == userId && r.IsActive),
                     ReviewedUserId = b.Listing.HostId,
-                    Rating = b.Reviews.FirstOrDefault(r => r.IsActive).Rating,
-                    Comment = b.Reviews.FirstOrDefault(r => r.IsActive).Comment
+                    Rating = b.Reviews
+                        .Where(r => r.ReviewerId == userId && r.IsActive)
+                        .Select(r => r.Rating)
+                        .FirstOrDefault(),
+
+                    Comment = b.Reviews
+                        .Where(r => r.ReviewerId == userId && r.IsActive)
+                        .Select(r => r.Comment)
+                        .FirstOrDefault()
                 })
                 .ToListAsync();
         }
+
     }
 }
