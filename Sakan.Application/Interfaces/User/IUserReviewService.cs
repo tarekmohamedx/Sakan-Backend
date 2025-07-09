@@ -12,7 +12,7 @@ namespace Sakan.Application.Interfaces.User
         //Task<bool> CreateReviewAsync(UserCreateReviewDto dto);
         Task<bool> CreateOrUpdateReviewAsync(string reviewerId, UserCreateReviewDto dto);
         Task<IEnumerable<ReviewDetailsDto>> GetReviewsByListingIdAsync(int listingId);
-        Task<IEnumerable<ReviewDetailsDto>> GetReviewsByHostIdAsync(string hostId);
+        Task<IEnumerable<ReviewDetailsDto>> GetUserReviewsAsync(string userId);
         Task<IEnumerable<BookingReviewDto>> GetUserBookingsWithReviewStatusAsync(string userId);
     }
 }
