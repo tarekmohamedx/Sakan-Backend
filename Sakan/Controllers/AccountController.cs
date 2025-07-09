@@ -13,6 +13,9 @@ using System.Security.Claims;
 using System.Text;
 using Google.Apis.Auth;
 using System.Net;
+using Microsoft.AspNetCore.Authentication.Google;
+using MailKit;
+using Sakan.Application.Services;
 
 namespace Sakan.Controllers
 {
@@ -134,7 +137,13 @@ namespace Sakan.Controllers
 
             if (user == null)
             {
-                return Unauthorized(new { Message = "this email does not exist." });
+                return Unauthorized(new { Message = "This email does not exist." });
+            }
+
+            // ✅ Check if the user is soft-deleted
+            if (user.IsDeleted)
+            {
+                return Unauthorized(new { Message = "Account is deactivated." });
             }
 
             var passwordValid = await userManager.CheckPasswordAsync(user, loginDTO.Password);
@@ -146,12 +155,12 @@ namespace Sakan.Controllers
 
             // Create claims
             var claims = new List<Claim>
-            {
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.Email, user.Email)
-            };
+    {
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+        new Claim(ClaimTypes.NameIdentifier, user.Id),
+        new Claim(ClaimTypes.Name, user.UserName),
+        new Claim(ClaimTypes.Email, user.Email)
+    };
 
             var roles = await userManager.GetRolesAsync(user);
             foreach (var role in roles)
@@ -159,20 +168,12 @@ namespace Sakan.Controllers
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }
 
-            // Prepare the signing key
             var signKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["jwt:key"]));
-
-            //var key = config["jwt:key"];
-            //var signKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key!));
-            //System.Diagnostics.Debug.WriteLine("🔐 LOGIN: jwt:key = " + key);
-
-
             var signingCredentials = new SigningCredentials(signKey, SecurityAlgorithms.HmacSha256);
 
-            // Create the token
             var token = new JwtSecurityToken(
                 issuer: config["jwt:issuer"],
-                audience: config["jwt:audience"], // ✅ fix typo here: was "jst"
+                audience: config["jwt:audience"],
                 expires: DateTime.UtcNow.AddDays(1),
                 claims: claims,
                 signingCredentials: signingCredentials
@@ -183,142 +184,83 @@ namespace Sakan.Controllers
                 Token = new JwtSecurityTokenHandler().WriteToken(token),
                 ExpiresAt = token.ValidTo
             });
+        }
 
-            //    [HttpGet("sakanak")]
-            //    public async Task<IActionResult> ExternalLoginCallback()
-            //    {
-            //        var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        [HttpPost("google-auth")]
+        public async Task<IActionResult> ExternalLogin([FromBody] GoogleloginDTO dto)
+        {
+            var validPayload = await GoogleJsonWebSignature.ValidateAsync(dto.Token);
 
-            //        if (!result.Succeeded)
-            //            return BadRequest("External login failed.");
+            var user = await userManager.FindByEmailAsync(validPayload.Email);
+            if (user == null)
+            {
+                user = new ApplicationUser
+                {
+                    Email = validPayload.Email,
+                    UserName = validPayload.Email,
+                    EmailConfirmed = true
+                };
+                await userManager.CreateAsync(user);
+            }
 
-            //        var externalUser = result.Principal;
-            //        var email = externalUser.FindFirst(ClaimTypes.Email)?.Value;
+            var token = await GenerateJwtToken(user);
 
-            //        var user = await userManager.FindByEmailAsync(email);
-
-            //        if (user == null)
-            //        {
-            //            user = new ApplicationUser
-            //            {
-            //                UserName = email,
-            //                Email = email
-            //            };
-            //            await userManager.CreateAsync(user);
-            //            await userManager.AddToRoleAsync(user, "Customer");
-            //        }
-
-            //        // Now generate JWT token
-            //        var claims = new List<Claim>
-            //{
-            //    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            //    new Claim(ClaimTypes.NameIdentifier, user.Id),
-            //    new Claim(ClaimTypes.Name, user.UserName),
-            //    new Claim(ClaimTypes.Email, user.Email)
-            //};
-
-            //        var roles = await userManager.GetRolesAsync(user);
-            //        foreach (var role in roles)
-            //        {
-            //            claims.Add(new Claim(ClaimTypes.Role, role));
-            //        }
-
-            //        var signKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["jwt:key"]));
-            //        var token = new JwtSecurityToken(
-            //            issuer: config["jwt:issuer"],
-            //            audience: config["jwt:audience"],
-            //            expires: DateTime.UtcNow.AddDays(1),
-            //            claims: claims,
-            //            signingCredentials: new SigningCredentials(signKey, SecurityAlgorithms.HmacSha256)
-            //        );
-
-            //        return Ok(new
-            //        {
-            //            Token = new JwtSecurityTokenHandler().WriteToken(token),
-            //            Expiration = token.ValidTo
-            //        });
-            //    }
-
-            //[HttpPost("sakanak")]
-            //public async Task<IActionResult> GoogleLogin([FromBody] GoogleloginDTO model)
-            //{
-            //    try
-            //    {
-            //        var payload = await GoogleJsonWebSignature.ValidateAsync(model.IdToken, new GoogleJsonWebSignature.ValidationSettings()
-            //        {
-            //            Audience = new[] { config["Google:ClientId"] }
-            //        });
-
-            //        // Here you can find/create the user in your DB
-
-            //        var claims = new[]
-            //        {
-            //        new Claim(ClaimTypes.NameIdentifier, payload.Subject),
-            //        new Claim(ClaimTypes.Name, payload.Name),
-            //        new Claim(ClaimTypes.Email, payload.Email),
-            //    };
-
-            //        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]));
-            //        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            //        var token = new JwtSecurityToken(
-            //            issuer: config["Jwt:Issuer"],
-            //            audience: config["Jwt:Audience"],
-            //            claims: claims,
-            //            expires: DateTime.UtcNow.AddDays(1),
-            //            signingCredentials: creds);
-
-            //        return Ok(new
-            //        {
-            //            token = new JwtSecurityTokenHandler().WriteToken(token),
-            //            expiration = token.ValidTo
-            //        });
-            //    }
-            //    catch
-            //    {
-            //        return BadRequest("Invalid Google token");
-            //    }
-            //}
-
-            // AccountController.cs
-
-
-
-
+            return Ok(new { token });
         }
 
 
+        //[HttpGet("google-callback")]
+        //public async Task<IActionResult> GoogleCallback()
+        //{
+        //    var info = await signInManager.GetExternalLoginInfoAsync();
+        //    if (info == null)
+        //        return Redirect($"{config["Frontend:Url"]}/login?error=google-failed");
 
-        [HttpGet("externallogin/google")]
-        public IActionResult GoogleLogin()
+        //    var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+        //    var user = await userManager.FindByEmailAsync(email);
+
+        //    if (user == null)
+        //    {
+        //        user = new ApplicationUser
+        //        {
+        //            UserName = email,
+        //            Email = email,
+        //        };
+
+        //        await userManager.CreateAsync(user);
+        //        await userManager.AddToRoleAsync(user, "Customer");
+        //    }
+
+        //    var token = await GenerateJwtToken(user);
+        //    return Redirect($"{config["Frontend:Url"]}/auth/google/callback?token={WebUtility.UrlEncode(token)}");
+        //}
+
+        private async Task<string> GenerateJwtToken(ApplicationUser user)
         {
-            var properties = new AuthenticationProperties
-            {
-                RedirectUri = "/api/Account/google-callback",
-                // Force account selection
-                Items = { { "prompt", "select_account" } }
-            };
-            return Challenge(properties, "Google");
-        }
+            var claims = new List<Claim>
+    {
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+        new Claim(ClaimTypes.NameIdentifier, user.Id),
+        new Claim(ClaimTypes.Email, user.Email),
+        new Claim(ClaimTypes.Name, user.UserName)
+    };
 
-        [HttpGet("google-callback")]
-        public async Task<IActionResult> GoogleCallback()
-        {
-            var info = await signInManager.GetExternalLoginInfoAsync();
-            if (info == null) return BadRequest("Error loading external login info.");
+            var roles = await userManager.GetRolesAsync(user);
+            foreach (var role in roles)
+                claims.Add(new Claim(ClaimTypes.Role, role));
 
-            try
-            {
-                var token = await GenerateJwtToken(info);
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["jwt:key"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-                // Secure redirect with token
-                return Redirect($"{config["Frontend:Url"]}/auth/google/callback?token={WebUtility.UrlEncode(token)}");
-            }
-            catch (Exception ex)
-            {
-                //logger.LogError(ex, "Google authentication failed");
-                return Redirect($"{config["Frontend:URL"]}/login?error=google_auth_failed");
-            }
+            var token = new JwtSecurityToken(
+                issuer: config["jwt:issuer"],
+                audience: config["jwt:audience"],
+                expires: DateTime.UtcNow.AddDays(1),
+                claims: claims,
+                signingCredentials: creds
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
 
@@ -366,6 +308,41 @@ namespace Sakan.Controllers
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDTO model, [FromServices] EmailService mailService)
+        {
+            var user = await userManager.FindByEmailAsync(model.Email);
+            if (user == null || !(await userManager.IsEmailConfirmedAsync(user)))
+                return BadRequest(new { message = "Invalid user or email not confirmed" });
+
+            var token = await userManager.GeneratePasswordResetTokenAsync(user);
+            var resetLink = $"{config["Frontend:Url"]}/reset-password?email={Uri.EscapeDataString(user.Email)}&token={Uri.EscapeDataString(token)}";
+
+            var subject = "Reset Your Password";
+            var body = $"<p>Click the link below to reset your password:</p><a href='{resetLink}'>{resetLink}</a>";
+
+            await mailService.SendEmailAsync(user.Email, subject, body);
+
+            return Ok(new { Message = "Password reset link has been sent to your email." });
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDTO model)
+        {
+            var user = await userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+                return BadRequest(new { message = "User not found" });
+
+            var result = await userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
+            if (!result.Succeeded)
+                return BadRequest(new { message = "Password reset failed", errors = result.Errors });
+
+            return Ok(new { message = "Password has been reset successfully" });
+        }
+
+
 
 
 

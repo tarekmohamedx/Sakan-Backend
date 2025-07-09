@@ -13,5 +13,5 @@ public partial class Amenity
 
     public string IconUrl { get; set; }
 
-    public virtual ICollection<Listing> Listings { get; set; } = new List<Listing>();
+    public virtual ICollection<ListingAmenities> ListingAmenities { get; set; } = new List<ListingAmenities>();
 }

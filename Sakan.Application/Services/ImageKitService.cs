@@ -31,21 +31,31 @@ namespace Sakan.Application.Services
             if (file.Length > 5 * 1024 * 1024)
                 throw new Exception("File size must be less than 5MB");
 
-            // Validate extension
             var allowedExtensions = new[] { ".png", ".jpg", ".jpeg" };
             var extension = Path.GetExtension(file.FileName).ToLower();
             if (!allowedExtensions.Contains(extension))
                 throw new Exception("Only .png, .jpg, .jpeg formats are allowed");
 
-            using var stream = file.OpenReadStream();
+            byte[] fileBytes;
+            using (var ms = new MemoryStream())
+            {
+                await file.CopyToAsync(ms);
+                fileBytes = ms.ToArray();
+            }
+
             var fileCreateRequest = new FileCreateRequest
             {
-                file = stream,
-                fileName = Guid.NewGuid().ToString() + extension,
-                folder = folder
+                file = fileBytes,
+                fileName = Guid.NewGuid() + extension,
+                folder = folder,
+                useUniqueFileName = true
             };
 
             var result = await _imagekit.UploadAsync(fileCreateRequest);
+
+            if (string.IsNullOrEmpty(result.url))
+                throw new Exception("ImageKit upload failed: No URL returned.");
+
             return result.url;
         }
     }
