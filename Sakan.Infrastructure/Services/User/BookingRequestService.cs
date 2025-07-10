@@ -153,6 +153,7 @@ namespace Sakan.Infrastructure.Services
 
             return requests;
         }
+
         public async Task<ChatWithHostDTO> GetLatestBookingRequestAsync(int listingId, string guestId)
         {
             var latestRequest = await _context.BookingRequests

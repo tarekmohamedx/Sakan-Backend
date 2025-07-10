@@ -104,17 +104,16 @@ namespace Sakan.Application.Services
         }
 
 
-        public async Task<BookingApprovalResult> GetBookingApprovalStatusAsync(string userId, int chatId, bool isHost)
+        public async Task<BookingApprovalResult> GetBookingApprovalStatusAsync(string userId, int bookingId, bool isHost)
         {
-            var chat = await MessageRepo.GetChatWithListingAsync(chatId);
-            if (chat == null)
-                throw new Exception("Chat not found");
-
-            var booking = await MessageRepo.GetLatestActiveBookingAsync(chat.ListingId, userId);
+            var booking = await MessageRepo.GetBookingByIdAsync(bookingId);
             if (booking == null)
-                throw new Exception("No active booking request");
+                throw new Exception("Booking not found");
 
-            System.Diagnostics.Debug.WriteLine($"BookingRequestId = {booking?.Id}, GuestApproved = {booking?.GuestApproved}, HostApproved = {booking?.HostApproved}, IsActive = {booking?.IsActive}");
+            if (booking.GuestId != userId)
+                throw new UnauthorizedAccessException("User is not part of this booking");
+
+            System.Diagnostics.Debug.WriteLine($"BookingRequestId = {booking.Id}, GuestApproved = {booking.GuestApproved}, HostApproved = {booking.HostApproved}, IsActive = {booking.IsActive}");
 
             // Get status
             string status = GetBookingStatus(booking.HostApproved, booking.GuestApproved, isHost, out _);
@@ -126,6 +125,7 @@ namespace Sakan.Application.Services
                 Status = status
             };
         }
+
         private string GetBookingStatus(bool? host, bool? guest, bool isHost, out string logicalStatus)
         {
             if (host == null && guest == null)
@@ -203,7 +203,8 @@ namespace Sakan.Application.Services
         public async Task<BookingApprovalResult> ApproveBookingByIdAsync(int bookingId, string approverId, bool isHost)
         {
             var booking = await MessageRepo.GetBookingByIdAsync(bookingId);
-            if (booking == null || !booking.IsActive)
+           // if (booking == null || !booking.IsActive)
+            if (booking == null)
                 throw new Exception("Booking not found or not active");
 
             if (isHost)

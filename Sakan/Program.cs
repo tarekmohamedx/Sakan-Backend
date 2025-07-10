@@ -70,6 +70,8 @@ namespace Sakan
 
             builder.Services.Configure<OpenAIOptions>(builder.Configuration.GetSection("OpenAI"));
             builder.Services.AddScoped<IAdminHostsService, AdminHostsApproveService>();
+            builder.Services.AddScoped<INotificationService, NotificationService>();
+
 
 
 
@@ -115,6 +117,7 @@ namespace Sakan
                 options.RequireHttpsMetadata = false;
                 //var jwtKey = builder.Configuration["jwt:key"];
 
+
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
@@ -128,6 +131,20 @@ namespace Sakan
                     ),
                     RoleClaimType = ClaimTypes.Role,
                     NameClaimType = ClaimTypes.NameIdentifier
+                };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnAuthenticationFailed = context =>
+                    {
+                        Console.WriteLine("❌ JWT Validation failed: " + context.Exception.Message);
+                        return Task.CompletedTask;
+                    },
+                    OnTokenValidated = context =>
+                    {
+                        Console.WriteLine("✅ Token validated successfully.");
+                        return Task.CompletedTask;
+                    }
                 };
 
 
@@ -153,6 +170,17 @@ namespace Sakan
                 //        }
                 //    };
 
+            }).AddGoogle(GoogleDefaults.AuthenticationScheme, googleOptions =>
+            {
+                googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+                googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+                googleOptions.CallbackPath = "/api/Account/google-callback"; // ✅ must match your controller
+            });
+
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.Cookie.SameSite = SameSiteMode.Lax; // Or None with HTTPS
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
             });
 
 
@@ -160,12 +188,15 @@ namespace Sakan
             builder.Services.AddDbContext<sakanContext>(option =>
             {
                 option.UseSqlServer(connection);
+
             });
 
             builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
 
 
             //swagger
+            builder.Services.AddAuthentication().AddCookie();
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
@@ -189,7 +220,10 @@ namespace Sakan
                         policy.WithOrigins("http://localhost:4200")
                               .AllowAnyHeader()
                               .AllowAnyMethod()
-                              .AllowCredentials();
+                              .AllowCredentials()
+                              .SetIsOriginAllowed(_ => true);
+
+
                     });
             });
 
@@ -234,6 +268,8 @@ namespace Sakan
             builder.Services.AddScoped<IBookingRepository, BookingRepository>();
             builder.Services.AddScoped<IFavoriteRepository, FavoriteRepository>();
             builder.Services.AddScoped<IFavoriteService, FavoriteService>();
+            builder.Services.AddScoped<EmailService>();
+
 
 
             builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);

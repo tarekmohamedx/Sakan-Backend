@@ -10,5 +10,6 @@ namespace Sakan.Application.Services
     public interface IProfileService
     {
         UserProfileDTO GetUserprofilebyid(string id);
+
     }
 }

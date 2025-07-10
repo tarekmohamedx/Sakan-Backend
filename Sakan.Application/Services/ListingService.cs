@@ -97,8 +97,18 @@ namespace Sakan.Application.Services
                     room.Beds.Add(bed);
                 }
 
+
                 listing.Rooms.Add(room);
             }
+            if (dto.AmenityIds != null && dto.AmenityIds.Any())
+            {
+                listing.ListingAmenities = dto.AmenityIds.Select(id => new ListingAmenities
+                {
+                    AmenitiesId = id,
+                  //  listing = listing
+                }).ToList();
+            }
+
 
             // Save to DB
             await _listingRepository.Addlistasync(listing);

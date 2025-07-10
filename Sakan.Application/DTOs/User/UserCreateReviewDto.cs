@@ -8,7 +8,6 @@ namespace Sakan.Application.DTOs.User
 {
     public class UserCreateReviewDto
     {
-        public string ReviewerId { get; set; }
         public string? ReviewedUserId { get; set; } // HostId
         public int? ListingId { get; set; }         // Listing being reviewed
         public int BookingId { get; set; }
