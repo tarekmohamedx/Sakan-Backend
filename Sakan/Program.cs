@@ -19,16 +19,14 @@ using Sakan.Infrastructure.UnitOfWork;
 using System.Security.Claims;
 using System.Text;
 using Stripe;
-using ReviewService = Sakan.Application.Services.ReviewService;
-using Sakan.Application.Services.Admin;
-using Sakan.Application.Interfaces.Admin;
-using Sakan.Infrastructure.Services.Admin;
-using Sakan.Infrastructure.Services.Host;
-using Sakan.Infrastructure.Services.User;
-using Sakan.Application.Interfaces.Host;
 using Sakan.Application.Interfaces.User;
+using Sakan.Infrastructure.Services.User;
 using Sakan.Infrastructure.Services;
-using Sakan.Controllers;
+using Sakan.Infrastructure.Services.Host;
+using Sakan.Application.Interfaces.Host;
+using Sakan.Application.Services.Admin;
+using Sakan.Infrastructure.Services.Admin;
+using Sakan.Application.Interfaces.Admin;
 using static Sakan.Controllers.AiController;
 
 namespace Sakan
@@ -217,11 +215,8 @@ namespace Sakan
                     {
                         policy.WithOrigins("http://localhost:4200")
                               .AllowAnyHeader()
-                              .AllowAnyMethod()
-                              .AllowCredentials()
-                              .SetIsOriginAllowed(_ => true);
-
-
+                              .AllowAnyMethod();
+                              //.AllowCredentials();
                     });
             });
 

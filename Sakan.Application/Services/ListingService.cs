@@ -12,6 +12,7 @@ using Sakan.Application.Common;
 using Sakan.Domain.Common;
 using Sakan.Application.Interfaces.User;
 using Sakan.Application.DTOs.User;
+using Microsoft.AspNetCore.Http;
 
 namespace Sakan.Application.Services
 {
@@ -30,6 +31,63 @@ namespace Sakan.Application.Services
             _mapper = mapper;
             _listingRepository2 = listingRepository2;
         }
+
+        public async Task<CreateListingDTO> ParseCreateListingFormAsync(IFormCollection form)
+        {
+            var dto = new CreateListingDTO
+            {
+                Title = form["Title"],
+                Description = form["Description"],
+                PricePerMonth = decimal.Parse(form["PricePerMonth"]),
+                MaxGuests = int.Parse(form["MaxGuests"]),
+                Governorate = form["Governorate"],
+                District = form["District"],
+                Latitude = double.Parse(form["Latitude"]),
+                Longitude = double.Parse(form["Longitude"]),
+                IsBookableAsWhole = bool.Parse(form["IsBookableAsWhole"]),
+                AmenityIds = form["AmenityIds"].Select(int.Parse).ToList(),
+                ListingPhotos = form.Files.Where(f => f.Name == "ListingPhotos").ToList(),
+                Rooms = new List<CreateRoomDTO>()
+            };
+
+            int roomIndex = 0;
+            while (form.ContainsKey($"Rooms[{roomIndex}].Name"))
+            {
+                var room = new CreateRoomDTO
+                {
+                    Name = form[$"Rooms[{roomIndex}].Name"],
+                    Type = form[$"Rooms[{roomIndex}].Type"],
+                    PricePerNight = decimal.Parse(form[$"Rooms[{roomIndex}].PricePerNight"]),
+                    MaxGuests = int.Parse(form[$"Rooms[{roomIndex}].MaxGuests"]),
+                    IsBookableAsWhole = bool.Parse(form[$"Rooms[{roomIndex}].IsBookableAsWhole"]),
+                    RoomPhotos = form.Files.Where(f => f.Name == $"Rooms[{roomIndex}].RoomPhotos").ToList(),
+                    Beds = new List<CreateBedDTO>()
+                };
+
+                int bedIndex = 0;
+                while (form.ContainsKey($"Rooms[{roomIndex}].Beds[{bedIndex}].Label"))
+                {
+                    var bed = new CreateBedDTO
+                    {
+                        Label = form[$"Rooms[{roomIndex}].Beds[{bedIndex}].Label"],
+                        Type = form[$"Rooms[{roomIndex}].Beds[{bedIndex}].Type"],
+                        Price = decimal.Parse(form[$"Rooms[{roomIndex}].Beds[{bedIndex}].Price"]),
+                        IsAvailable = bool.Parse(form[$"Rooms[{roomIndex}].Beds[{bedIndex}].IsAvailable"]),
+                        BedPhotos = form.Files.Where(f => f.Name == $"Rooms[{roomIndex}].Beds[{bedIndex}].BedPhotos").ToList()
+                    };
+
+                    room.Beds.Add(bed);
+                    bedIndex++;
+                }
+
+                dto.Rooms.Add(room);
+                roomIndex++;
+            }
+
+            return dto;
+        }
+
+
 
         public async Task CreateListingAsync(CreateListingDTO dto, string hostId)
         {
@@ -105,7 +163,7 @@ namespace Sakan.Application.Services
                 listing.ListingAmenities = dto.AmenityIds.Select(id => new ListingAmenities
                 {
                     AmenitiesId = id,
-                  //  listing = listing
+                    ListingsId = listing.Id
                 }).ToList();
             }
 
