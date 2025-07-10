@@ -148,12 +148,12 @@ public partial class sakanContext:IdentityDbContext<ApplicationUser>
                 .HasConstraintName("FK__Beds__RoomId__08B54D69");
         });
         modelBuilder.Entity<ListingAmenities>()
-            .HasKey(la => new { la.listingId, la.AmenitiesId });
+            .HasKey(la => new { la.ListingsId, la.AmenitiesId });
 
         modelBuilder.Entity<ListingAmenities>()
             .HasOne(la => la.listing)
             .WithMany(l => l.ListingAmenities)
-            .HasForeignKey(la => la.listingId);
+            .HasForeignKey(la => la.ListingsId);
 
         modelBuilder.Entity <ListingAmenities>()
             .HasOne(la => la.amenity)

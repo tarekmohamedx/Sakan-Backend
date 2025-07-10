@@ -17,36 +17,26 @@ namespace Sakan.Controllers.User
         {
             _listingService = listingService;
         }
-
-      //  [Authorize(Roles = "Host")]  this filter will decode token after send it from client 
-        //[HttpPost]
-        //public async Task<IActionResult> CreateListing([FromForm] CreateListingDTO dto ,[FromRoute]string hostId)
-        //{
-        //    try
-        //    {
-        //       // var hostId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        //        var token = Request.Headers["Authorization"];
-
         [HttpPost("{hostId}")]
-        public async Task<IActionResult> CreateListing([FromForm] CreateListingDTO dto , [FromRoute]string hostId)
+        public async Task<IActionResult> CreateListing([FromForm] IFormCollection form, [FromRoute] string hostId)
         {
             try
             {
-                //var hostId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var dto = await _listingService.ParseCreateListingFormAsync(form);
                 await _listingService.CreateListingAsync(dto, hostId);
-                return Ok(new { message = $"Listing created successfully." });
+                return Ok(new { message = "Listing created successfully." });
             }
             catch (Exception ex)
             {
-                // Log the error if needed
                 return BadRequest(new
                 {
                     error = true,
-                    message = ex.Message
+                    message = ex.Message,
+                    stack = ex.StackTrace,
+                    inner = ex.InnerException?.Message
                 });
             }
         }
-
 
         [Authorize]
         [HttpGet("test-auth")]

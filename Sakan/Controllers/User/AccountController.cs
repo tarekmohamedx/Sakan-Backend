@@ -18,8 +18,9 @@ using Sakan.Application.Services;
 
 using Sakan.Application.DTOs.User;
 using Sakan.Application.DTOs;
+using Microsoft.AspNetCore.Authorization;
 
-namespace Sakan.Controllers.User
+namespace Sakan.Controllers.User 
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -344,6 +345,24 @@ namespace Sakan.Controllers.User
             return Ok(new { message = "Password has been reset successfully" });
         }
 
+
+        
+        [HttpPost("change-password/{userid}")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDTO dto ,[FromRoute] string userid)
+        {
+            var user = await userManager.FindByIdAsync(userid);
+            if (user == null) return Unauthorized();
+
+            if (dto.NewPassword != dto.ConfirmPassword)
+                return BadRequest(new { message = "New password and confirm password do not match." });
+
+            var result = await userManager.ChangePasswordAsync(user, dto.CurrentPassword, dto.NewPassword);
+
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+
+            return Ok(new { message = "Password changed successfully." });
+        }
 
 
 
