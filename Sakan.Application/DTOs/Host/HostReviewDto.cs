@@ -24,5 +24,13 @@ namespace Sakan.Application.DTOs.Host
         public string Comment { get; set; }
     }
 
+    public class ReviewsDto
+    {
+        public string ReviewerName { get; set; }
+        public string Comment { get; set; }
+        public int Rating { get; set; }
+        public DateTime CreatedAt { get; set; }
+    }
+
 
 }
