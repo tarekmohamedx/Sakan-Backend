@@ -35,6 +35,13 @@ namespace Sakan.Infrastructure.Services.User
             }
             else
             {
+                // First, get the booking to extract the ListingId
+                var booking = await _context.Bookings
+                    .FirstOrDefaultAsync(b => b.Id == dto.BookingId);
+
+                if (booking == null)
+                    return false;
+
                 var review = new Review
                 {
                     BookingId = dto.BookingId,
@@ -43,7 +50,8 @@ namespace Sakan.Infrastructure.Services.User
                     Rating = dto.Rating,
                     Comment = dto.Comment,
                     CreatedAt = DateTime.UtcNow,
-                    IsActive = true
+                    IsActive = true,
+                    ListingId = booking.ListingId
                 };
 
                 _context.Reviews.Add(review);

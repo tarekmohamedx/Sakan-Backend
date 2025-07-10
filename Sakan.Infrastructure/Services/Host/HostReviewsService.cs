@@ -94,6 +94,38 @@ namespace Sakan.Infrastructure.Services.Host
                 .ToListAsync();
         }
 
+        //public async Task<bool> CreateOrUpdateReviewAsync(string reviewerId, ReviewDto dto)
+        //{
+        //    var existing = await _context.Reviews
+        //        .FirstOrDefaultAsync(r => r.BookingId == dto.BookingId && r.ReviewerId == reviewerId);
+
+        //    if (existing != null)
+        //    {
+        //        existing.Comment = dto.Comment;
+        //        existing.Rating = dto.Rating;
+        //        existing.CreatedAt = DateTime.UtcNow;
+        //        existing.IsActive = true;
+        //    }
+        //    else
+        //    {
+        //        var review = new Review
+        //        {
+        //            BookingId = dto.BookingId,
+        //            ReviewerId = reviewerId,
+        //            ReviewedUserId = dto.ReviewedUserId,
+        //            Rating = dto.Rating,
+        //            Comment = dto.Comment,
+        //            CreatedAt = DateTime.UtcNow,
+        //            IsActive = true
+        //        };
+
+        //        _context.Reviews.Add(review);
+        //    }
+
+        //    await _context.SaveChangesAsync();
+        //    return true;
+        //}
+
         public async Task<bool> CreateOrUpdateReviewAsync(string reviewerId, ReviewDto dto)
         {
             var existing = await _context.Reviews
@@ -120,6 +152,17 @@ namespace Sakan.Infrastructure.Services.Host
                 };
 
                 _context.Reviews.Add(review);
+
+                var notification = new Notification
+                {
+                    UserId = dto.ReviewedUserId,
+                    Message = "You received a new review from your host.",
+                    Link = $"/reviews",
+                    IsRead = false,
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                _context.Notifications.Add(notification);
             }
 
             await _context.SaveChangesAsync();
