@@ -16,13 +16,13 @@ namespace Sakan.Controllers.User
     {
         private readonly IMessageService _messageService;
         private readonly IHubContext<ChatHub> _hubContext;
-
         public UserManager<ApplicationUser> UserManager { get; }
 
-        public ChatController(IMessageService messageService,
+        public ChatController(
+            IMessageService messageService,
             IHubContext<ChatHub> hubContext,
             UserManager<ApplicationUser> userManager
-            )
+                            )
         {
             _messageService = messageService;
             _hubContext = hubContext;
@@ -76,6 +76,7 @@ namespace Sakan.Controllers.User
             return Ok(chat);
         }
 
+        //done
         [HttpGet("approval-status")]
         public async Task<IActionResult> GetApprovalStatus(int bookingId, string userId, bool isHost)
         {
@@ -124,6 +125,7 @@ namespace Sakan.Controllers.User
         //    return Ok(result);
         //}
 
+        //reviewing
         [HttpPost("approve-booking")]
         public async Task<IActionResult> ApproveBooking([FromBody] ApproveBookingRequest request)
         {
@@ -131,41 +133,38 @@ namespace Sakan.Controllers.User
 
             // 1. Get booking by ID
             var booking = await _messageService.GetBookingByIdAsync(request.BookingId);
-            if (booking == null || booking.Listing == null || booking.Guest == null)
+            if (booking == null)
                 return BadRequest("Booking or related data not found");
 
-            var listing = booking.Listing;
-            var guestId = booking.GuestId!;
-            var hostId = listing.HostId;
 
             // 2. Call approval logic
-            var result = await _messageService.ApproveBookingByIdAsync(request.BookingId, guestId, request.IsHost);
+            var result = await _messageService.ApproveBookingByIdAsync(booking, request);
 
-            var receiverId = request.IsHost ? guestId : hostId;
+
 
             // 3. Send SignalR
-            await _hubContext.Clients.User(receiverId).SendAsync("ReceiveBookingStatusUpdate", new
+            await _hubContext.Clients.User(result.UserIdToNotify).SendAsync("ReceiveBookingStatusUpdate", new
             {
                 GuestApproved = result.GuestApproved,
                 HostApproved = result.HostApproved,
                 Status = result.Status,
-                ListingTitle = listing.Title ?? "Listing",
+                ListingTitle = result.ListingTitle ?? "Default Listing Title",
                 UserName = result.ApproverName
             });
 
             return Ok(result);
         }
+
+        //done
         [HttpGet("get-booking-id")]
         public async Task<IActionResult> GetBookingIdFromChat(int chatId, string guestId)
         {
-            var chat = await _messageService.GetChatWithListingAsync(chatId);
-
-            var booking = await _messageService.GetLatestActiveBookingAsync(chat.ListingId, guestId);
-
-            if (booking == null)
-                return NotFound("Booking not found");
-
-            return Ok(booking.Id);
+            var bookingId = await _messageService.GetBookingIdFromChat(chatId, guestId);
+            if (bookingId == null)
+            {
+                return NotFound("Booking ID not found for the specified chat and guest.");
+            }
+            return Ok(bookingId);
         }
 
 

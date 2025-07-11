@@ -27,7 +27,7 @@ public partial class BookingRequest
 
     public bool IsActive { get; set; }
 
-    public DateTime CreatedAt { get; set; }
+    public DateTime? CreatedAt { get; set; }
 
     public virtual Bed Bed { get; set; }
 

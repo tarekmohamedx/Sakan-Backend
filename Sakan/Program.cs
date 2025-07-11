@@ -196,7 +196,11 @@ namespace Sakan
             builder.Services.AddAuthentication().AddCookie();
 
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            //builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.CustomSchemaIds(type => type.FullName);
+            });
 
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
               .AddEntityFrameworkStores<sakanContext>().AddDefaultTokenProviders();
@@ -264,6 +268,7 @@ namespace Sakan
             builder.Services.AddScoped<IFavoriteRepository, FavoriteRepository>();
             builder.Services.AddScoped<IFavoriteService, FavoriteService>();
             builder.Services.AddScoped<EmailService>();
+            builder.Services.AddScoped<MessageRepo, MessageRepo>();
 
 
 
@@ -307,11 +312,12 @@ namespace Sakan
             app.MapHub<ChatHub>("/ChatHub");
             app.MapControllers();
 
-            //app.MapGet("/host-rating", async ([FromQuery] string userId, HostDashboardRepo repo) =>
-            //{
-            //    var LatestRating = await repo.GetLatestReviewForHostAsync(userId);
-            //    return Results.Ok(new { LatestRating = LatestRating });
-            //});
+            app.MapGet("/test-repo", async ([FromQuery] int listingId, string guestid,  [FromServices] MessageRepo repo) =>
+            {
+                var Booking = await repo.GetLatestActiveBookingAsync(listingId, guestid);
+                return Results.Ok(new { Booking = Booking });
+            });
+
 
             app.Run();
         }
