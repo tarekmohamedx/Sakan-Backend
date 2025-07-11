@@ -58,7 +58,7 @@ namespace Sakan
 
             builder.Services.AddScoped<IImageKitService, ImageKitService>();
             builder.Services.AddScoped<IListRepository, ListingRepo>();
-            builder.Services.AddScoped<IListingService, ListingService>();
+           builder.Services.AddScoped<IListingService, ListingService>();
             //builder.Services.AddScoped<IReviewService, ReviewService>();
             builder.Services.AddScoped<IHostBookingService, HostBookingService>();
             builder.Services.AddScoped<IHostReviewsService, HostReviewsService>();
@@ -70,6 +70,8 @@ namespace Sakan
 
             builder.Services.Configure<OpenAIOptions>(builder.Configuration.GetSection("OpenAI"));
             builder.Services.AddScoped<IAdminHostsService, AdminHostsApproveService>();
+            builder.Services.AddScoped<IAdminUsersService, AdminUsersService>();
+
 
 
 
@@ -246,7 +248,7 @@ namespace Sakan
             ));
 
 
-            builder.Services.AddScoped<IImageKitService, ImageKitService>();
+           //a builder.Services.AddScoped<IImageKitService, ImageKitService>();
 
             builder.Services.AddScoped<ITestRepo, TestRepo>();
             builder.Services.AddScoped<IProfile, ProfileRepo>();
@@ -257,15 +259,15 @@ namespace Sakan
             builder.Services.AddScoped<IHostDashboard, HostDashboardRepo>();
             builder.Services.AddScoped<IHostDashboardService, HostDashboardService>();
             builder.Services.AddScoped<IListingRepository, ListingRepository>();
-            builder.Services.AddScoped<IListingService, ListingService>();
+           builder.Services.AddScoped<IListingService, ListingService>();
             builder.Services.AddScoped<IAmenityRepository, AmenityRepository>();
-            builder.Services.AddScoped<IAmenityService, AmenityService>();
+          builder.Services.AddScoped<IAmenityService, AmenityService>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-            builder.Services.AddScoped<IPaymentService, PaymentService>();
+          builder.Services.AddScoped<IPaymentService, PaymentService>();
             builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
             builder.Services.AddScoped<IBookingRepository, BookingRepository>();
             builder.Services.AddScoped<IFavoriteRepository, FavoriteRepository>();
-            builder.Services.AddScoped<IFavoriteService, FavoriteService>();
+           builder.Services.AddScoped<IFavoriteService, FavoriteService>();
             builder.Services.AddScoped<EmailService>();
 
 
