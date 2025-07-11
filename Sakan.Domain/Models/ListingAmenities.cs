@@ -8,7 +8,7 @@ namespace Sakan.Domain.Models
 {
     public class ListingAmenities
     {
-        public int listingId { get; set; }
+        public int ListingsId { get; set; }
         public Listing listing { get; set; }
         public int AmenitiesId { get; set; }
         public Amenity amenity { get; set; }

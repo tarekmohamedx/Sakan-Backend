@@ -35,6 +35,7 @@ namespace Sakan.Application.DTOs.User
         public List<int> BedIds { get; set; } = new();
         public DateTime FromDate { get; set; }
         public DateTime ToDate { get; set; }
+        public DateTime? CreatedAt { get; set; }
     }
 
 }

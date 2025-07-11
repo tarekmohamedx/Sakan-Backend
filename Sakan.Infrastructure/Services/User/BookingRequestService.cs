@@ -40,7 +40,8 @@ namespace Sakan.Infrastructure.Services
                     FromDate = dto.FromDate,
                     ToDate = dto.ToDate,
                     HostApproved = null,
-                    GuestApproved = null
+                    GuestApproved = null,
+                    CreatedAt = dto.CreatedAt
                 };
 
                 _context.BookingRequests.Add(booking);
@@ -61,7 +62,8 @@ namespace Sakan.Infrastructure.Services
                         FromDate = dto.FromDate,
                         ToDate = dto.ToDate,
                         HostApproved = null,
-                        GuestApproved = null
+                        GuestApproved = null,
+                        CreatedAt = dto.CreatedAt
                     };
 
                     _context.BookingRequests.Add(booking);

@@ -12,13 +12,16 @@ namespace Sakan.Application.DTOs.User
         public bool HostApproved { get; set; }
         public string Status { get; set; } // "GoToPayment", "PendingHost", etc.
         public string? ListingTitle { get; set; }
-        public string? ApproverName { get; set; }     
+        public string? ApproverName { get; set; }   
+        public string? ApproverId { get; set; }
+        public string? UserIdToNotify { get; set; }
     }
 
     public class ApproveBookingRequest
     {
-        public int ChatId { get; set; }
+        public int? ChatId { get; set; }
         public bool IsHost { get; set; }
         public int BookingId { get; set; }
+        public string? UserId { get; set; }
     }
 }
