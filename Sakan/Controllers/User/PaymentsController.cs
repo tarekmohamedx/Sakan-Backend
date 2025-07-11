@@ -8,7 +8,7 @@ namespace Sakan.Controllers.User
 {
     [ApiController]
     [Route("api/[controller]")]
-    //[Authorize] 
+    [Authorize] 
     public class PaymentsController : ControllerBase
     {
         private readonly IPaymentService _paymentService;
@@ -22,8 +22,8 @@ namespace Sakan.Controllers.User
         [HttpPost("create-intent")]
         public async Task<IActionResult> CreatePaymentIntent([FromBody] CreatePaymentIntentRequest request)
         {
-           // var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var userId = "8569ce99-18f5-49a1-88e8-1549e42c0d83";
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            //var userId = "8569ce99-18f5-49a1-88e8-1549e42c0d83";
             if (string.IsNullOrEmpty(userId)) return Unauthorized();
 
             try

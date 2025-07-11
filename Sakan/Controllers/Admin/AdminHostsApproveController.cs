@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Sakan.Application.DTOs.Admin;
 using Sakan.Application.Interfaces.Admin;
+using Sakan.Domain.Models;
 using Sakan.Infrastructure.Models;
 
 namespace Sakan.Controllers.Admin
@@ -13,10 +14,12 @@ namespace Sakan.Controllers.Admin
     public class AdminHostsApproveController : ControllerBase
     {
         private readonly IAdminHostsService _hostAdminService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public AdminHostsApproveController(IAdminHostsService hostAdminService)
+        public AdminHostsApproveController(IAdminHostsService hostAdminService, UserManager<ApplicationUser> userManager)
         {
             _hostAdminService = hostAdminService;
+            _userManager = userManager;
         }
 
         [HttpGet("hosts")]
@@ -24,6 +27,7 @@ namespace Sakan.Controllers.Admin
         {
             var result = await _hostAdminService.GetAllHostsAsync();
             return Ok(result);
+            
         }
 
         [HttpPost("approve-host")]
