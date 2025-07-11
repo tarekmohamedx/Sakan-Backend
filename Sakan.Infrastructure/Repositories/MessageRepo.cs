@@ -118,30 +118,27 @@ namespace Sakan.Infrastructure.Repositories
             await Context.SaveChangesAsync();
         }
 
-     public async Task<Chat?> GetChatWithListingAsync(int chatId)
-{
-    return await Context.Chats
-        .Include(c => c.Listing)
-            .ThenInclude(l => l.Host)
-        .Include(c => c.Messages)
-            .ThenInclude(m => m.Sender)
-        .FirstOrDefaultAsync(c => c.ChatId == chatId);
-}
+        //done
+     public async Task<Chat?> GetChatWitIdAsync(int chatId)
+        { 
+             return await Context.Chats.FirstOrDefaultAsync(c => c.ChatId == chatId);
+        }
+
+        //done
         public async Task<BookingRequest?> GetLatestActiveBookingAsync(int listingId)
         {
             return await Context.BookingRequests
-                .Include(br => br.Guest)
-                .Where(br => br.ListingId == listingId)
-                .OrderByDescending(br => br.FromDate)
+                .Where(br => br.ListingId == listingId && br.IsActive)
+                .OrderByDescending(br => br.CreatedAt)
                 .FirstOrDefaultAsync();
         }
 
+        //done
         public async Task<BookingRequest?> GetLatestActiveBookingAsync(int listingId, string guestId)
         {
-            System.Diagnostics.Debug.WriteLine("From GetLatestActiveBookingAsync Repo listing id: " + listingId + " guestid: " + guestId);
              return await Context.BookingRequests
-                .Where(br => br.ListingId == listingId && br.GuestId == guestId)
-                .OrderByDescending(br => br.FromDate)
+                .Where(br => br.ListingId == listingId && br.GuestId == guestId && br.IsActive)
+                .OrderByDescending(br => br.CreatedAt)
                 .FirstOrDefaultAsync();
         }
 
@@ -162,29 +159,41 @@ namespace Sakan.Infrastructure.Repositories
 
     return guestId;
 }
+
+        //done review
         public async Task<BookingRequest?> GetBookingByIdAsync(int bookingId)
         {
+            //return await Context.BookingRequests
+            //    .Include(b => b.Guest)
+            //    .Include(b => b.Listing)
+            //        .ThenInclude(l => l.Host)
+            //    .Include(b => b.Listing)
+            //        .ThenInclude(l => l.Chats)
+            //    .FirstOrDefaultAsync(b => b.Id == bookingId);
+
             return await Context.BookingRequests
-                .Include(b => b.Guest)
-                .Include(b => b.Listing)
-                    .ThenInclude(l => l.Host)
-                .Include(b => b.Listing)
-                    .ThenInclude(l => l.Chats)
-                .FirstOrDefaultAsync(b => b.Id == bookingId);
+                .FirstAsync(b => b.Id == bookingId);
+        }
+        //done 
+        public async Task<Listing> GetListingByIdAsync(int listingId)
+        {
+            return await Context.Listings
+                .Where(l => l.Id == listingId && l.IsActive && !l.IsDeleted)
+                .FirstOrDefaultAsync();
         }
 
         public async Task<string?> GetGuestIdByChatId(int chatId)
         {
             var listingId = await Context.Chats
-      .Where(c => c.ChatId == chatId)
-      .Select(c => c.ListingId)
-      .FirstOrDefaultAsync();
+              .Where(c => c.ChatId == chatId)
+              .Select(c => c.ListingId)
+              .FirstOrDefaultAsync();
 
             if (listingId == 0) return null;
 
             var guestId = await Context.BookingRequests
                 .Where(b => b.ListingId == listingId && b.IsActive)
-                .OrderByDescending(b => b.FromDate)
+                .OrderByDescending(b => b.CreatedAt)
                 .Select(b => b.GuestId)
                 .FirstOrDefaultAsync();
 
