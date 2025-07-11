@@ -3,6 +3,8 @@ using Sakan.Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
 using Sakan.Application.Interfaces.User;
 using Sakan.Application.DTOs.User;
+using Microsoft.AspNetCore.Mvc;
+using Sakan.Application.DTOs.Host;
 
 namespace Sakan.Infrastructure.Services.User
 {
@@ -14,49 +16,6 @@ namespace Sakan.Infrastructure.Services.User
         {
             _context = context;
         }
-
-        //public async Task<ListingDetailsDto> GetListingDetails(int id)
-        //{
-        //    var listing = await _context.Listings
-        //        .Include(l => l.ListingPhotos)
-        //        .Include(l => l.Rooms)
-        //        .ThenInclude(r => r.RoomPhotos)
-        //        .Include(l => l.Host)
-        //        .FirstOrDefaultAsync(l => l.Id == id);
-
-        //    if (listing == null) return null;
-        //    var bedroomTypes = new[] { "single", "double", "studio", "shared" };
-        //    return new ListingDetailsDto
-        //    {
-        //        Id = listing.Id,
-        //        Title = listing.Title,
-        //        Description = listing.Description,
-        //        PricePerMonth = listing.PricePerMonth ?? 0,
-        //        Location = $"{listing.Governorate}, {listing.District}",
-        //        Latitude = listing.Latitude ?? 0,
-        //        Longitude = listing.Longitude ?? 0,
-        //        Bedrooms = listing.Rooms.Count(r => r.Type != null && bedroomTypes.Contains(r.Type.ToLower())),
-        //        Bathrooms = listing.Rooms.Count(r => r.Type == "bathroom"),
-        //        Photos = listing.ListingPhotos.Select(p => p.PhotoUrl).ToList(),
-        //        BedroomList = listing.Rooms
-        //            .Where(r => r.Type != null && bedroomTypes.Contains(r.Type.ToLower()))
-        //            .Select(r => new RoomDto
-        //            {
-        //                Id = r.Id,
-        //                Name = r.Name,
-        //                PricePerNight = r.PricePerNight,
-        //                Photos = r.RoomPhotos.Select(p => p.PhotoUrl).ToList()
-        //            })
-        //            .ToList(),
-        //        Host = new HostInfoDto
-        //        {
-        //            Name = listing.Host.UserName,
-
-        //        }
-        //    };
-
-        //}
-
 
         public async Task<ListingDetailsDto> GetListingDetails(int id)
         {
@@ -140,6 +99,35 @@ namespace Sakan.Infrastructure.Services.User
             return bookedMonths.ToList();
         }
 
+        public async Task<List<ReviewsDto>> GetReviewsForListingAsync(int listingId)
+        {
+            return await _context.Reviews
+                .Where(r => r.ListingId == listingId && r.IsActive)
+                .Include(r => r.Reviewer)
+                .OrderByDescending(r => r.CreatedAt)
+                .Select(r => new ReviewsDto
+                {
+                    ReviewerName = r.Reviewer.UserName,
+                    Comment = r.Comment,
+                    Rating = r.Rating ?? 0,
+                    CreatedAt = r.CreatedAt ?? DateTime.MinValue
+                })
+                .ToListAsync();
+        }
+
+
+
+        //public async Task<List<AmenityDto>> GetAmenitiesForListingAsync(int listingId)
+        //{
+        //    return await _context.ListingAmenities
+        //        .Where(la => la.ListingsId == listingId)
+        //        .Select(la => new AmenityDto
+        //        {
+        //            Id = la.amenity.Id,
+        //            Name = la.amenity.Name,
+        //            IconUrl = la.amenity.IconUrl
+        //        }).ToListAsync();
+        //}
 
 
     }

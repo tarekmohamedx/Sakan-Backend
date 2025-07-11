@@ -72,6 +72,16 @@ namespace Sakan.Infrastructure.Services.Host
 
                 _context.Reviews.Add(review);
             }
+            var notification = new Notification
+            {
+                UserId = dto.ReviewedUserId,
+                Message = "You received a new review from your host.",
+                Link = $"/",
+                IsRead = false,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _context.Notifications.Add(notification);
 
             await _context.SaveChangesAsync();
             return true;
@@ -122,9 +132,26 @@ namespace Sakan.Infrastructure.Services.Host
                 _context.Reviews.Add(review);
             }
 
+            var message = existing != null
+                    ? "Your review has been updated by the host."
+                    : "You received a new review from your host.";
+
+            // 🔔 Always notify the reviewed user
+            var notification = new Notification
+            {
+                UserId = dto.ReviewedUserId,
+                Message = message,
+                Link = $"/",
+                IsRead = false,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _context.Notifications.Add(notification);
+
             await _context.SaveChangesAsync();
             return true;
         }
+
 
     }
 }

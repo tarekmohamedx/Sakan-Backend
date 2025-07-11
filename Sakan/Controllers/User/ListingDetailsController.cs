@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Sakan.Application.Interfaces.User;
 using Sakan.Application.DTOs.User;
+using Sakan.Infrastructure.Services.User;
 
 namespace Sakan.Controllers.User
 {
@@ -41,11 +42,27 @@ namespace Sakan.Controllers.User
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);  // <-- This returns validation errors
+                return BadRequest(ModelState);  
             }
             var result = await _bookingService.CreateAsync(dto);
             return Ok(new { result.requestId, result.hostId });
         }
+
+        [HttpGet("listing-reviews/{listingId}")]
+        public async Task<IActionResult> GetListingReviews(int listingId)
+        {
+            var reviews = await _listingService.GetReviewsForListingAsync(listingId);
+            return Ok(reviews);
+        }
+
+
+
+        //[HttpGet("{listingId}/amenities")]
+        //public async Task<IActionResult> GetAmenities(int listingId)
+        //{
+        //    var amenities = await _listingService.GetAmenitiesForListingAsync(listingId);
+        //    return Ok(amenities);
+        //}
 
 
         //[HttpGet("{id}")]

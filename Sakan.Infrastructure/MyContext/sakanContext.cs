@@ -148,12 +148,12 @@ public partial class sakanContext:IdentityDbContext<ApplicationUser>
                 .HasConstraintName("FK__Beds__RoomId__08B54D69");
         });
         modelBuilder.Entity<ListingAmenities>()
-            .HasKey(la => new { la.listingId, la.AmenitiesId });
+            .HasKey(la => new { la.ListingsId, la.AmenitiesId });
 
         modelBuilder.Entity<ListingAmenities>()
             .HasOne(la => la.listing)
             .WithMany(l => l.ListingAmenities)
-            .HasForeignKey(la => la.listingId);
+            .HasForeignKey(la => la.ListingsId);
 
         modelBuilder.Entity <ListingAmenities>()
             .HasOne(la => la.amenity)
@@ -251,6 +251,8 @@ public partial class sakanContext:IdentityDbContext<ApplicationUser>
                 .HasForeignKey(d => d.HostId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Listings__HostId__7F2BE32F");
+            //entity.HasMany(d => d.Amenities).WithMany(p => p.Listings)
+            //    .UsingEntity(j => j.ToTable("ListingAmenities"));
         });
 
         modelBuilder.Entity<ListingPhoto>(entity =>

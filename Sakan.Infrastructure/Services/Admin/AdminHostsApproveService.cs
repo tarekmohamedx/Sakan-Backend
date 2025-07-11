@@ -45,15 +45,38 @@ namespace Sakan.Infrastructure.Services.Admin
             {
                 user.HostVerificationStatus = "accepted";
                 await _userManager.AddToRoleAsync(user, "Host");
+
+                var notification = new Notification
+                {
+                    UserId = dto.UserId, // ✅ Set user ID
+                    Message = "🎉 Your host request has been approved!",
+                    Link = "/", // You can update this to point to the dashboard or relevant page
+                    IsRead = false,
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                _context.Notifications.Add(notification);
             }
             else if (dto.Action == "reject")
             {
                 user.HostVerificationStatus = "rejected";
+
+                var notification = new Notification
+                {
+                    UserId = dto.UserId, // ✅ Set user ID
+                    Message = "❌ Your host request has been rejected.",
+                    Link = "/", // Same here
+                    IsRead = false,
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                _context.Notifications.Add(notification);
             }
 
             await _context.SaveChangesAsync();
             return $"Host {dto.Action}ed successfully.";
         }
+
     }
 }
 
