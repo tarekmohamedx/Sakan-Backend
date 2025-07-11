@@ -71,6 +71,8 @@ namespace Sakan
             builder.Services.AddScoped<EmailService>();
             builder.Services.AddScoped<IEmailService, SendGridEmailService>();
             builder.Services.AddScoped<ISupportTicketService, SupportTicketService>();
+            builder.Services.AddScoped<IAdminUsersService, AdminUsersService>();
+
 
             // إضافة المستودعات (Repositories)
             builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
