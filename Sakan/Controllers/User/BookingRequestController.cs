@@ -33,6 +33,8 @@ namespace Sakan.Controllers.User
             return BadRequest(new { message = "Failed to update booking request." });
         }
 
+        //--
+
         [HttpGet("host/{hostId}")]
         public async Task<IActionResult> GetBookingRequestsByHostId(string hostId)
         {

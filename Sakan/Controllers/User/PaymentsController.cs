@@ -18,7 +18,7 @@ namespace Sakan.Controllers.User
             _paymentService = paymentService;
         }
 
-        // POST: api/payments/create-intent
+     //   [Authorize]
         [HttpPost("create-intent")]
         public async Task<IActionResult> CreatePaymentIntent([FromBody] CreatePaymentIntentRequest request)
         {
