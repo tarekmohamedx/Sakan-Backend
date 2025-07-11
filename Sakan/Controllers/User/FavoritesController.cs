@@ -8,7 +8,7 @@ namespace Sakan.Controllers.User
 {
     [ApiController]
     [Route("api/[controller]")]
-    //[Authorize] // هذه العمليات تتطلب أن يكون المستخدم مسجلاً دخوله
+    [Authorize] // هذه العمليات تتطلب أن يكون المستخدم مسجلاً دخوله
     public class FavoritesController : ControllerBase
     {
         private readonly IFavoriteService _favoriteService;
@@ -20,9 +20,9 @@ namespace Sakan.Controllers.User
 
         // POST: api/favorites/toggle/123  (حيث 123 هو رقم الوحدة)
         [HttpPost("toggle/{listingId:int}")]
-        public async Task<IActionResult> ToggleFavorite(int listingId, string userId)
+        public async Task<IActionResult> ToggleFavorite(int listingId)
         {
-            //var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             //var userId = "b0607feb-d284-431f-a686-6bd5c77e5d9d";
             if (string.IsNullOrEmpty(userId))
             {
@@ -35,9 +35,9 @@ namespace Sakan.Controllers.User
 
         // GET: api/favorites
         [HttpGet]
-        public async Task<IActionResult> GetUserFavorites(string userId)
+        public async Task<IActionResult> GetUserFavorites()
         {
-            //var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             //var userId = "b0607feb-d284-431f-a686-6bd5c77e5d9d";
             if (string.IsNullOrEmpty(userId))
             {

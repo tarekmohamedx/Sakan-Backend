@@ -36,4 +36,5 @@ public partial class SupportTicket
     public virtual ICollection<TicketReply> TicketReplies { get; set; } = new List<TicketReply>();
 
     public virtual ApplicationUser User { get; set; }
+    public string? GuestAccessToken { get; set; }
 }
