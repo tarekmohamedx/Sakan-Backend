@@ -15,6 +15,8 @@ namespace Sakan.Application.DTOs.Host
         public string ListingTitle { get; set; }
         public string RoomTitle { get; set; }
         public string BedTitle { get; set; }
+
+        public DateTime CreatedAt { get; set; }
         public string ListingLocation { get; set; }
         public DateTime FromDate { get; set; }
         public DateTime ToDate { get; set; }

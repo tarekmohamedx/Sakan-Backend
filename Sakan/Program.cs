@@ -185,6 +185,27 @@ namespace Sakan
                           .AllowAnyMethod()  // اسمح بأي نوع طلب (GET, POST, etc.)
                           .AllowCredentials(); // مهم لـ SignalR
                 });
+                options.AddPolicy(name: corsPolicyName,
+                    policy =>
+                    {
+                        policy.WithOrigins("http://localhost:4200")
+                              .AllowAnyHeader()
+                              .AllowAnyMethod()
+                              .AllowCredentials();
+                    });
+            });
+
+
+            builder.Services.Configure<IdentityOptions>(options =>
+            {
+                options.Password.RequireDigit = true;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequiredLength = 4;
+                options.SignIn.RequireConfirmedEmail = false;
+                options.Lockout.AllowedForNewUsers = false;
+
             });
             #endregion
 

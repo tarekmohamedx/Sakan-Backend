@@ -17,11 +17,14 @@ namespace Sakan.Controllers.User
         {
             _listingService = listingService;
         }
+
+
         [HttpPost("{hostId}")]
         public async Task<IActionResult> CreateListing([FromForm] IFormCollection form, [FromRoute] string hostId)
         {
             try
             {
+
                 var dto = await _listingService.ParseCreateListingFormAsync(form);
                 await _listingService.CreateListingAsync(dto, hostId);
                 return Ok(new { message = "Listing created successfully." });
@@ -44,6 +47,7 @@ namespace Sakan.Controllers.User
         {
             if (User.Identity?.IsAuthenticated == true)
             {
+            
                 var name = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 var role = User.FindFirst(ClaimTypes.Role)?.Value;
                 return Ok(new { name, role });
