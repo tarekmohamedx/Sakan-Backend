@@ -12,6 +12,7 @@ using Sakan.Application.Interfaces.User;
 using Sakan.Application.Mapper;
 using Sakan.Application.Services;
 using Sakan.Application.Services.Admin;
+using Sakan.Controllers;
 using Sakan.Domain.Interfaces;
 using Sakan.Domain.IUnitOfWork;
 using Sakan.Domain.Models;
@@ -43,6 +44,7 @@ namespace Sakan
             builder.Services.AddControllers();
             builder.Services.AddHttpClient();
             builder.Services.AddSignalR();
+
 
             // إضافة AutoMapper
             builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
@@ -191,6 +193,9 @@ namespace Sakan
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             #endregion
+
+            builder.Services.Configure<AiController.OpenAIOptions>(
+                builder.Configuration.GetSection("OpenAI"));
 
             var app = builder.Build();
 
