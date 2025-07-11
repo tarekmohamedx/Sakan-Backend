@@ -124,6 +124,8 @@ namespace Sakan.Controllers.User
             var errors = ModelState.Values.SelectMany(s => s.Errors).Select(s => s.ErrorMessage).ToList();
             return BadRequest(errors);
         }
+
+
         [HttpPost("Login")]
         public async Task<IActionResult> Login(LoginDTO loginDTO)
         {

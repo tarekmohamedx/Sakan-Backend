@@ -17,8 +17,11 @@ namespace Sakan.Application.DTOs.User
         public int? RoomId { get; set; }
         public string RoomName { get; set; }
 
+        public DateTime CreatedAt { get; set; }
+
         public int? BedId { get; set; }
         public string BedName { get; set; }
+
 
         public List<int> BedIds { get; set; } = new();
 
@@ -32,6 +35,8 @@ namespace Sakan.Application.DTOs.User
         public string GuestId { get; set; }
         public int? ListingId { get; set; }
         public int? RoomId { get; set; }
+        public DateTime CreatedAt { get; set; }
+
         public List<int> BedIds { get; set; } = new();
         public DateTime FromDate { get; set; }
         public DateTime ToDate { get; set; }

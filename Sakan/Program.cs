@@ -28,6 +28,7 @@ using Sakan.Application.Services.Admin;
 using Sakan.Infrastructure.Services.Admin;
 using Sakan.Application.Interfaces.Admin;
 using static Sakan.Controllers.AiController;
+using Sakan.Controllers;
 
 namespace Sakan
 {
@@ -189,6 +190,9 @@ namespace Sakan
 
             });
 
+            builder.Services.Configure<AiController.OpenAIOptions>(
+    builder.Configuration.GetSection("OpenAI"));
+
             builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
 
 
@@ -217,8 +221,8 @@ namespace Sakan
                     {
                         policy.WithOrigins("http://localhost:4200")
                               .AllowAnyHeader()
-                              .AllowAnyMethod();
-                              //.AllowCredentials();
+                              .AllowAnyMethod()
+                              .AllowCredentials();
                     });
             });
 

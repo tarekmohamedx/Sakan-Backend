@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 using Sakan.Application.DTOs;
 using Sakan.Application.DTOs.Host;
 using Sakan.Application.DTOs.User;
@@ -38,6 +39,7 @@ namespace Sakan.Infrastructure.Services
                     RoomId = dto.RoomId,
                     BedId = null, // No specific bed
                     FromDate = dto.FromDate,
+                    CreatedAt = DateAndTime.Now,
                     ToDate = dto.ToDate,
                     HostApproved = null,
                     GuestApproved = null
@@ -136,6 +138,7 @@ namespace Sakan.Infrastructure.Services
                 {
                     BookingRequestId = br.Id,
                     GuestId = br.GuestId,
+                   
                     GuestName = _context.Users.Where(u => u.Id == br.GuestId).Select(u => u.UserName).FirstOrDefault(),
                     ListingTitle = _context.Listings.Where(l => l.Id == br.ListingId).Select(l => l.Title).FirstOrDefault(),
                     RoomTitle = _context.Rooms.Where(r => r.Id == br.RoomId).Select(r => r.Name).FirstOrDefault(),
@@ -144,11 +147,12 @@ namespace Sakan.Infrastructure.Services
                         .Select(l => l.Governorate + " - " + l.District).FirstOrDefault(),
                     FromDate = (DateTime)br.FromDate,
                     ToDate = (DateTime)br.ToDate,
+                    CreatedAt = (DateTime)br.CreatedAt,
                     IsApproved = br.HostApproved == true ? "Accepted" :
                              br.HostApproved == false ? "Rejected" :
                              "Pending"
 
-                })
+                }).OrderByDescending(s => s.CreatedAt)
                 .ToListAsync();
 
             return requests;
