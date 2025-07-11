@@ -39,11 +39,12 @@ namespace Sakan.Infrastructure.Repositories
             return messages;
         }
 
+        //done
         public async Task<IEnumerable<UserChatSummary>> GetUserChatsAsync(string userId)
         {
             var chats = await Context.Chats
                 .Include(c => c.Listing)
-                    .ThenInclude(l => l.Host)
+                .ThenInclude(l => l.Host)
                 .Include(c => c.Messages)
                 .Where(c => c.Messages.Any(m => m.SenderId == userId || m.ReceiverId == userId))
                 .Select(c => new UserChatSummary
@@ -62,16 +63,6 @@ namespace Sakan.Infrastructure.Repositories
                             .FirstOrDefault()
                         )
                         .FirstOrDefault(),
-
-                    ListingStatus = Context.BookingRequests
-    .Where(br => br.ListingId == c.ListingId)
-    .OrderByDescending(br => br.FromDate)
-    .Select(br =>
-        br.HostApproved == true && br.GuestApproved == true ? "Approved" :
-        (br.HostApproved == false || br.GuestApproved == false) ? "Rejected" :
-        "Pending"
-    )
-    .FirstOrDefault() ?? "Pending",
 
                     LastMessage = c.Messages
                         .OrderByDescending(m => m.Timestamp)

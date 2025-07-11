@@ -84,48 +84,7 @@ namespace Sakan.Controllers.User
             return Ok(result);
         }
 
-
-        //[HttpPost("approve")]
-        //public async Task<IActionResult> ApproveBooking([FromBody] ApproveBookingRequest request)
-        //{
-        //    //var userId = request.UserId ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
-        //    var userId = "6a2f6c64-510c-43a8-a900-ce8ecbb2e889";
-
-        //    // 1. Call core logic
-        //    var result = await _messageService.ApproveBookingAsync("6a2f6c64-510c-43a8-a900-ce8ecbb2e889", request.ChatId, request.IsHost);
-
-        //    // 2. Get chat + listing
-        //    var chat = await _messageService.GetChatWithListingAsync(request.ChatId);
-
-        //    if (chat?.Listing == null)
-        //        return BadRequest("Listing not found");
-
-        //    var listingTitle = chat.Listing.Title ?? "Listing";
-        //    var hostId = chat.Listing.HostId;
-
-        //    // 3. Get booking to extract GuestId
-        //    var booking = await _messageService.GetLatestActiveBookingAsync(chat.ListingId, userId);
-        //    if (booking == null || string.IsNullOrEmpty(booking.GuestId))
-        //        return BadRequest("Guest not found");
-
-        //    var guestId = booking.GuestId;
-
-        //    var receiverId = request.IsHost ? guestId : hostId;
-
-        //    // 4. Send SignalR
-        //    await _hubContext.Clients.User(receiverId).SendAsync("ReceiveBookingStatusUpdate", new
-        //    {
-        //        GuestApproved = result.GuestApproved,
-        //        HostApproved = result.HostApproved,
-        //        Status = result.Status,
-        //        ListingTitle = listingTitle,
-        //        UserName = result.ApproverName // Already calculated في service
-        //    });
-
-        //    return Ok(result);
-        //}
-
-        //reviewing
+        //done
         [HttpPost("approve-booking")]
         public async Task<IActionResult> ApproveBooking([FromBody] ApproveBookingRequest request)
         {
