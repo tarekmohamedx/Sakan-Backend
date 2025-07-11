@@ -14,14 +14,16 @@ namespace Sakan.Application.Services
 {
     public class PaymentService : IPaymentService
     {
+        private readonly IBookingRequestRepository _requestRepository;
         private readonly IBookingRepository _bookingRepository;
         private readonly IPaymentRepository _paymentRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly string _stripeSecretKey;
         private readonly string _webhookSecret;
 
-        public PaymentService(IBookingRepository bookingRepository, IPaymentRepository paymentRepository, IUnitOfWork unitOfWork, IConfiguration config)
+        public PaymentService(IBookingRequestRepository requestRepository, IBookingRepository bookingRepository, IPaymentRepository paymentRepository, IUnitOfWork unitOfWork, IConfiguration config)
         {
+            _requestRepository = requestRepository;
             _bookingRepository = bookingRepository;
             _unitOfWork = unitOfWork;
             _paymentRepository = paymentRepository;
@@ -30,47 +32,33 @@ namespace Sakan.Application.Services
             StripeConfiguration.ApiKey = _stripeSecretKey;
         }
 
-        public async Task<string> CreatePaymentIntentAsync(int bookingId, string userId)
+        public async Task<string> CreatePaymentIntentAsync(int requestId, string userId)
         {
-            var booking = await _bookingRepository.GetByIdAsync(bookingId);
+            var request = await _requestRepository.GetByIdAsync(requestId);
 
             // 1. التحقق من صحة الحجز
-            if (booking == null || booking.GuestId != userId || booking.PaymentStatus != "Pending")
+            if (request == null || !request.IsActive || request.GuestId != userId)
             {
-                throw new Exception("Invalid booking or booking already processed.");
+                throw new InvalidOperationException("This booking request is not ready for payment.");
             }
 
             // 2. حساب المبلغ **دائماً في الباك اند** لضمان الأمان
-            var amountInCents = (long)(booking.Price * 100); // Stripe تتعامل مع المبلغ بالـ cents/قروش
+            var price = CalculatePrice(request);
+            var amountInCents = (long)(price * 100);
 
             var options = new PaymentIntentCreateOptions
             {
                 Amount = amountInCents,
-                Currency = "egp", // أو أي عملة أخرى
+                Currency = "egp",
                 Metadata = new Dictionary<string, string>
-                {
-                    { "booking_id", booking.Id.ToString() },
-                    { "user_id", userId }
-                }
+            {
+                { "booking_request_id", requestId.ToString() },
+                { "user_id", userId }
+            }
             };
 
             var service = new PaymentIntentService();
             var paymentIntent = await service.CreateAsync(options);
-
-            // 3. إنشاء سجل دفع في قاعدة بياناتك بحالة "pending"
-            var newPayment = new Payment
-            {
-                BookingId = booking.Id,
-                StripePaymentIntentId = paymentIntent.Id,
-                Amount = booking.Price,
-                Currency = "egp",
-                Status = "pending", // أو "requires_payment_method"
-                PaymentDate = DateTime.UtcNow
-            };
-            // سنحتاج لـ context لإضافة الدفعة أو repository متخصص
-            // For simplicity, assuming UnitOfWork can access DbContext to add.
-            // In a real app, you might have IPaymentRepository with an Add method.
-            await _paymentRepository.AddAsync(newPayment);
 
             await _unitOfWork.SaveChangesAsync();
 
@@ -114,19 +102,77 @@ namespace Sakan.Application.Services
         private async Task ProcessSuccessfulPayment(string paymentIntentId)
         {
             // هنا ستحتاجين لـ IPaymentRepository لجلب الدفعة وتحديثها
-            var payment = await _paymentRepository.GetByIntentIdAsync(paymentIntentId);
-            Console.WriteLine(payment == null ? "Payment not found in DB!" : "Payment found!");
-            if (payment != null && payment.Status != "Paid")
+            var service = new PaymentIntentService();
+            var paymentIntent = await service.GetAsync(paymentIntentId);
+
+            // 1. استخراج booking_request_id من الـ Metadata
+            var requestIdStr = paymentIntent.Metadata["booking_request_id"];
+            if (!int.TryParse(requestIdStr, out var requestId))
             {
-                Console.WriteLine($"Payment Succeeded for Intent: {paymentIntentId}");
-                payment.Status = "Paid";
-                payment.PaymentDate = DateTime.UtcNow;
-                var booking = await _bookingRepository.GetByIdAsync(payment.BookingId.Value);
-                booking.PaymentStatus = "Paid";
-                await _unitOfWork.SaveChangesAsync();
-                // يمكنك هنا إرسال إيميل تأكيد الحجز
-                Console.WriteLine($"Payment Succeeded for Intent: {paymentIntentId}");
+                throw new InvalidOperationException("Booking Request ID not found in payment metadata.");
             }
+
+            // 2. جلب طلب الحجز الأصلي
+            var request = await _requestRepository.GetByIdAsync(requestId);
+            if (request == null)
+            {
+                throw new KeyNotFoundException("Original booking request not found.");
+            }
+
+            // 3. **الآن فقط، نقوم بإنشاء سجل الـ Booking**
+            var newBooking = new Booking
+            {
+                GuestId = request.GuestId,
+                ListingId = request.ListingId,
+                RoomId = request.RoomId,
+                BedId = request.BedId,
+                FromDate = request.FromDate.Value,
+                ToDate = request.ToDate.Value,
+                Price = (decimal)paymentIntent.Amount / 100, // السعر من الدفعة المؤكدة
+                PaymentStatus = "Paid", // <-- مدفوع مباشرة
+                CreatedAt = DateTime.UtcNow,
+                IsActive = true
+            };
+            await _bookingRepository.AddAsync(newBooking);
+
+            // 4. إنشاء سجل الـ Payment
+            var newPayment = new Payment
+            {
+                // يجب الانتظار حتى يتم حفظ الحجز للحصول على BookingId
+                // سنقوم بتعديل هذا الجزء
+                Booking = newBooking, // ربط مباشر
+                StripePaymentIntentId = paymentIntent.Id,
+                Amount = newBooking.Price,
+                Currency = paymentIntent.Currency,
+                Status = "Paid",
+                PaymentDate = DateTime.UtcNow
+            };
+            await _paymentRepository.AddAsync(newPayment);
+
+            // 5. حفظ كل شيء في عملية واحدة
+            await _unitOfWork.SaveChangesAsync();
+        }
+        private decimal CalculatePrice(BookingRequest request)
+        {
+            // 1. إذا كان السرير محدداً
+            if (request.BedId.HasValue && request.Bed != null)
+            {
+                return request.Bed.Price ?? 0;
+            }
+            // 2. إذا كانت الغرفة محددة (بدون سرير)
+            else if (request.RoomId.HasValue && request.Room != null)
+            {
+                // نفترض أن السعر هنا لليلة الواحدة
+                var nights = (request.ToDate.Value - request.FromDate.Value).Days;
+                return (request.Room.PricePerNight ?? 0) * nights;
+            }
+            // 3. إذا كانت الشقة كاملة محددة
+            else if (request.ListingId.HasValue && request.Listing != null)
+            {
+                return request.Listing.PricePerMonth ?? 0; // أو أي منطق آخر للشقة كاملة
+            }
+
+            throw new InvalidOperationException("Could not determine the price for the booking request.");
         }
     }
 }

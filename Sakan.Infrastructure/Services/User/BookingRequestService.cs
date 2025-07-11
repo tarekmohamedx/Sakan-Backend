@@ -174,6 +174,29 @@ namespace Sakan.Infrastructure.Services
 
             return latestRequest;
         }
+
+        private decimal CalculatePrice(BookingRequest request)
+        {
+            // 1. إذا كان السرير محدداً
+            if (request.BedId.HasValue && request.Bed != null)
+            {
+                return request.Bed.Price ?? 0;
+            }
+            // 2. إذا كانت الغرفة محددة (بدون سرير)
+            else if (request.RoomId.HasValue && request.Room != null)
+            {
+                // نفترض أن السعر هنا لليلة الواحدة
+                var nights = (request.ToDate.Value - request.FromDate.Value).Days;
+                return (request.Room.PricePerNight ?? 0) * nights;
+            }
+            // 3. إذا كانت الشقة كاملة محددة
+            else if (request.ListingId.HasValue && request.Listing != null)
+            {
+                return request.Listing.PricePerMonth ?? 0; // أو أي منطق آخر للشقة كاملة
+            }
+
+            throw new InvalidOperationException("Could not determine the price for the booking request.");
+        }
     }
 
 }

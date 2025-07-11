@@ -25,7 +25,7 @@ namespace Sakan.Infrastructure.Repositories
             var query = _context.Listings
                 .Include(l => l.ListingPhotos)
                 .Include(l => l.Rooms).ThenInclude(r => r.Beds).ThenInclude(b => b.Bookings)
-                .Where(l => l.IsApproved == true)
+                .Where(l => l.IsApproved == true && l.IsActive == true)
                 .AsNoTracking(); // AsNoTracking لتحسين الأداء لأننا لن نعدل على البيانات
 
             // --- تطبيق الفلاتر ---
@@ -95,7 +95,7 @@ namespace Sakan.Infrastructure.Repositories
         {
             var query = _context.Listings
                 .Include(l => l.ListingPhotos)
-                .Where(l => l.IsApproved == true)
+                .Where(l => l.IsApproved == true && l.IsActive == true)
                 .AsNoTracking();
 
             var totalCount = await query.CountAsync();
@@ -113,7 +113,7 @@ namespace Sakan.Infrastructure.Repositories
         {
             return await _context.Listings
                 .Include(l => l.ListingPhotos)
-                .Where(l => l.IsApproved == true)
+                .Where(l => l.IsApproved == true && l.IsActive == true)
                 .OrderByDescending(l => l.AverageRating)
                 .Take(count)
                 .ToListAsync();
@@ -123,7 +123,7 @@ namespace Sakan.Infrastructure.Repositories
         {
             return await _context.Listings
                 .Include(l => l.ListingPhotos)
-                .Where(l => l.IsApproved == true)
+                .Where(l => l.IsApproved == true && l.IsActive == true)
                 .OrderByDescending(l => l.CreatedAt)
                 .Take(count)
                 .ToListAsync();
@@ -133,7 +133,7 @@ namespace Sakan.Infrastructure.Repositories
         {
             return await _context.Listings
                 .Include(l => l.ListingPhotos)
-                .Where(l => l.IsApproved == true && l.MinBedPrice > 0)
+                .Where(l => l.IsApproved == true && l.IsActive == true && l.MinBedPrice > 0)
                 .OrderBy(l => l.MinBedPrice)
                 .Take(count)
                 .ToListAsync();
