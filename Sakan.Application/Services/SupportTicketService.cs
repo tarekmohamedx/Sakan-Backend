@@ -14,12 +14,14 @@ namespace Sakan.Application.Services
 {
     public class SupportTicketService : ISupportTicketService
     {
+        private readonly IEmailService _emailService;
         private readonly ISupportTicketRepository _ticketRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public SupportTicketService(ISupportTicketRepository ticketRepository, IUnitOfWork unitOfWork, IMapper mapper)
+        public SupportTicketService(ISupportTicketRepository ticketRepository, IUnitOfWork unitOfWork, IMapper mapper, IEmailService emailService)
         {
+            _emailService = emailService;
             _ticketRepository = ticketRepository;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -55,9 +57,9 @@ namespace Sakan.Application.Services
 
             if (userId == null)
             {
-                var ticketLink = $"https://your-frontend-url.com/support/guest-ticket/{ticket.GuestAccessToken}";
+                var ticketLink = $"http://localhost:4200/guest-ticket/{ticket.GuestAccessToken}";
                 var emailBody = $"Thank you for contacting support. You can view and reply to your ticket using this private link: {ticketLink}";
-                //await _emailService.SendEmailAsync(ticket.GuestEmail, $"Support Ticket #{ticket.Id}", emailBody);
+                await _emailService.SendEmailAsync(ticket.GuestEmail, $"Support Ticket #{ticket.Id}", emailBody);
             }
 
             return ticket.Id;
