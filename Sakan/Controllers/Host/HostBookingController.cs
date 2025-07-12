@@ -17,7 +17,8 @@ namespace Sakan.Controllers.Host
             _bookingService = bookingService;
         }
 
-        [HttpGet("host/bookings")]
+        //Hostbooking/host/bookings
+        [HttpGet("host/bookings/{hostId}")]
         public async Task<IActionResult> GetBookingsForHost(string hostId)
         {
             var bookings = await _bookingService.GetHostBookingsAsync(hostId);
