@@ -40,12 +40,19 @@ namespace Sakan.Controllers.User
         [HttpPost("request")]
         public async Task<IActionResult> CreateBookingRequest([FromBody] BookingRequestsDto dto)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);  
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                var result = await _bookingService.CreateAsync(dto);
+                return Ok(new { result.requestId, result.hostId });
             }
-            var result = await _bookingService.CreateAsync(dto);
-            return Ok(new { result.requestId, result.hostId });
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpGet("listing-reviews/{listingId}")]
