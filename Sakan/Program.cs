@@ -220,6 +220,8 @@ namespace Sakan
             builder.Services.Configure<AiController.OpenAIOptions>(
                 builder.Configuration.GetSection("OpenAI"));
 
+            builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
+
             var app = builder.Build();
 
             // 6. إعداد خط أنابيب الطلبات (Request Pipeline)
