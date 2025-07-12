@@ -22,7 +22,9 @@ public class AdminUsersService : IAdminUsersService
                 Id = u.Id,
                 UserName = u.UserName,
                 Email = u.Email,
-                HostVerificationStatus = u.HostVerificationStatus
+                HostVerificationStatus = u.HostVerificationStatus,
+                PhoneNumber=u.PhoneNumber,
+                IsDeleted=u.IsDeleted
             })
             .ToListAsync();
 
@@ -37,19 +39,23 @@ public class AdminUsersService : IAdminUsersService
             {
                 Id = u.Id,
                 UserName = u.UserName,
-                Email = u.Email
+                Email = u.Email,
+                PhoneNumber = u.PhoneNumber,
+                IsDeleted = u.IsDeleted
+
             })
             .ToListAsync();
 
         return guests;
     }
 
-    public async Task<bool> UpdateUserAsync(string userId, string userName, string email)
+    public async Task<bool> UpdateUserAsync(string userId, string userName, string email, string PhoneNumber)
     {
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null) return false;
         user.UserName = userName;
         user.Email = email;
+        user.PhoneNumber = PhoneNumber;
         var result = await _userManager.UpdateAsync(user);
         return result.Succeeded;
     }

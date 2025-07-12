@@ -11,7 +11,7 @@ namespace Sakan.Application.Interfaces.Admin
     {
         Task<List<HostAdminViewDto>> GetAllHostsAsync();
         Task<List<GuestAdminViewDto>> GetAllGuestsAsync();
-        Task<bool> UpdateUserAsync(string userId, string userName, string email);
+        Task<bool> UpdateUserAsync(string userId, string userName, string email, string phoneNumber);
         Task<bool> DeleteUserAsync(string userId);
     }
 }
