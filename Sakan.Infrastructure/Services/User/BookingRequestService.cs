@@ -29,6 +29,18 @@ namespace Sakan.Infrastructure.Services
         {
             int firstRequestId = 0;
 
+            // ✅ Get hostId first
+            var hostId = await _context.Listings
+                .Where(l => l.Id == dto.ListingId)
+                .Select(l => l.HostId)
+                .FirstOrDefaultAsync();
+
+            // ✅ Check if guest is the host
+            if (hostId == dto.GuestId)
+            {
+                throw new InvalidOperationException("You cannot book your own apartment.");
+            }
+
             // Check for duplicate request
             bool isDuplicate = await _context.BookingRequests.AnyAsync(r =>
                 r.GuestId == dto.GuestId &&
@@ -90,11 +102,6 @@ namespace Sakan.Infrastructure.Services
                         firstRequestId = booking.Id;
                 }
             }
-
-            var hostId = await _context.Listings
-                .Where(l => l.Id == dto.ListingId)
-                .Select(l => l.HostId)
-                .FirstOrDefaultAsync();
 
             return (firstRequestId, hostId);
         }

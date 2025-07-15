@@ -74,7 +74,8 @@ namespace Sakan
             builder.Services.AddScoped<IEmailService, SendGridEmailService>();
             builder.Services.AddScoped<ISupportTicketService, SupportTicketService>();
             builder.Services.AddScoped<IAdminUsersService, AdminUsersService>();
-
+            builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
+            builder.Services.Configure<AiController.OpenAIOptions>(builder.Configuration.GetSection("OpenAI"));
 
             // إضافة المستودعات (Repositories)
             builder.Services.AddScoped<IReviewRepository, ReviewRepository>();

@@ -220,6 +220,14 @@ namespace Sakan.Application.Services
                  userId = guestId;
             }
 
+            if (booking == null)
+                throw new KeyNotFoundException("Booking not found");
+
+            if (booking.HostApproved == true && booking.GuestApproved == true)
+            {
+                booking.IsActive = true;
+            }
+
             await MessageRepo.SaveChangesAsync();
 
             return await GetBookingApprovalStatusAsync(userId, booking.Id, ApproveBookingRequest.IsHost);

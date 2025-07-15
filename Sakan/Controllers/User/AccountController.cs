@@ -199,13 +199,51 @@ namespace Sakan.Controllers.User
             var user = await userManager.FindByEmailAsync(validPayload.Email);
             if (user == null)
             {
+                // Create a new user
                 user = new ApplicationUser
                 {
                     Email = validPayload.Email,
                     UserName = validPayload.Email,
                     EmailConfirmed = true
                 };
-                await userManager.CreateAsync(user);
+
+                var createResult = await userManager.CreateAsync(user);
+
+                if (!createResult.Succeeded)
+                {
+                    return BadRequest(new
+                    {
+                        message = "User creation failed",
+                        errors = createResult.Errors.Select(e => e.Description)
+                    });
+                }
+
+                // Assign "Customer" role to the newly created user
+                var roleResult = await userManager.AddToRoleAsync(user, "Customer");
+                if (!roleResult.Succeeded)
+                {
+                    return BadRequest(new
+                    {
+                        message = "Failed to assign Customer role",
+                        errors = roleResult.Errors.Select(e => e.Description)
+                    });
+                }
+            }
+            else
+            {
+                // If user exists, check if they already have "Customer" role
+                if (!await userManager.IsInRoleAsync(user, "Customer"))
+                {
+                    var roleResult = await userManager.AddToRoleAsync(user, "Customer");
+                    if (!roleResult.Succeeded)
+                    {
+                        return BadRequest(new
+                        {
+                            message = "Failed to assign Customer role to existing user",
+                            errors = roleResult.Errors.Select(e => e.Description)
+                        });
+                    }
+                }
             }
 
             var token = await GenerateJwtToken(user);
@@ -319,7 +357,7 @@ namespace Sakan.Controllers.User
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDTO model, [FromServices] EmailService mailService)
         {
             var user = await userManager.FindByEmailAsync(model.Email);
-            if (user == null || !(await userManager.IsEmailConfirmedAsync(user)))
+            if (user != null && await userManager.IsEmailConfirmedAsync(user))
                 return BadRequest(new { message = "Invalid user or email not confirmed" });
 
             var token = await userManager.GeneratePasswordResetTokenAsync(user);

@@ -47,6 +47,13 @@ namespace Sakan.Hubs
             await Clients.User(receiverId).SendAsync("ReceiveBookingStatusUpdate", result);
         }
 
+        public async Task NotifyWhenChattingWithHost(string receiverId)
+        {
+            await Clients.User(receiverId).SendAsync("ReceivingNewChat");
+        }
+
+
+
 
     }
 }
