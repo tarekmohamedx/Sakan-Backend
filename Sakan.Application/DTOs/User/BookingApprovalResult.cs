@@ -21,7 +21,7 @@ namespace Sakan.Application.DTOs.User
     {
         public int? ChatId { get; set; }
         public bool IsHost { get; set; }
-        public int BookingId { get; set; }
+        public int BookingId { get; set; }              
         public string? UserId { get; set; }
     }
 }

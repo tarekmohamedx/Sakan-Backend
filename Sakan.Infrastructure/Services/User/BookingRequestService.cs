@@ -29,25 +29,53 @@ namespace Sakan.Infrastructure.Services
         {
             int firstRequestId = 0;
 
+            // ✅ Get hostId first
+            var hostId = await _context.Listings
+                .Where(l => l.Id == dto.ListingId)
+                .Select(l => l.HostId)
+                .FirstOrDefaultAsync();
+
+            // ✅ Check if guest is the host
+            if (hostId == dto.GuestId)
+            {
+                throw new InvalidOperationException("You cannot book your own apartment.");
+            }
+
+            // Check for duplicate request
+            bool isDuplicate = await _context.BookingRequests.AnyAsync(r =>
+                r.GuestId == dto.GuestId &&
+                r.FromDate == dto.FromDate &&
+                r.ToDate == dto.ToDate &&
+                (
+                    (dto.BedIds == null || !dto.BedIds.Any()) // whole room booking
+                        ? (r.RoomId == dto.RoomId && r.BedId == null && r.ListingId == dto.ListingId)
+                        : (dto.BedIds.Contains(r.BedId ?? 0) && r.RoomId == dto.RoomId && r.ListingId == dto.ListingId)
+                )
+            );
+
+            if (isDuplicate)
+            {
+                throw new InvalidOperationException("You have already sent this booking request.");
+            }
+
+            // Create booking(s)
             if (dto.BedIds == null || !dto.BedIds.Any())
             {
-                // Create a single booking request for the entire room (or listing)
                 var booking = new BookingRequest
                 {
                     GuestId = dto.GuestId,
                     ListingId = dto.ListingId ?? 0,
                     RoomId = dto.RoomId,
-                    BedId = null, // No specific bed
+                    BedId = null,
                     FromDate = dto.FromDate,
-                    CreatedAt = DateAndTime.Now,
                     ToDate = dto.ToDate,
                     HostApproved = null,
                     GuestApproved = null,
+                    CreatedAt = DateAndTime.Now
                 };
 
                 _context.BookingRequests.Add(booking);
                 await _context.SaveChangesAsync();
-
                 firstRequestId = booking.Id;
             }
             else
@@ -75,13 +103,9 @@ namespace Sakan.Infrastructure.Services
                 }
             }
 
-            var hostId = await _context.Listings
-                .Where(l => l.Id == dto.ListingId)
-                .Select(l => l.HostId)
-                .FirstOrDefaultAsync();
-
             return (firstRequestId, hostId);
         }
+
 
         //use the BookingRequestsDTO then return all the booking requests for the user with the given userId
         public async Task<IEnumerable<BookingRequestsDTO>> GetBookingRequestsByUserIdAsync(string userId)

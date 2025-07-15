@@ -25,7 +25,7 @@ namespace Sakan.Infrastructure.Repositories
             var query = _context.Listings
                 .Include(l => l.ListingPhotos)
                 .Include(l => l.Rooms).ThenInclude(r => r.Beds).ThenInclude(b => b.Bookings)
-                .Where(l => l.IsApproved == true && l.IsActive == true)
+                .Where(l => l.IsApproved == true && l.IsActive == true && l.IsDeleted==false)
                 .AsNoTracking(); // AsNoTracking لتحسين الأداء لأننا لن نعدل على البيانات
 
             // --- تطبيق الفلاتر ---
@@ -95,7 +95,7 @@ namespace Sakan.Infrastructure.Repositories
         {
             var query = _context.Listings
                 .Include(l => l.ListingPhotos)
-                .Where(l => l.IsApproved == true && l.IsActive == true)
+                .Where(l => l.IsApproved == true && l.IsActive == true && l.IsDeleted == false)
                 .AsNoTracking();
 
             var totalCount = await query.CountAsync();
@@ -113,7 +113,7 @@ namespace Sakan.Infrastructure.Repositories
         {
             return await _context.Listings
                 .Include(l => l.ListingPhotos)
-                .Where(l => l.IsApproved == true && l.IsActive == true)
+                .Where(l => l.IsApproved == true && l.IsActive == true && l.IsDeleted == false)
                 .OrderByDescending(l => l.AverageRating)
                 .Take(count)
                 .ToListAsync();
@@ -123,7 +123,7 @@ namespace Sakan.Infrastructure.Repositories
         {
             return await _context.Listings
                 .Include(l => l.ListingPhotos)
-                .Where(l => l.IsApproved == true && l.IsActive == true)
+                .Where(l => l.IsApproved == true && l.IsActive == true && l.IsDeleted == false)
                 .OrderByDescending(l => l.CreatedAt)
                 .Take(count)
                 .ToListAsync();
@@ -133,7 +133,7 @@ namespace Sakan.Infrastructure.Repositories
         {
             return await _context.Listings
                 .Include(l => l.ListingPhotos)
-                .Where(l => l.IsApproved == true && l.IsActive == true && l.MinBedPrice > 0)
+                .Where(l => l.IsApproved == true && l.IsActive == true && l.MinBedPrice > 0 && l.IsDeleted == false)
                 .OrderBy(l => l.MinBedPrice)
                 .Take(count)
                 .ToListAsync();

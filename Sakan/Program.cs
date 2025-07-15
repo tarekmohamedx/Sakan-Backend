@@ -12,6 +12,7 @@ using Sakan.Application.Interfaces.User;
 using Sakan.Application.Mapper;
 using Sakan.Application.Services;
 using Sakan.Application.Services.Admin;
+using Sakan.Controllers;
 using Sakan.Domain.Interfaces;
 using Sakan.Domain.IUnitOfWork;
 using Sakan.Domain.Models;
@@ -72,7 +73,8 @@ namespace Sakan
             builder.Services.AddScoped<IEmailService, SendGridEmailService>();
             builder.Services.AddScoped<ISupportTicketService, SupportTicketService>();
             builder.Services.AddScoped<IAdminUsersService, AdminUsersService>();
-
+            builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
+            builder.Services.Configure<AiController.OpenAIOptions>(builder.Configuration.GetSection("OpenAI"));
 
             // إضافة المستودعات (Repositories)
             builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
