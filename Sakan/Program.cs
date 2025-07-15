@@ -45,6 +45,7 @@ namespace Sakan
             builder.Services.AddHttpClient();
             builder.Services.AddSignalR();
 
+
             // إضافة AutoMapper
             builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
@@ -216,6 +217,11 @@ namespace Sakan
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             #endregion
+
+            builder.Services.Configure<AiController.OpenAIOptions>(
+                builder.Configuration.GetSection("OpenAI"));
+
+            builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
 
             var app = builder.Build();
 

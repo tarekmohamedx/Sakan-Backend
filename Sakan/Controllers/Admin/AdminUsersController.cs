@@ -33,7 +33,7 @@ namespace Sakan.Controllers.Admin
         [HttpPut("{userId}")]
         public async Task<IActionResult> UpdateUser(string userId, [FromBody] GuestAdminViewDto dto)
         {
-            var success = await _adminUsersService.UpdateUserAsync(userId, dto.UserName, dto.Email);
+            var success = await _adminUsersService.UpdateUserAsync(userId, dto.UserName, dto.Email, dto.PhoneNumber);
             if (!success) return NotFound();
             return Ok();
         }
