@@ -119,8 +119,7 @@ namespace Sakan.Infrastructure.Repositories
         public async Task<BookingRequest?> GetLatestActiveBookingAsync(int listingId)
         {
             return await Context.BookingRequests
-                //.Where(br => br.ListingId == listingId && br.IsActive)
-                .Where(br => br.ListingId == listingId)
+                .Where(br => br.ListingId == listingId && br.IsActive)
                 .OrderByDescending(br => br.CreatedAt)
                 .FirstOrDefaultAsync();
         }
@@ -128,14 +127,10 @@ namespace Sakan.Infrastructure.Repositories
         //done
         public async Task<BookingRequest?> GetLatestActiveBookingAsync(int listingId, string guestId)
         {
-             //return await Context.BookingRequests
-             //   .Where(br => br.ListingId == listingId && br.GuestId == guestId && br.IsActive)
-             //   .OrderByDescending(br => br.CreatedAt)
-             //   .FirstOrDefaultAsync();
-            return await Context.BookingRequests
-              .Where(br => br.ListingId == listingId && br.GuestId == guestId)
-              .OrderByDescending(br => br.CreatedAt)
-              .FirstOrDefaultAsync();
+             return await Context.BookingRequests
+                .Where(br => br.ListingId == listingId && br.GuestId == guestId && br.IsActive)
+                .OrderByDescending(br => br.CreatedAt)
+                .FirstOrDefaultAsync();
         }
 
      public async Task<string?> GetGuestIdFromChat(int chatId)

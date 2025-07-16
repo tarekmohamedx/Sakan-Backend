@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Sakan.Application.Interfaces.User;
+using Stripe;
 
 namespace Sakan.Controllers.User
 {
@@ -40,6 +41,18 @@ namespace Sakan.Controllers.User
         {
             var requests = await _bookingRequestService.GetBookingRequestsByHostIdAsync(hostId);
             return Ok(requests);
+        }
+
+
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetBookingRequestById(int id)
+        {
+            var dto = await _bookingRequestService.getbookingrequestbyid(id);
+            if (dto == null)
+                return NotFound();
+
+            return Ok(dto);
         }
     }
 }

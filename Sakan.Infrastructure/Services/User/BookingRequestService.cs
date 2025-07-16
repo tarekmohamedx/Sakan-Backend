@@ -5,6 +5,7 @@ using Sakan.Application.DTOs.Host;
 using Sakan.Application.DTOs.User;
 using Sakan.Application.Interfaces;
 using Sakan.Application.Interfaces.User;
+using Sakan.Domain.Interfaces;
 using Sakan.Domain.Models;
 using Sakan.Infrastructure.Models;
 using System;
@@ -19,10 +20,12 @@ namespace Sakan.Infrastructure.Services
     public class BookingRequestService : IBookingRequestService
     {
         private readonly sakanContext _context;
+        private readonly IBookingRequestRepository bookingRequestRepository;
 
-        public BookingRequestService(sakanContext context)
+        public BookingRequestService(sakanContext context, IBookingRequestRepository bookingRequestRepository)
         {
             _context = context;
+            this.bookingRequestRepository = bookingRequestRepository;
         }
 
         public async Task<(int requestId, string hostId)> CreateAsync(BookingRequestsDto dto)
@@ -174,7 +177,8 @@ namespace Sakan.Infrastructure.Services
                     ToDate = (DateTime)br.ToDate,
                     CreatedAt = (DateTime)br.CreatedAt,
                     IsApproved = br.HostApproved == true ? "Accepted" :
-                             br.HostApproved == false ? "Rejected" :
+                             br.HostApproved == false ? "Rejected" : 
+
                              "Pending"
 
                 }).OrderByDescending(s => s.CreatedAt)
@@ -223,6 +227,24 @@ namespace Sakan.Infrastructure.Services
             }
 
             throw new InvalidOperationException("Could not determine the price for the booking request.");
+        }
+
+        public async Task<BookingRQSDTO> getbookingrequestbyid(int id)
+        {
+            var entity = await bookingRequestRepository.GetByIdAsync(id);
+            if (entity == null) return null;
+
+            return new BookingRQSDTO
+            {
+                Id = entity.Id,
+                GuestId = entity.GuestId,
+                ListingId = entity.ListingId,
+                RoomId = entity.RoomId,
+                BedId = entity.BedId,
+                FromDate = entity.FromDate,
+                ToDate = entity.ToDate,
+                IsActive = entity.IsActive,
+            };
         }
     }
 
