@@ -79,62 +79,26 @@ namespace Sakan.Application.Services
                 UserIdToNotify = isHost ? booking.GuestId : listing?.HostId
             };
         }
-        ////done
-        //private string GetBookingStatus(bool? host, bool? guest, bool isHost, out string logicalStatus)
-        //{
-        //    if (host == null && guest == null)
-        //        logicalStatus = "Pending";
-        //    else if (host == false)
-        //        logicalStatus = "RejectedByHost";
-        //    else if (guest == false)
-        //        logicalStatus = "RejectedByGuest";
-        //    else if (host == true && guest == true)
-        //        logicalStatus = isHost ? "PendingUserBooking" : "GoToPayment";
-        //    else if (host == true)
-        //        logicalStatus = "ApprovedByHost";
-        //    else if (guest == true)
-        //        logicalStatus = "ApprovedByGuest";
-        //    else
-        //        logicalStatus = "Pending";
-
-        //    return logicalStatus;
-        //}
-
         //done
         private string GetBookingStatus(bool? host, bool? guest, bool isHost, out string logicalStatus)
         {
             if (host == null && guest == null)
-            {
                 logicalStatus = "Pending";
-            }
             else if (host == false)
-            {
                 logicalStatus = "RejectedByHost";
-            }
             else if (guest == false)
-            {
                 logicalStatus = "RejectedByGuest";
-            }
             else if (host == true && guest == true)
-            {
                 logicalStatus = isHost ? "PendingUserBooking" : "GoToPayment";
-            }
             else if (host == true)
-            {
                 logicalStatus = "ApprovedByHost";
-            }
             else if (guest == true)
-            {
                 logicalStatus = "ApprovedByGuest";
-            }
             else
-            {
                 logicalStatus = "Pending";
-            }
 
             return logicalStatus;
         }
-
 
         public Task<Chat> CreateChatIfNotExistsAsync(string senderId, string receiverId, int listingId)
         {

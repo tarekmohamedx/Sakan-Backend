@@ -88,6 +88,7 @@ namespace Sakan
             builder.Services.AddScoped<IBookingRepository, BookingRepository>();
             builder.Services.AddScoped<IFavoriteRepository, FavoriteRepository>();
             builder.Services.AddScoped<ISupportTicketRepository, SupportTicketRepository>();
+            builder.Services.AddScoped<IBookingService,BookingService>();
 
             // إضافة UnitOfWork
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
