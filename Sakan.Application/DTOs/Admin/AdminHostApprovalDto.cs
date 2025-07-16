@@ -18,5 +18,7 @@ namespace Sakan.Application.DTOs.Admin
         public string UserName { get; set; }
         public string Email { get; set; }
         public string HostVerificationStatus { get; set; }
+        public String PhoneNumber { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }

@@ -162,9 +162,8 @@ namespace Sakan.Application.Services
             // 2. إذا كانت الغرفة محددة (بدون سرير)
             else if (request.RoomId.HasValue && request.Room != null)
             {
-                // نفترض أن السعر هنا لليلة الواحدة
-                var nights = (request.ToDate.Value - request.FromDate.Value).Days;
-                return (request.Room.PricePerNight ?? 0) * nights;
+                
+                return request.Room.PricePerNight ?? 0;
             }
             // 3. إذا كانت الشقة كاملة محددة
             else if (request.ListingId.HasValue && request.Listing != null)

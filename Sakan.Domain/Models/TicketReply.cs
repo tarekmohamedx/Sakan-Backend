@@ -11,7 +11,7 @@ public partial class TicketReply
 
     public int SupportTicketId { get; set; }
 
-    public string AuthorId { get; set; }
+    public string? AuthorId { get; set; }
 
     public string Content { get; set; }
 

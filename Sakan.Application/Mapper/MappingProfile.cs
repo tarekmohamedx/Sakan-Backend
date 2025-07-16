@@ -7,6 +7,7 @@ using Sakan.Domain.Models;
 using AutoMapper;
 using Sakan.Application.DTOs.User;
 using Sakan.Application.DTOs;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Sakan.Application.Mapper
 {
@@ -29,7 +30,9 @@ namespace Sakan.Application.Mapper
             CreateMap<SupportTicket, TicketDetailsDto>()
                 .ForMember(dest => dest.SubmitterName,
                        opt => opt.MapFrom(src => src.User != null ? src.User.UserName : src.GuestName))
-                .ForMember(dest => dest.Replies, opt => opt.MapFrom(src => src.TicketReplies));
+                .ForMember(dest => dest.Replies, opt => opt.MapFrom(src => src.TicketReplies))
+                .ForMember(dest => dest.CreatedAt,
+                       opt => opt.MapFrom(src => src.LastUpdatedAt ?? src.CreatedAt));
             CreateMap<TicketReply, TicketReplyDto>()
                 .ForMember(dest => dest.AuthorName,
                        opt => opt.MapFrom(src => src.Author != null ? src.Author.UserName : "Guest"));
